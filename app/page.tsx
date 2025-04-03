@@ -5,16 +5,8 @@ export default async function Home() {
 
   return (
     <>
-      {session ? (
-        <div>
-          <a href='/auth/logout'>Logout</a>
-        </div>
-      ) : (
-        <>
-          <a href='/auth/login'>Login</a>
-          <a href='/auth/login?screen_hint=signup'>Sign Up</a>
-        </>
-      )}
+      <h1>Welcome to the App</h1>
+      <p>{session ? 'You are logged in' : 'You are not logged in'}</p>
     </>
   );
 }

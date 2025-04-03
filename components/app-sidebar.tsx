@@ -13,6 +13,7 @@ import { randomUUID } from 'crypto';
 import { PawPrint, Send, Settings } from 'lucide-react';
 import { NavUser } from './nav-user';
 import { PetsNav } from './pets-nav';
+import AuthButtons from './auth/auth-buttons';
 
 export interface AppSidebarProps {
   user: User | undefined;
@@ -106,7 +107,9 @@ export function AppSidebar({ user }: AppSidebarProps) {
         <PetsNav pets={data.pets} />
         <NavSecondary items={data.navSecondary} className='mt-auto' />
       </SidebarContent>
-      <SidebarFooter>{user ? <NavUser user={user} /> : null}</SidebarFooter>
+      <SidebarFooter>
+        {user ? <NavUser user={user} /> : <AuthButtons />}
+      </SidebarFooter>
     </Sidebar>
   );
 }
