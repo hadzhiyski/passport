@@ -5,12 +5,9 @@ export default async function Home() {
 
   return (
     <>
-      <h1>Welcome to My Page</h1>
-
       {session ? (
         <div>
           <a href='/auth/logout'>Logout</a>
-          <pre>{JSON.stringify(session, null, 2)}</pre>
         </div>
       ) : (
         <>
