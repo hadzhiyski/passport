@@ -1,12 +1,5 @@
 'use client';
 
-import { ChevronRight, PawPrint } from 'lucide-react';
-
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from '@passport/components/ui/collapsible';
 import {
   SidebarGroup,
   SidebarGroupLabel,
@@ -24,7 +17,6 @@ export function PetsNav({
   pets: {
     id: string;
     name: string;
-    url: string;
     kind: 'dog' | 'cat';
     selected?: boolean;
     items?: {
@@ -36,37 +28,26 @@ export function PetsNav({
   return (
     <SidebarGroup>
       <SidebarGroupLabel>My Pets</SidebarGroupLabel>
-      <SidebarMenu>
+      <SidebarMenu className='gap-2'>
         {pets.map((item) => (
-          <Collapsible
-            key={item.name}
-            asChild
-            defaultOpen={item.selected}
-            className='group/collapsible'
-          >
-            <SidebarMenuItem>
-              <CollapsibleTrigger asChild>
-                <SidebarMenuButton tooltip={item.name}>
-                  <PawPrint />
-                  <span>{item.name}</span>
-                  <ChevronRight className='ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90' />
-                </SidebarMenuButton>
-              </CollapsibleTrigger>
-              <CollapsibleContent>
-                <SidebarMenuSub className='border-l-0'>
-                  {item.items?.map((subItem) => (
-                    <SidebarMenuSubItem key={subItem.title}>
-                      <SidebarMenuSubButton asChild>
-                        <a href={subItem.url}>
-                          <span>{subItem.title}</span>
-                        </a>
-                      </SidebarMenuSubButton>
-                    </SidebarMenuSubItem>
-                  ))}
-                </SidebarMenuSub>
-              </CollapsibleContent>
-            </SidebarMenuItem>
-          </Collapsible>
+          <SidebarMenuItem key={item.name}>
+            <SidebarMenuButton asChild>
+              <a href={`/pets/${item.id}`} className='font-medium'>
+                {item.name}
+              </a>
+            </SidebarMenuButton>
+            {item.items?.length ? (
+              <SidebarMenuSub className='ml-0 border-l-0 px-1.5'>
+                {item.items.map((item) => (
+                  <SidebarMenuSubItem key={item.title}>
+                    <SidebarMenuSubButton asChild isActive={false}>
+                      <a href={item.url}>{item.title}</a>
+                    </SidebarMenuSubButton>
+                  </SidebarMenuSubItem>
+                ))}
+              </SidebarMenuSub>
+            ) : null}
+          </SidebarMenuItem>
         ))}
       </SidebarMenu>
     </SidebarGroup>
