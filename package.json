@@ -2,6 +2,7 @@
   "name": "passport",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "description": "Your pet passport app",
   "author": "Vladislav Hadzhiyski (vladislav.hadzhiyski@gmail.com)",
   "keywords": [
@@ -24,7 +25,10 @@
     "start": "next start",
     "lint": "next lint",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "drizzle:generate": "drizzle-kit generate",
+    "drizzle:migrate": "drizzle-kit migrate",
+    "db:seed": "tsx database/seed/index.ts"
   },
   "dependencies": {
     "@auth0/nextjs-auth0": "^4.3.0",
@@ -37,8 +41,12 @@
     "@radix-ui/react-tooltip": "^1.1.8",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "dotenv": "^16.4.7",
+    "dotenv-expand": "^12.0.1",
+    "drizzle-orm": "^0.41.0",
     "lucide-react": "^0.485.0",
     "next": "15.2.4",
+    "pg": "^8.14.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "tailwind-merge": "^3.0.2",
@@ -48,13 +56,18 @@
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
+    "@types/pg": "^8.11.11",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "chalk": "^5.4.1",
+    "drizzle-kit": "^0.30.6",
     "eslint": "^9",
     "eslint-config-next": "15.2.4",
     "eslint-config-prettier": "^10.1.1",
+    "glob": "^11.0.1",
     "prettier": "^3.5.3",
     "tailwindcss": "^4",
+    "tsx": "^4.19.3",
     "typescript": "^5"
   }
 }

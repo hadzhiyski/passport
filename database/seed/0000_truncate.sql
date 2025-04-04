@@ -1,0 +1,9 @@
+truncate table "anti_echinococcus_treatments" restart identity cascade;
+truncate table "anti_parasite_treatments" restart identity cascade;
+truncate table "clinical_examinations" restart identity cascade;
+truncate table "owners" restart identity cascade;
+truncate table "passports" restart identity cascade;
+truncate table "pet_markings" restart identity cascade;
+truncate table "pets" restart identity cascade;
+truncate table "vaccinations" restart identity cascade;
+truncate table "veterinarians" restart identity cascade;
