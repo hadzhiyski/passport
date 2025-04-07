@@ -9,9 +9,6 @@ import {
   SidebarMenuItem,
 } from '@passport/components/ui/sidebar';
 import { getUser } from '@passport/user';
-import { Send, Settings } from 'lucide-react';
-import { User } from '@passport/user';
-import { randomUUID } from 'crypto';
 import { PawPrint, Send, Settings } from 'lucide-react';
 import { Suspense } from 'react';
 import AuthButtons from './auth/auth-buttons';
