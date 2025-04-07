@@ -8,69 +8,19 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@passport/components/ui/sidebar';
+import { getUser } from '@passport/user';
+import { Send, Settings } from 'lucide-react';
 import { User } from '@passport/user';
 import { randomUUID } from 'crypto';
 import { PawPrint, Send, Settings } from 'lucide-react';
+import { Suspense } from 'react';
+import AuthButtons from './auth/auth-buttons';
 import { NavUser } from './nav-user';
 import { PetsNav } from './pets-nav';
-import AuthButtons from './auth/auth-buttons';
 
-export interface AppSidebarProps {
-  user: User | undefined;
-}
-
-export function AppSidebar({ user }: AppSidebarProps) {
+export async function AppSidebar() {
+  const user = await getUser();
   const data = {
-    pets: [
-      {
-        id: randomUUID(),
-        name: 'Bella',
-        url: '#',
-        kind: 'dog' as const,
-        items: [
-          {
-            title: 'Dog Food',
-            url: '#',
-          },
-          {
-            title: 'Dog Treats',
-            url: '#',
-          },
-        ],
-      },
-      {
-        id: randomUUID(),
-        name: 'Blaze',
-        url: '#',
-        kind: 'dog' as const,
-        items: [
-          {
-            title: 'Dog Food',
-            url: '#',
-          },
-          {
-            title: 'Dog Treats',
-            url: '#',
-          },
-        ],
-      },
-      {
-        id: randomUUID(),
-        name: 'Felix',
-        url: '#',
-        kind: 'cat' as const,
-        items: [
-          {
-            title: 'Cat Food',
-            url: '#',
-          },
-          {
-            title: 'Cat Treats',
-            url: '#',
-          },
-        ],
-      },
-    ],
     navSecondary: [
       {
         title: 'Settings',
@@ -104,7 +54,11 @@ export function AppSidebar({ user }: AppSidebarProps) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <PetsNav pets={data.pets} />
+        {user ? (
+          <Suspense fallback={<div>Loading...</div>}>
+            <PetsNav ownerId={user.id} />
+          </Suspense>
+        ) : null}
         <NavSecondary items={data.navSecondary} className='mt-auto' />
       </SidebarContent>
       <SidebarFooter>

@@ -16,8 +16,6 @@ import { Separator } from '@radix-ui/react-separator';
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
-import { auth0 } from '@passport/lib/auth0';
-import { createAppUser } from '@passport/user';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -39,16 +37,13 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const session = await auth0.getSession();
-  const user = createAppUser(session?.user);
-
   return (
     <html lang='en'>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <SidebarProvider>
-          <AppSidebar user={user} />
+          <AppSidebar />
           <SidebarInset>
             <header className='flex sticky top-0 bg-background h-16 shrink-0 items-center gap-2 border-b px-4'>
               <SidebarTrigger className='-ml-1' />

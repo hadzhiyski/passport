@@ -22,8 +22,8 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from '@passport/components/ui/sidebar';
-import Link from 'next/link';
 import { User } from '@passport/user';
+import Link from 'next/link';
 
 export interface NavUserProps {
   user: User;
@@ -31,12 +31,6 @@ export interface NavUserProps {
 
 export function NavUser({ user }: NavUserProps) {
   const { isMobile } = useSidebar();
-  const initials = user
-    ? user.name
-        .split(' ')
-        .map((n) => n[0])
-        .join('')
-    : '';
 
   return (
     <SidebarMenu>
@@ -50,7 +44,7 @@ export function NavUser({ user }: NavUserProps) {
               <Avatar className='h-8 w-8 rounded-lg'>
                 <AvatarImage src={user.picture} alt={user.name} />
                 <AvatarFallback className='rounded-lg'>
-                  {initials}
+                  {user.initials}
                 </AvatarFallback>
               </Avatar>
               <div className='grid flex-1 text-left text-sm leading-tight'>
@@ -71,7 +65,7 @@ export function NavUser({ user }: NavUserProps) {
                 <Avatar className='h-8 w-8 rounded-lg'>
                   <AvatarImage src={user.picture} alt={user.name} />
                   <AvatarFallback className='rounded-lg'>
-                    {initials}
+                    {user.initials}
                   </AvatarFallback>
                 </Avatar>
                 <div className='grid flex-1 text-left text-sm leading-tight'>
