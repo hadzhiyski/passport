@@ -1,6 +1,5 @@
 import {
   SidebarGroup,
-  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -13,7 +12,6 @@ import { ownerTable } from '@passport/database/schema/owner';
 import { passportTable } from '@passport/database/schema/passport';
 import { petsTable } from '@passport/database/schema/pet';
 import { eq, or } from 'drizzle-orm';
-import { Bug, Syringe } from 'lucide-react';
 import Link from 'next/link';
 
 export interface PetsNavProps {
@@ -37,33 +35,26 @@ export async function PetsNav({ ownerId }: PetsNavProps) {
     )
     .where(eq(ownerTable.externalId, ownerId));
 
-  return (
+  return pets.length > 0 ? (
     <SidebarGroup>
-      <SidebarGroupLabel>My Pets</SidebarGroupLabel>
-      <SidebarMenu className='gap-2'>
+      <SidebarMenu>
         {pets.map((pet) => (
-          <SidebarMenuItem key={pet.name}>
-            <SidebarMenuButton asChild>
-              <Link href={`/pets/${pet.id}`} className='font-medium'>
-                {pet.name}
-              </Link>
+          <SidebarMenuItem key={pet.id}>
+            <SidebarMenuButton asChild className='font-medium'>
+              <Link href={`/pets/${pet.id}`}>{pet.name}</Link>
             </SidebarMenuButton>
             <SidebarMenuSub className='ml-0 border-l-0 px-1.5'>
               <SidebarMenuSubItem>
                 <SidebarMenuSubButton asChild>
                   <Link href={`/pets/${pet.id}/vaccinations`}>
-                    <div className='flex gap-1 items-center'>
-                      <Syringe /> Vaccinations
-                    </div>
+                    Vaccinations
                   </Link>
                 </SidebarMenuSubButton>
               </SidebarMenuSubItem>
               <SidebarMenuSubItem>
                 <SidebarMenuSubButton asChild>
                   <Link href={`/pets/${pet.id}/echinococcus`}>
-                    <div className='flex gap-1 items-center'>
-                      <Bug /> Anti-Parasite Treatments
-                    </div>
+                    Anti-Parasite Treatments
                   </Link>
                 </SidebarMenuSubButton>
               </SidebarMenuSubItem>
@@ -72,5 +63,5 @@ export async function PetsNav({ ownerId }: PetsNavProps) {
         ))}
       </SidebarMenu>
     </SidebarGroup>
-  );
+  ) : null;
 }

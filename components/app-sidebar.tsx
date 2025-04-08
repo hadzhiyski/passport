@@ -14,6 +14,7 @@ import { Suspense } from 'react';
 import AuthButtons from './auth/auth-buttons';
 import { NavUser } from './nav-user';
 import { PetsNav } from './pets-nav';
+import Link from 'next/link';
 
 export async function AppSidebar() {
   const user = await getUser();
@@ -38,14 +39,14 @@ export async function AppSidebar() {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size='lg' asChild>
-              <a href='#'>
+              <Link href='/'>
                 <div className='flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground'>
                   <PawPrint size={16} />
                 </div>
                 <div className='grid flex-1 text-left text-sm leading-tight'>
                   <span className='truncate font-semibold'>Passport</span>
                 </div>
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
