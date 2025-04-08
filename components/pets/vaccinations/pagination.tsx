@@ -8,7 +8,8 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '@passport/components/ui/pagination';
-import { useRouter, usePathname, useSearchParams } from 'next/navigation';
+import { cn } from '@passport/lib/utils';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useCallback } from 'react';
 
 interface VaccinePaginationProps {
@@ -55,17 +56,23 @@ export function VaccinePagination({
   return (
     <Pagination className='mt-6'>
       <PaginationContent>
-        {currentPage > 1 && (
-          <PaginationItem>
-            <PaginationPrevious
-              onClick={(e) => {
-                e.preventDefault();
+        <PaginationItem>
+          <PaginationPrevious
+            className={cn({
+              'pointer-events-none': currentPage === 1,
+              'opacity-50': currentPage === 1,
+            })}
+            tabIndex={currentPage === 1 ? -1 : undefined}
+            aria-disabled={currentPage === 1}
+            onClick={(e) => {
+              e.preventDefault();
+              if (currentPage > 1) {
                 handlePageClick(currentPage - 1);
-              }}
-              href='#'
-            />
-          </PaginationItem>
-        )}
+              }
+            }}
+            href='#'
+          />
+        </PaginationItem>
 
         {Array.from({ length: totalPages }).map((_, index) => (
           <PaginationItem key={index}>
@@ -82,17 +89,23 @@ export function VaccinePagination({
           </PaginationItem>
         ))}
 
-        {currentPage < totalPages && (
-          <PaginationItem>
-            <PaginationNext
-              onClick={(e) => {
-                e.preventDefault();
+        <PaginationItem>
+          <PaginationNext
+            className={cn({
+              'pointer-events-none': currentPage >= totalPages,
+              'opacity-50': currentPage >= totalPages,
+            })}
+            tabIndex={currentPage >= totalPages ? -1 : undefined}
+            aria-disabled={currentPage >= totalPages}
+            onClick={(e) => {
+              e.preventDefault();
+              if (currentPage < totalPages) {
                 handlePageClick(currentPage + 1);
-              }}
-              href='#'
-            />
-          </PaginationItem>
-        )}
+              }
+            }}
+            href='#'
+          />
+        </PaginationItem>
       </PaginationContent>
     </Pagination>
   );
