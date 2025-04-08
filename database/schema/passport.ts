@@ -1,23 +1,23 @@
+import { sql } from 'drizzle-orm';
 import {
   date,
   foreignKey,
   integer,
   pgTable,
   primaryKey,
-  serial,
   uniqueIndex,
   varchar,
 } from 'drizzle-orm/pg-core';
 import { ownerTable } from './owner';
 import { petsTable } from './pet';
 import { auditTimestamps, softDeleteTimestamps } from './timestamps';
+import { serialSqid } from './types/serial-sqid';
 import { veterinarianTable } from './veterinarian';
-import { sql } from 'drizzle-orm';
 
 export const passportTable = pgTable(
   'passports',
   {
-    id: serial().notNull(),
+    id: serialSqid('passports').notNull(),
     serialNumber: varchar({ length: 255 }).notNull(),
     issueDate: date().notNull(),
     issuedBy: integer().notNull(),

@@ -1,12 +1,5 @@
+import { AppBreadcrumbList } from '@passport/components/app-breadcrumb-list';
 import { AppSidebar } from '@passport/components/app-sidebar';
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '@passport/components/ui/breadcrumb';
 import {
   SidebarInset,
   SidebarProvider,
@@ -45,24 +38,12 @@ export default async function RootLayout({
         <SidebarProvider>
           <AppSidebar />
           <SidebarInset>
-            <header className='flex sticky top-0 bg-background h-16 shrink-0 items-center gap-2 border-b px-4'>
+            <header className='flex sticky top-0 bg-background h-16 shrink-0 items-center gap-2 border-b px-4 z-10'>
               <SidebarTrigger className='-ml-1' />
               <Separator orientation='vertical' className='mr-2 h-4' />
-              <Breadcrumb>
-                <BreadcrumbList>
-                  <BreadcrumbItem className='md:block'>
-                    <BreadcrumbLink href='#'>
-                      Building Your Application
-                    </BreadcrumbLink>
-                  </BreadcrumbItem>
-                  <BreadcrumbSeparator className='md:block' />
-                  <BreadcrumbItem>
-                    <BreadcrumbPage>Data Fetching</BreadcrumbPage>
-                  </BreadcrumbItem>
-                </BreadcrumbList>
-              </Breadcrumb>
+              <AppBreadcrumbList />
             </header>
-            <div>{children}</div>
+            <div className='pt-4'>{children}</div>
           </SidebarInset>
         </SidebarProvider>
       </body>

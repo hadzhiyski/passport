@@ -1,17 +1,17 @@
 import {
   pgTable,
   primaryKey,
-  serial,
   text,
   unique,
   varchar,
 } from 'drizzle-orm/pg-core';
 import { auditTimestamps } from './timestamps';
+import { serialSqid } from './types/serial-sqid';
 
 export const ownerTable = pgTable(
   'owners',
   {
-    id: serial().notNull(),
+    id: serialSqid('owners').notNull(),
     externalId: varchar({ length: 255 }),
     firstname: varchar({ length: 255 }).notNull(),
     lastname: varchar({ length: 255 }).notNull(),

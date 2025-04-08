@@ -15,7 +15,7 @@ export const petSex = pgEnum('pet_sex', ['male', 'female']);
 export const petsTable = pgTable(
   'pets',
   {
-    id: serialSqid().notNull(),
+    id: serialSqid('pets').notNull(),
     name: varchar({ length: 255 }).notNull(),
     dob: date().notNull(),
     sex: petSex().notNull(),

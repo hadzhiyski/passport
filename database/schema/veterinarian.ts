@@ -1,16 +1,11 @@
-import {
-  pgTable,
-  primaryKey,
-  serial,
-  text,
-  varchar,
-} from 'drizzle-orm/pg-core';
+import { pgTable, primaryKey, text, varchar } from 'drizzle-orm/pg-core';
 import { auditTimestamps } from './timestamps';
+import { serialSqid } from './types/serial-sqid';
 
 export const veterinarianTable = pgTable(
   'veterinarians',
   {
-    id: serial().notNull(),
+    id: serialSqid('veterinarians').notNull(),
     name: varchar({ length: 255 }).notNull(),
     address: text().notNull(),
     postcode: varchar({ length: 255 }),
