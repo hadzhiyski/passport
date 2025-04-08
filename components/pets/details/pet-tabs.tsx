@@ -5,8 +5,10 @@ import {
   TabsList,
   TabsTrigger,
 } from '@passport/components/ui/tabs';
-import { BugIcon, ClipboardIcon, ShieldIcon } from 'lucide-react';
+import { BugIcon, ShieldIcon, ZapIcon } from 'lucide-react';
 import { Suspense } from 'react';
+import { EchinococcusTreatmentSection } from './echinococcus-treatment-section';
+import { GeneralParasiteTreatmentSection } from './general-parasite-treatment-section';
 import { ParasiteTreatmentLoadingSkeleton } from './parasite-treatments-loading';
 import { VaccinationsLoadingSkeleton } from './vaccinations-loading';
 import { VaccinationsSection } from './vaccinations-section';
@@ -19,18 +21,16 @@ export interface PetTabsProps {
 export function PetTabs({ id, vaxPage }: PetTabsProps) {
   return (
     <Tabs defaultValue='vaccinations' className='w-full'>
-      <TabsList className='w-full grid grid-cols-2 bg-slate-50 border-b border-slate-100 rounded-none p-0'>
-        <TabsTrigger
-          value='vaccinations'
-          className='py-3 rounded-none data-[state=active]:bg-white data-[state=active]:shadow-none'
-        >
+      <TabsList className='w-full grid grid-cols-3'>
+        <TabsTrigger value='vaccinations'>
           <ShieldIcon className='h-4 w-4 mr-2' />
           Vaccinations
         </TabsTrigger>
-        <TabsTrigger
-          value='parasite'
-          className='py-3 rounded-none data-[state=active]:bg-white data-[state=active]:shadow-none'
-        >
+        <TabsTrigger value='echinococcus'>
+          <ZapIcon className='h-4 w-4 mr-2' />
+          Anti-Echinococcus
+        </TabsTrigger>
+        <TabsTrigger value='parasite'>
           <BugIcon className='h-4 w-4 mr-2' />
           Anti-Parasite
         </TabsTrigger>
@@ -39,7 +39,39 @@ export function PetTabs({ id, vaxPage }: PetTabsProps) {
       <TabsContent value='vaccinations' className='p-0 mt-0' id='vaccinations'>
         <div className='p-6'>
           <Suspense fallback={<VaccinationsLoadingSkeleton />}>
+            <div className='flex justify-between items-center mb-5'>
+              <h3 className='text-sm font-medium text-slate-700'>
+                Vaccination Records
+              </h3>
+              <Button
+                variant='outline'
+                size='sm'
+                className='text-blue-600 border-blue-200'
+              >
+                Add Vaccination
+              </Button>
+            </div>
             <VaccinationsSection petId={id} page={vaxPage} />
+          </Suspense>
+        </div>
+      </TabsContent>
+
+      <TabsContent value='echinococcus' className='p-0 mt-0' id='echinococcus'>
+        <div className='p-6'>
+          <Suspense fallback={<ParasiteTreatmentLoadingSkeleton />}>
+            <div className='flex justify-between items-center mb-5'>
+              <h3 className='text-sm font-medium text-slate-700'>
+                Echinococcus Treatments
+              </h3>
+              <Button
+                variant='outline'
+                size='sm'
+                className='text-orange-600 border-orange-200'
+              >
+                Add Treatment
+              </Button>
+            </div>
+            <EchinococcusTreatmentSection petId={id} />
           </Suspense>
         </div>
       </TabsContent>
@@ -47,24 +79,19 @@ export function PetTabs({ id, vaxPage }: PetTabsProps) {
       <TabsContent value='parasite' className='p-0 mt-0' id='parasite'>
         <div className='p-6'>
           <Suspense fallback={<ParasiteTreatmentLoadingSkeleton />}>
-            <div className='flex flex-col items-center text-center p-6'>
-              <div className='bg-blue-100 text-blue-600 p-3 rounded-full mb-3'>
-                <ClipboardIcon className='h-6 w-6' />
-              </div>
-              <h3 className='font-medium text-blue-900 mb-2'>
-                Anti-Parasite Treatment
+            <div className='flex justify-between items-center mb-5'>
+              <h3 className='text-sm font-medium text-slate-700'>
+                General Anti-Parasite Treatments
               </h3>
-              <p className='text-blue-700 mb-4'>
-                Coming soon - record flea, tick, and worming treatments
-              </p>
               <Button
                 variant='outline'
-                className='bg-white text-blue-600 border-blue-200'
-                disabled
+                size='sm'
+                className='text-amber-600 border-amber-200'
               >
                 Add Treatment
               </Button>
             </div>
+            <GeneralParasiteTreatmentSection petId={id} />
           </Suspense>
         </div>
       </TabsContent>

@@ -68,10 +68,7 @@ export async function PassportSection({ petId }: { petId: string }) {
           <p className='text-blue-700 mb-4'>
             Register a passport to make traveling with your pet easier.
           </p>
-          <Button
-            variant='outline'
-            className='bg-white text-blue-600 border-blue-200'
-          >
+          <Button variant='outline' className='text-blue-600 border-blue-200'>
             Register Passport
           </Button>
         </div>
@@ -144,7 +141,7 @@ export async function PassportSection({ petId }: { petId: string }) {
           <div className='space-y-5'>
             <div>
               <div className='text-sm text-slate-500 mb-3'>Issued By</div>
-              <div className='flex items-center gap-3 bg-slate-50 p-3 rounded-lg border border-slate-100'>
+              <div className='flex items-center gap-3  p-3 rounded-lg border border-slate-100'>
                 <div className='bg-emerald-100 text-emerald-600 p-2 rounded-full'>
                   <HeartPulseIcon className='h-5 w-5' />
                 </div>
@@ -162,7 +159,7 @@ export async function PassportSection({ petId }: { petId: string }) {
                 Registered Owners
               </div>
               <div className='space-y-3'>
-                <div className='flex items-center gap-3 bg-slate-50 p-3 rounded-lg border border-slate-100'>
+                <div className='flex items-center gap-3  p-3 rounded-lg border border-slate-100'>
                   <div className='bg-blue-100 text-blue-600 p-2 rounded-full'>
                     <UserIcon className='h-5 w-5' />
                   </div>
@@ -175,7 +172,7 @@ export async function PassportSection({ petId }: { petId: string }) {
                 </div>
 
                 {passport.owner2?.id && (
-                  <div className='flex items-center gap-3 bg-slate-50 p-3 rounded-lg border border-slate-100'>
+                  <div className='flex items-center gap-3  p-3 rounded-lg border border-slate-100'>
                     <div className='bg-blue-100 text-blue-600 p-2 rounded-full'>
                       <UserPlusIcon className='h-5 w-5' />
                     </div>

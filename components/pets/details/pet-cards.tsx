@@ -15,7 +15,7 @@ export function PetCards({ pet }: PetCardsProps) {
   const petAge = getHumanReadeableAge(pet.dob);
   return (
     <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5'>
-      <div className='bg-slate-50 rounded-xl p-5 border border-slate-100'>
+      <div className='bg-white rounded-xl p-5 border border-slate-100'>
         <div className='flex items-center gap-2 mb-1'>
           <div className='bg-blue-100 text-blue-600 p-2 rounded-full'>
             <CalendarIcon className='h-5 w-5' />
@@ -30,7 +30,7 @@ export function PetCards({ pet }: PetCardsProps) {
         )}
       </div>
 
-      <div className='bg-slate-50 rounded-xl p-5 border border-slate-100'>
+      <div className='bg-white rounded-xl p-5 border border-slate-100'>
         <div className='flex items-center gap-2 mb-1'>
           <div className='bg-pink-100 text-pink-600 p-2 rounded-full'>
             {pet.sex === 'male' ? <MarsIcon className='h-5 w-5' /> : null}
@@ -45,7 +45,7 @@ export function PetCards({ pet }: PetCardsProps) {
         </div>
       </div>
 
-      <div className='bg-slate-50 rounded-xl p-5 border border-slate-100'>
+      <div className='bg-white rounded-xl p-5 border border-slate-100'>
         <div className='flex items-center gap-2 mb-1'>
           <div className='bg-purple-100 text-purple-600 p-2 rounded-full'>
             <PaletteIcon className='h-5 w-5' />

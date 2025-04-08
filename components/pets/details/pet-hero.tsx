@@ -33,7 +33,7 @@ export function PetHero({ pet }: PetHeroProps) {
             <div className='flex flex-wrap justify-center md:justify-start items-center gap-2 mt-2'>
               <Badge
                 variant='outline'
-                className='text-white border-white/30 bg-white/10 px-3 py-1 text-sm'
+                className='text-white border-white/30 /10 px-3 py-1 text-sm'
               >
                 <PawPrintIcon className='h-3.5 w-3.5 mr-1 opacity-80' />
                 {pet.species}
@@ -41,7 +41,7 @@ export function PetHero({ pet }: PetHeroProps) {
               {pet.breed && (
                 <Badge
                   variant='outline'
-                  className='text-white border-white/30 bg-white/10 px-3 py-1 text-sm'
+                  className='text-white border-white/30 /10 px-3 py-1 text-sm'
                 >
                   {pet.breed}
                 </Badge>
@@ -49,7 +49,7 @@ export function PetHero({ pet }: PetHeroProps) {
 
               <Badge
                 variant='outline'
-                className='text-white border-white/30 bg-white/10 px-3 py-1 text-sm'
+                className='text-white border-white/30 /10 px-3 py-1 text-sm'
               >
                 {pet.sex?.toLowerCase() === 'male' ? (
                   <MarsIcon className='h-3.5 w-3.5 mr-1 opacity-80' />

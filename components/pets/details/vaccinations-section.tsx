@@ -38,10 +38,7 @@ export async function VaccinationsSection({
         <p className='text-blue-700 mb-4'>
           Add your pet&apos;s vaccinations to track their health history.
         </p>
-        <Button
-          variant='outline'
-          className='bg-white text-blue-600 border-blue-200'
-        >
+        <Button variant='outline' className='text-blue-600 border-blue-200'>
           Add Vaccination
         </Button>
       </div>
@@ -85,7 +82,7 @@ export async function VaccinationsSection({
       {vaccinations.map((vaccination) => (
         <div
           key={vaccination.id}
-          className='bg-slate-50 rounded-lg p-4 border border-slate-100'
+          className=' rounded-lg p-4 border border-slate-100'
         >
           <div className='flex flex-col sm:flex-row sm:justify-between gap-2 mb-2'>
             <h4 className='font-medium text-slate-800'>{vaccination.name}</h4>

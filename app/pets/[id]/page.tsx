@@ -137,12 +137,13 @@ export default async function PetDetailsPage(page: {
                 Add Record
               </Button>
             </div>
-
-            <PetTabs id={id} vaxPage={vaxPage} />
+            <div className='p-6'>
+              <PetTabs id={id} vaxPage={vaxPage} />
+            </div>
           </div>
         </CardContent>
 
-        <CardFooter className='bg-slate-50 px-8 py-4 text-sm text-slate-500 border-t border-slate-100'>
+        <CardFooter className='px-8 py-4 text-sm text-slate-500 border-t border-slate-100'>
           <div className='flex flex-col sm:flex-row sm:justify-between w-full gap-2'>
             <span>
               Last updated:{' '}
