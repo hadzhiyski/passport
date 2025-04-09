@@ -5,14 +5,46 @@ import { antiEchinococcusTreatmentTable } from '@passport/database/schema/anti-e
 import { petsTable } from '@passport/database/schema/pet';
 import { veterinarianTable } from '@passport/database/schema/veterinarian';
 import { format } from 'date-fns';
-import { eq } from 'drizzle-orm';
+import { desc, eq } from 'drizzle-orm';
 import { ZapIcon } from 'lucide-react';
+import { PetSectionPagination } from './pagination';
 
 export async function EchinococcusTreatmentSection({
   petId,
+  page = 1,
 }: {
   petId: string;
+  page?: number;
 }) {
+  const PAGE_SIZE = 3;
+  const count = await db.$count(
+    antiEchinococcusTreatmentTable,
+    eq(
+      antiEchinococcusTreatmentTable.petId,
+      petsTable.id.mapToDriverValue(petId) as number,
+    ),
+  );
+  if (count === 0) {
+    return (
+      <div className='flex flex-col items-center text-center p-6'>
+        <div className='bg-orange-100 text-orange-600 p-3 rounded-full mb-3'>
+          <ZapIcon className='h-6 w-6' />
+        </div>
+        <h3 className='font-medium text-orange-900 mb-2'>
+          No Anti-Echinococcus Treatments
+        </h3>
+        <p className='text-orange-700 mb-4'>
+          Add anti-echinococcus treatments to track your pet&apos;s prevention
+          history.
+        </p>
+        <Button variant='outline' className='text-orange-600 border-orange-200'>
+          Add Treatment
+        </Button>
+      </div>
+    );
+  }
+
+  const totalPages = Math.ceil(count / PAGE_SIZE);
   const treatments = await db
     .select({
       id: antiEchinococcusTreatmentTable.id,
@@ -32,27 +64,10 @@ export async function EchinococcusTreatmentSection({
         antiEchinococcusTreatmentTable.petId,
         petsTable.id.mapToDriverValue(petId) as number,
       ),
-    );
-
-  if (treatments.length === 0) {
-    return (
-      <div className='flex flex-col items-center text-center p-6'>
-        <div className='bg-orange-100 text-orange-600 p-3 rounded-full mb-3'>
-          <ZapIcon className='h-6 w-6' />
-        </div>
-        <h3 className='font-medium text-orange-900 mb-2'>
-          No Anti-Echinococcus Treatments
-        </h3>
-        <p className='text-orange-700 mb-4'>
-          Add anti-echinococcus treatments to track your pet&apos;s prevention
-          history.
-        </p>
-        <Button variant='outline' className='text-orange-600 border-orange-200'>
-          Add Treatment
-        </Button>
-      </div>
-    );
-  }
+    )
+    .orderBy(desc(antiEchinococcusTreatmentTable.administeredOn))
+    .offset((page - 1) * PAGE_SIZE)
+    .limit(PAGE_SIZE);
 
   return (
     <div className='space-y-4'>
@@ -105,6 +120,13 @@ export async function EchinococcusTreatmentSection({
           </div>
         </div>
       ))}
+
+      <PetSectionPagination
+        currentPage={page}
+        totalPages={totalPages}
+        paramName='echp'
+        anchorId='echinococcus'
+      />
     </div>
   );
 }

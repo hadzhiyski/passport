@@ -1,4 +1,3 @@
-import { Button } from '@passport/components/ui/button';
 import {
   Tabs,
   TabsContent,
@@ -14,11 +13,18 @@ import { VaccinationsLoadingSkeleton } from './vaccinations-loading';
 import { VaccinationsSection } from './vaccinations-section';
 
 export interface PetTabsProps {
-  id: string;
-  vaxPage: number;
+  petId: string;
+  vaxSectionPage: number;
+  echinoSectionPage: number;
+  parasiteSectionPage: number;
 }
 
-export function PetTabs({ id, vaxPage }: PetTabsProps) {
+export function PetTabs({
+  petId,
+  vaxSectionPage,
+  echinoSectionPage,
+  parasiteSectionPage,
+}: PetTabsProps) {
   return (
     <Tabs defaultValue='vaccinations' className='w-full'>
       <TabsList className='w-full grid grid-cols-3'>
@@ -37,61 +43,31 @@ export function PetTabs({ id, vaxPage }: PetTabsProps) {
       </TabsList>
 
       <TabsContent value='vaccinations' className='p-0 mt-0' id='vaccinations'>
-        <div className='p-6'>
+        <div className='p-4'>
           <Suspense fallback={<VaccinationsLoadingSkeleton />}>
-            <div className='flex justify-between items-center mb-5'>
-              <h3 className='text-sm font-medium text-slate-700'>
-                Vaccination Records
-              </h3>
-              <Button
-                variant='outline'
-                size='sm'
-                className='text-blue-600 border-blue-200'
-              >
-                Add Vaccination
-              </Button>
-            </div>
-            <VaccinationsSection petId={id} page={vaxPage} />
+            <VaccinationsSection petId={petId} page={vaxSectionPage} />
           </Suspense>
         </div>
       </TabsContent>
 
       <TabsContent value='echinococcus' className='p-0 mt-0' id='echinococcus'>
-        <div className='p-6'>
+        <div className='p-4'>
           <Suspense fallback={<ParasiteTreatmentLoadingSkeleton />}>
-            <div className='flex justify-between items-center mb-5'>
-              <h3 className='text-sm font-medium text-slate-700'>
-                Echinococcus Treatments
-              </h3>
-              <Button
-                variant='outline'
-                size='sm'
-                className='text-orange-600 border-orange-200'
-              >
-                Add Treatment
-              </Button>
-            </div>
-            <EchinococcusTreatmentSection petId={id} />
+            <EchinococcusTreatmentSection
+              petId={petId}
+              page={echinoSectionPage}
+            />
           </Suspense>
         </div>
       </TabsContent>
 
       <TabsContent value='parasite' className='p-0 mt-0' id='parasite'>
-        <div className='p-6'>
+        <div className='p-4'>
           <Suspense fallback={<ParasiteTreatmentLoadingSkeleton />}>
-            <div className='flex justify-between items-center mb-5'>
-              <h3 className='text-sm font-medium text-slate-700'>
-                General Anti-Parasite Treatments
-              </h3>
-              <Button
-                variant='outline'
-                size='sm'
-                className='text-amber-600 border-amber-200'
-              >
-                Add Treatment
-              </Button>
-            </div>
-            <GeneralParasiteTreatmentSection petId={id} />
+            <GeneralParasiteTreatmentSection
+              petId={petId}
+              page={parasiteSectionPage}
+            />
           </Suspense>
         </div>
       </TabsContent>

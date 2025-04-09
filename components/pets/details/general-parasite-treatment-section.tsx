@@ -5,14 +5,46 @@ import { antiParasiteTreatmentTable } from '@passport/database/schema/anti-paras
 import { petsTable } from '@passport/database/schema/pet';
 import { veterinarianTable } from '@passport/database/schema/veterinarian';
 import { format } from 'date-fns';
-import { eq } from 'drizzle-orm';
+import { desc, eq } from 'drizzle-orm';
 import { BugIcon } from 'lucide-react';
+import { PetSectionPagination } from './pagination';
 
 export async function GeneralParasiteTreatmentSection({
   petId,
+  page = 1,
 }: {
   petId: string;
+  page?: number;
 }) {
+  const PAGE_SIZE = 3;
+  const count = await db.$count(
+    antiParasiteTreatmentTable,
+    eq(
+      antiParasiteTreatmentTable.petId,
+      petsTable.id.mapToDriverValue(petId) as number,
+    ),
+  );
+  if (count === 0) {
+    return (
+      <div className='flex flex-col items-center text-center p-6'>
+        <div className='bg-amber-100 text-amber-600 p-3 rounded-full mb-3'>
+          <BugIcon className='h-6 w-6' />
+        </div>
+        <h3 className='font-medium text-amber-900 mb-2'>
+          No Anti-Parasite Treatments
+        </h3>
+        <p className='text-amber-700 mb-4'>
+          Add general anti-parasite treatments to protect your pet from fleas,
+          ticks, and other parasites.
+        </p>
+        <Button variant='outline' className='text-amber-600 border-amber-200'>
+          Add Treatment
+        </Button>
+      </div>
+    );
+  }
+
+  const totalPages = Math.ceil(count / PAGE_SIZE);
   const treatments = await db
     .select({
       id: antiParasiteTreatmentTable.id,
@@ -32,27 +64,10 @@ export async function GeneralParasiteTreatmentSection({
         antiParasiteTreatmentTable.petId,
         petsTable.id.mapToDriverValue(petId) as number,
       ),
-    );
-
-  if (treatments.length === 0) {
-    return (
-      <div className='flex flex-col items-center text-center p-6'>
-        <div className='bg-amber-100 text-amber-600 p-3 rounded-full mb-3'>
-          <BugIcon className='h-6 w-6' />
-        </div>
-        <h3 className='font-medium text-amber-900 mb-2'>
-          No Anti-Parasite Treatments
-        </h3>
-        <p className='text-amber-700 mb-4'>
-          Add general anti-parasite treatments to protect your pet from fleas,
-          ticks, and other parasites.
-        </p>
-        <Button variant='outline' className='text-amber-600 border-amber-200'>
-          Add Treatment
-        </Button>
-      </div>
-    );
-  }
+    )
+    .orderBy(desc(antiParasiteTreatmentTable.administeredOn))
+    .offset((page - 1) * PAGE_SIZE)
+    .limit(PAGE_SIZE);
 
   return (
     <div className='space-y-4'>
@@ -107,6 +122,12 @@ export async function GeneralParasiteTreatmentSection({
           </div>
         </div>
       ))}
+      <PetSectionPagination
+        currentPage={page}
+        totalPages={totalPages}
+        paramName='parp'
+        anchorId='parasite'
+      />
     </div>
   );
 }

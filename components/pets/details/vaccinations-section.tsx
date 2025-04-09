@@ -7,7 +7,7 @@ import { veterinarianTable } from '@passport/database/schema/veterinarian';
 import { format } from 'date-fns';
 import { desc, eq } from 'drizzle-orm';
 import { ShieldIcon } from 'lucide-react';
-import { VaccinePagination } from '../vaccinations/pagination';
+import { PetSectionPagination } from './pagination';
 
 function isExpired(date: string | null): boolean {
   if (!date) return false;
@@ -148,10 +148,10 @@ export async function VaccinationsSection({
         </div>
       ))}
 
-      <VaccinePagination
+      <PetSectionPagination
         currentPage={page}
         totalPages={totalPages}
-        paramName='vpage'
+        paramName='vaxp'
         anchorId='vaccinations'
       />
     </div>

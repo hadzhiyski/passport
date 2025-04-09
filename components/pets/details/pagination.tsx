@@ -12,19 +12,19 @@ import { cn } from '@passport/lib/utils';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useCallback } from 'react';
 
-interface VaccinePaginationProps {
+interface PetSectionPaginationProps {
   currentPage: number;
   totalPages: number;
-  paramName?: string;
-  anchorId?: string;
+  paramName: string;
+  anchorId: string;
 }
 
-export function VaccinePagination({
+export function PetSectionPagination({
   currentPage,
   totalPages,
-  paramName = 'vpage',
+  paramName,
   anchorId,
-}: VaccinePaginationProps) {
+}: PetSectionPaginationProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();

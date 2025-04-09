@@ -28,11 +28,13 @@ import { Suspense } from 'react';
 
 export default async function PetDetailsPage(page: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ vpage?: string }>;
+  searchParams: Promise<{ vaxp?: string; echp?: string; parp?: string }>;
 }) {
   const { id } = await page.params;
-  const { vpage } = await page.searchParams;
-  const vaxPage = vpage ? parseInt(vpage) : 1;
+  const { vaxp, echp, parp } = await page.searchParams;
+  const vaxPage = vaxp ? parseInt(vaxp) : 1;
+  const echPage = echp ? parseInt(echp) : 1;
+  const parPage = parp ? parseInt(parp) : 1;
 
   const petSelect = await db
     .select({
@@ -138,7 +140,12 @@ export default async function PetDetailsPage(page: {
               </Button>
             </div>
             <div className='p-6'>
-              <PetTabs id={id} vaxPage={vaxPage} />
+              <PetTabs
+                petId={id}
+                vaxSectionPage={vaxPage}
+                echinoSectionPage={echPage}
+                parasiteSectionPage={parPage}
+              />
             </div>
           </div>
         </CardContent>
