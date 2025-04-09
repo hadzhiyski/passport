@@ -3,6 +3,7 @@ import { Button } from '@passport/components/ui/button';
 import { db } from '@passport/database';
 import { antiParasiteTreatmentTable } from '@passport/database/schema/anti-parasite-treatment';
 import { petsTable } from '@passport/database/schema/pet';
+import { veterinarianTable } from '@passport/database/schema/veterinarian';
 import { format } from 'date-fns';
 import { eq } from 'drizzle-orm';
 import { BugIcon } from 'lucide-react';
@@ -18,8 +19,14 @@ export async function GeneralParasiteTreatmentSection({
       name: antiParasiteTreatmentTable.name,
       manufacturer: antiParasiteTreatmentTable.manufacturer,
       administeredOn: antiParasiteTreatmentTable.administeredOn,
+      administeredBy: veterinarianTable.name,
+      validUntil: antiParasiteTreatmentTable.validUntil,
     })
     .from(antiParasiteTreatmentTable)
+    .leftJoin(
+      veterinarianTable,
+      eq(antiParasiteTreatmentTable.administeredBy, veterinarianTable.id),
+    )
     .where(
       eq(
         antiParasiteTreatmentTable.petId,
@@ -71,16 +78,30 @@ export async function GeneralParasiteTreatmentSection({
             <div className='flex justify-between'>
               <span className='text-slate-500'>Manufacturer:</span>
               <span className='text-slate-700 font-medium'>
-                {treatment.manufacturer || 'N/A'}
+                {treatment.manufacturer || 'Not Available'}
+              </span>
+            </div>
+
+            <div className='flex justify-between'>
+              <span className='text-slate-500'>Valid Until:</span>
+              <span className='text-slate-700 font-medium'>
+                {treatment.validUntil
+                  ? format(new Date(treatment.validUntil), 'MMM d, yyyy')
+                  : 'Not Available'}
               </span>
             </div>
 
             <div className='flex justify-between'>
               <span className='text-slate-500'>Administered On:</span>
               <span className='text-slate-700 font-medium'>
-                {treatment.administeredOn
-                  ? format(new Date(treatment.administeredOn), 'MMM d, yyyy')
-                  : 'N/A'}
+                {format(treatment.administeredOn, 'MMM d, yyyy')}
+              </span>
+            </div>
+
+            <div className='flex justify-between'>
+              <span className='text-slate-500'>Administered By:</span>
+              <span className='text-slate-700 font-medium'>
+                {treatment.administeredBy || 'Not Available'}
               </span>
             </div>
           </div>

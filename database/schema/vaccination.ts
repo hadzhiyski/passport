@@ -1,4 +1,5 @@
 import {
+  check,
   date,
   foreignKey,
   integer,
@@ -11,6 +12,7 @@ import {
 import { petsTable } from './pet';
 import { auditTimestamps } from './timestamps';
 import { veterinarianTable } from './veterinarian';
+import { sql } from 'drizzle-orm';
 
 export const vaccinationTypeEnum = pgEnum('vaccination_type', [
   'rabies',
@@ -27,7 +29,7 @@ export const vaccinationsTable = pgTable(
     expiryDate: date().notNull(),
     administeredOn: date().notNull(),
     administeredBy: integer().notNull(),
-    validFrom: date().notNull(),
+    validFrom: date(),
     validUntil: date().notNull(),
     petId: integer().notNull(),
     type: vaccinationTypeEnum().notNull(),
@@ -35,6 +37,10 @@ export const vaccinationsTable = pgTable(
   },
   (table) => [
     primaryKey({ columns: [table.id] }),
+    check(
+      'rabies_required_valid_from',
+      sql`(${table.type} = 'rabies' AND ${table.validFrom} IS NOT NULL) OR (${table.type} != 'rabies')`,
+    ),
     foreignKey({ columns: [table.petId], foreignColumns: [petsTable.id] })
       .onUpdate('restrict')
       .onDelete('cascade'),

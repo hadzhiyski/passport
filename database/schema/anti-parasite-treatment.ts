@@ -5,6 +5,7 @@ import {
   pgTable,
   primaryKey,
   serial,
+  timestamp,
   varchar,
 } from 'drizzle-orm/pg-core';
 import { petsTable } from './pet';
@@ -16,10 +17,11 @@ export const antiParasiteTreatmentTable = pgTable(
   {
     id: serial().notNull(),
     name: varchar({ length: 255 }).notNull(),
-    manufacturer: varchar({ length: 255 }).notNull(),
-    administeredOn: date().notNull(),
+    manufacturer: varchar({ length: 255 }),
+    administeredOn: timestamp().notNull(),
     administeredBy: integer(),
     petId: integer().notNull(),
+    validUntil: date(),
     ...auditTimestamps,
   },
   (table) => [

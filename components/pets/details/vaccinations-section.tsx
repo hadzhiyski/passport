@@ -21,7 +21,7 @@ export async function VaccinationsSection({
   petId: string;
   page?: number;
 }) {
-  const PAGE_SIZE = 2;
+  const PAGE_SIZE = 3;
   const count = await db.$count(
     vaccinationsTable,
     eq(vaccinationsTable.petId, petsTable.id.mapToDriverValue(petId) as number),
@@ -82,7 +82,7 @@ export async function VaccinationsSection({
       {vaccinations.map((vaccination) => (
         <div
           key={vaccination.id}
-          className=' rounded-lg p-4 border border-slate-100'
+          className='rounded-lg p-4 border border-slate-100'
         >
           <div className='flex flex-col sm:flex-row sm:justify-between gap-2 mb-2'>
             <h4 className='font-medium text-slate-800'>{vaccination.name}</h4>

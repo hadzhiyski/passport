@@ -3,6 +3,7 @@ import { Button } from '@passport/components/ui/button';
 import { db } from '@passport/database';
 import { antiEchinococcusTreatmentTable } from '@passport/database/schema/anti-echinococcus-treatment';
 import { petsTable } from '@passport/database/schema/pet';
+import { veterinarianTable } from '@passport/database/schema/veterinarian';
 import { format } from 'date-fns';
 import { eq } from 'drizzle-orm';
 import { ZapIcon } from 'lucide-react';
@@ -18,8 +19,14 @@ export async function EchinococcusTreatmentSection({
       name: antiEchinococcusTreatmentTable.name,
       manufacturer: antiEchinococcusTreatmentTable.manufacturer,
       administeredOn: antiEchinococcusTreatmentTable.administeredOn,
+      administeredBy: veterinarianTable.name,
+      validUntil: antiEchinococcusTreatmentTable.validUntil,
     })
     .from(antiEchinococcusTreatmentTable)
+    .leftJoin(
+      veterinarianTable,
+      eq(antiEchinococcusTreatmentTable.administeredBy, veterinarianTable.id),
+    )
     .where(
       eq(
         antiEchinococcusTreatmentTable.petId,
@@ -55,9 +62,7 @@ export async function EchinococcusTreatmentSection({
           className='bg-orange-50 rounded-lg p-4 border border-orange-100'
         >
           <div className='flex flex-col sm:flex-row sm:justify-between gap-2 mb-2'>
-            <h4 className='font-medium text-slate-800'>
-              {treatment.name || 'Unnamed Treatment'}
-            </h4>
+            <h4 className='font-medium text-slate-800'>{treatment.name}</h4>
             <Badge
               variant='outline'
               className='bg-orange-100 text-orange-700 w-fit'
@@ -71,16 +76,30 @@ export async function EchinococcusTreatmentSection({
             <div className='flex justify-between'>
               <span className='text-slate-500'>Manufacturer:</span>
               <span className='text-slate-700 font-medium'>
-                {treatment.manufacturer || 'N/A'}
+                {treatment.manufacturer || 'Not Available'}
+              </span>
+            </div>
+
+            <div className='flex justify-between'>
+              <span className='text-slate-500'>Valid Until:</span>
+              <span className='text-slate-700 font-medium'>
+                {treatment.validUntil
+                  ? format(new Date(treatment.validUntil), 'MMM d, yyyy')
+                  : 'Not Available'}
               </span>
             </div>
 
             <div className='flex justify-between'>
               <span className='text-slate-500'>Administered On:</span>
               <span className='text-slate-700 font-medium'>
-                {treatment.administeredOn
-                  ? format(new Date(treatment.administeredOn), 'MMM d, yyyy')
-                  : 'N/A'}
+                {format(treatment.administeredOn, 'MMM d, yyyy')}
+              </span>
+            </div>
+
+            <div className='flex justify-between'>
+              <span className='text-slate-500'>Administered By:</span>
+              <span className='text-slate-700 font-medium'>
+                {treatment.administeredBy || 'Not Available'}
               </span>
             </div>
           </div>

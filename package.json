@@ -2,7 +2,6 @@
   "name": "passport",
   "version": "0.1.0",
   "private": true,
-  "type": "module",
   "description": "Your pet passport app",
   "author": "Vladislav Hadzhiyski (vladislav.hadzhiyski@gmail.com)",
   "keywords": [

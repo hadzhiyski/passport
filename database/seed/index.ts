@@ -1,10 +1,10 @@
+import chalk from 'chalk';
+import dotenv from 'dotenv';
+import dotenvExpand from 'dotenv-expand';
 import { readFile } from 'fs/promises';
 import { glob } from 'glob';
 import { join } from 'path';
-import dotenv from 'dotenv';
-import dotenvExpand from 'dotenv-expand';
-import { db } from '..';
-import chalk from 'chalk';
+import { db } from '../connection';
 
 dotenvExpand.expand(dotenv.config());
 
@@ -32,4 +32,4 @@ async function seed() {
   }
 }
 
-await seed();
+seed();
