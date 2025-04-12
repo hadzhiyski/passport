@@ -42,8 +42,8 @@ export async function ClinicalExaminationsSection({
           key={index}
           className='border border-slate-100 rounded-lg p-4 shadow-sm'
         >
-          <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
-            <div className='text-slate-700 bg-slate-50 p-3 rounded italic text-sm'>
+          <div className='grid grid-cols-1 md:grid-cols-4 gap-4'>
+            <div className='text-slate-700 bg-slate-50 p-3 rounded italic text-sm md:col-span-2'>
               The animal shows no signs of diseases and is fit to be transported
               for the intended journey.
             </div>
