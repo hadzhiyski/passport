@@ -27,12 +27,12 @@ export function PetTabs({
 }: PetTabsProps) {
   return (
     <Tabs defaultValue='vaccinations' className='w-full'>
-      <TabsList className='w-full grid grid-cols-3'>
-        <TabsTrigger value='vaccinations'>
+      <TabsList className='w-full flex items-center justify-start flex-wrap h-auto space-y-1'>
+        <TabsTrigger value='vaccinations' className='mr-3'>
           <ShieldIcon className='h-4 w-4 mr-2' />
           Vaccinations
         </TabsTrigger>
-        <TabsTrigger value='echinococcus'>
+        <TabsTrigger value='echinococcus' className='mr-3'>
           <ZapIcon className='h-4 w-4 mr-2' />
           Anti-Echinococcus
         </TabsTrigger>
