@@ -135,7 +135,7 @@ export default async function PetDetailsPage(page: {
               </Button>
             </div>
 
-            <div className='p-6'>
+            <div className='p-3'>
               <Suspense fallback={<PassportLoadingSkeleton />}>
                 <PassportSection petId={id} />
               </Suspense>
@@ -153,7 +153,7 @@ export default async function PetDetailsPage(page: {
 
               <AddHealthRecordButton>Add Record</AddHealthRecordButton>
             </div>
-            <div className='p-6'>
+            <div className='p-3'>
               <PetTabs
                 petId={id}
                 vaxSectionPage={vaxPage}
@@ -182,7 +182,7 @@ export default async function PetDetailsPage(page: {
                 Add Examination
               </Button> */}
             </div>
-            <div className='p-6'>
+            <div className='p-3'>
               <Suspense fallback={<ClinicalExaminationsLoadingSkeleton />}>
                 <ClinicalExaminationsSection petId={id} />
               </Suspense>
