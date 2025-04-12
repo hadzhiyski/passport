@@ -1,3 +1,6 @@
+import { AddHealthRecordButton } from '@passport/components/pets/details/add-health-record-button';
+import { ClinicalExaminationsLoadingSkeleton } from '@passport/components/pets/details/clinical-examination-loading';
+import { ClinicalExaminationsSection } from '@passport/components/pets/details/clinical-examinations-section';
 import { PassportLoadingSkeleton } from '@passport/components/pets/details/passport-loading';
 import { PassportSection } from '@passport/components/pets/details/passport-section';
 import { PetCards } from '@passport/components/pets/details/pet-cards';
@@ -10,6 +13,11 @@ import {
   CardFooter,
   CardHeader,
 } from '@passport/components/ui/card';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@passport/components/ui/collapsible';
 import { Separator } from '@passport/components/ui/separator';
 import { db } from '@passport/database';
 import { petsTable } from '@passport/database/schema/pet';
@@ -19,8 +27,10 @@ import {
   ActivityIcon,
   ArrowLeftIcon,
   BookIcon,
+  ChevronDownIcon,
   ClipboardIcon,
   EditIcon,
+  StethoscopeIcon,
 } from 'lucide-react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -80,22 +90,32 @@ export default async function PetDetailsPage(page: {
         <CardContent className='p-6 lg:p-8 space-y-8'>
           <PetCards pet={pet} />
 
-          {pet.notes && (
-            <div className='bg-white rounded-xl p-6 border border-slate-200'>
-              <div className='flex items-center gap-2 mb-3'>
-                <div className='bg-purple-100 text-purple-600 p-2 rounded-full'>
-                  <ClipboardIcon className='h-5 w-5' />
+          <Collapsible
+            defaultOpen={Boolean(pet.notes)}
+            className='bg-white rounded-xl p-6 border border-slate-200'
+          >
+            <CollapsibleTrigger className='w-full'>
+              <div className='flex items-center justify-between'>
+                <div className='flex items-center gap-2 mb-3'>
+                  <div className='bg-purple-100 text-purple-600 p-2 rounded-full'>
+                    <ClipboardIcon className='h-5 w-5' />
+                  </div>
+                  <h3 className='font-medium text-slate-800'>Notes</h3>
                 </div>
-                <h3 className='font-medium text-slate-800'>Notes</h3>
+                <div className='text-slate-400'>
+                  <ChevronDownIcon className='h-5 w-5 transition-transform duration-200 collapsible-icon' />
+                </div>
               </div>
+            </CollapsibleTrigger>
+            <CollapsibleContent>
               <Separator className='mb-4' />
               <div className='prose prose-slate max-w-none'>
                 <p className='text-slate-700 leading-relaxed whitespace-pre-line'>
-                  {pet.notes}
+                  {pet.notes || 'No notes available.'}
                 </p>
               </div>
-            </div>
-          )}
+            </CollapsibleContent>
+          </Collapsible>
 
           <div className='bg-white rounded-xl border border-slate-200 overflow-hidden'>
             <div className='flex items-center justify-between p-6 border-b border-slate-100'>
@@ -131,13 +151,7 @@ export default async function PetDetailsPage(page: {
                 <h3 className='font-medium text-slate-800'>Health Records</h3>
               </div>
 
-              <Button
-                variant='outline'
-                size='sm'
-                className='text-emerald-600 border-emerald-200'
-              >
-                Add Record
-              </Button>
+              <AddHealthRecordButton>Add Record</AddHealthRecordButton>
             </div>
             <div className='p-6'>
               <PetTabs
@@ -146,6 +160,32 @@ export default async function PetDetailsPage(page: {
                 echinoSectionPage={echPage}
                 parasiteSectionPage={parPage}
               />
+            </div>
+          </div>
+
+          <div className='bg-white rounded-xl border border-slate-200 overflow-hidden'>
+            <div className='flex items-center justify-between p-6 border-b border-slate-100'>
+              <div className='flex items-center gap-2'>
+                <div className='bg-orange-100 text-orange-600 p-2 rounded-full'>
+                  <StethoscopeIcon className='h-5 w-5' />
+                </div>
+                <h3 className='font-medium text-slate-800'>
+                  Clinical Examinations
+                </h3>
+              </div>
+
+              {/* <Button
+                variant='outline'
+                size='sm'
+                className='text-orange-600 border-orange-200'
+              >
+                Add Examination
+              </Button> */}
+            </div>
+            <div className='p-6'>
+              <Suspense fallback={<ClinicalExaminationsLoadingSkeleton />}>
+                <ClinicalExaminationsSection petId={id} />
+              </Suspense>
             </div>
           </div>
         </CardContent>
