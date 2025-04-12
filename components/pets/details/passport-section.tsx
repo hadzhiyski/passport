@@ -109,7 +109,7 @@ export async function PassportSection({ petId }: { petId: string }) {
               <div className='mt-2 space-y-1'>
                 <div className='flex justify-between'>
                   <span className='text-slate-600 capitalize'>
-                    {passport.marking?.type || 'marking'} code:
+                    {passport.marking?.type || 'marking'} &#35;:
                   </span>
                   <span className='text-slate-900 font-medium font-mono'>
                     {passport.marking?.code || 'Not available'}
