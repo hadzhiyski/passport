@@ -9,29 +9,15 @@ import {
   SidebarMenuItem,
 } from '@passport/components/ui/sidebar';
 import { getUser } from '@passport/user';
-import { PawPrint, Send, Settings } from 'lucide-react';
+import { PawPrint } from 'lucide-react';
+import Link from 'next/link';
 import { Suspense } from 'react';
 import AuthButtons from './auth/auth-buttons';
 import { NavUser } from './nav-user';
 import { PetsNav } from './pets-nav';
-import Link from 'next/link';
 
 export async function AppSidebar() {
   const user = await getUser();
-  const data = {
-    navSecondary: [
-      {
-        title: 'Settings',
-        url: '#',
-        icon: Settings,
-      },
-      {
-        title: 'Feedback',
-        url: '#',
-        icon: Send,
-      },
-    ],
-  };
 
   return (
     <Sidebar>
@@ -57,7 +43,7 @@ export async function AppSidebar() {
             <PetsNav ownerId={user.id} />
           </Suspense>
         ) : null}
-        <NavSecondary items={data.navSecondary} className='mt-auto' />
+        <NavSecondary className='mt-auto' />
       </SidebarContent>
       <SidebarFooter>
         {user ? <NavUser user={user} /> : <AuthButtons />}

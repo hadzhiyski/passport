@@ -1,4 +1,4 @@
-import { type LucideIcon } from 'lucide-react';
+'use client';
 
 import {
   SidebarGroup,
@@ -7,31 +7,31 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@passport/components/ui/sidebar';
+import { Send, Settings } from 'lucide-react';
 
-export function NavSecondary({
-  items,
-  ...props
-}: {
-  items: {
-    title: string;
-    url: string;
-    icon: LucideIcon;
-  }[];
-} & React.ComponentPropsWithoutRef<typeof SidebarGroup>) {
+export function NavSecondary(
+  props: React.ComponentPropsWithoutRef<typeof SidebarGroup>,
+) {
   return (
     <SidebarGroup {...props}>
       <SidebarGroupContent>
         <SidebarMenu>
-          {items.map((item) => (
-            <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton asChild size='sm'>
-                <a href={item.url}>
-                  <item.icon />
-                  <span>{item.title}</span>
-                </a>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          ))}
+          <SidebarMenuItem>
+            <SidebarMenuButton asChild size='sm'>
+              <a href='/settings'>
+                <Settings />
+                <span>Settings</span>
+              </a>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <SidebarMenuButton asChild size='sm'>
+              <a href='/feedback'>
+                <Send />
+                <span>Feedback</span>
+              </a>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
         </SidebarMenu>
       </SidebarGroupContent>
     </SidebarGroup>

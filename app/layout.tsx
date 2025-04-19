@@ -10,6 +10,7 @@ import { Separator } from '@radix-ui/react-separator';
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
+import { ThemeProvider } from '@passport/components/theme-provider';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -36,18 +37,20 @@ export default async function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <SidebarProvider>
-          <AppSidebar />
-          <SidebarInset>
-            <header className='flex sticky top-0 bg-background h-16 shrink-0 items-center gap-2 border-b px-4 z-10'>
-              <SidebarTrigger className='-ml-1' />
-              <Separator orientation='vertical' className='mr-2 h-4' />
-              <AppBreadcrumbList />
-            </header>
-            <div className='pt-4'>{children}</div>
-          </SidebarInset>
-        </SidebarProvider>
-        <Toaster theme='light' richColors closeButton />
+        <ThemeProvider attribute='class'>
+          <SidebarProvider>
+            <AppSidebar />
+            <SidebarInset>
+              <header className='flex sticky top-0 bg-background h-16 shrink-0 items-center gap-2 border-b px-4 z-10'>
+                <SidebarTrigger className='-ml-1' />
+                <Separator orientation='vertical' className='mr-2 h-4' />
+                <AppBreadcrumbList />
+              </header>
+              <div className='pt-4'>{children}</div>
+            </SidebarInset>
+          </SidebarProvider>
+          <Toaster theme='light' richColors closeButton />
+        </ThemeProvider>
       </body>
     </html>
   );
