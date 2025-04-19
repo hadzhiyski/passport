@@ -73,7 +73,7 @@ export async function VaccinationsSection({
         petsTable.id.mapToDriverValue(petId) as number,
       ),
     )
-    .orderBy(desc(vaccinationsTable.validUntil))
+    .orderBy(desc(vaccinationsTable.validUntil), desc(vaccinationsTable.id))
     .offset((page - 1) * PAGE_SIZE)
     .limit(PAGE_SIZE);
 
