@@ -3,14 +3,15 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuTrigger,
 } from '@passport/components/ui/dropdown-menu';
+import Link from 'next/link';
 import { PropsWithChildren } from 'react';
 
-export type AddHealthRecordButtonProps = {} & PropsWithChildren;
+export type AddHealthRecordButtonProps = { petId: string } & PropsWithChildren;
 export function AddHealthRecordButton({
   children,
+  petId,
 }: AddHealthRecordButtonProps) {
   return (
     <DropdownMenu>
@@ -23,11 +24,12 @@ export function AddHealthRecordButton({
           {children}
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className='w-56'>
-        <DropdownMenuLabel>Add Health Record</DropdownMenuLabel>
-        <DropdownMenuItem>Vaccine</DropdownMenuItem>
-        <DropdownMenuItem>Anti-Ecinococcus treatment</DropdownMenuItem>
-        <DropdownMenuItem>Anti-Paraiste treatment</DropdownMenuItem>
+      <DropdownMenuContent>
+        <DropdownMenuItem asChild>
+          <Link href={`/pets/${petId}/vaccinations/add`}>Vaccine</Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem>Anti-Echinococcus treatment</DropdownMenuItem>
+        <DropdownMenuItem>Anti-Parasite treatment</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

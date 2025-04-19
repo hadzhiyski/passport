@@ -5,6 +5,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from '@passport/components/ui/sidebar';
+import { Toaster } from '@passport/components/ui/sonner';
 import { Separator } from '@radix-ui/react-separator';
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
@@ -46,6 +47,7 @@ export default async function RootLayout({
             <div className='pt-4'>{children}</div>
           </SidebarInset>
         </SidebarProvider>
+        <Toaster theme='light' richColors closeButton />
       </body>
     </html>
   );

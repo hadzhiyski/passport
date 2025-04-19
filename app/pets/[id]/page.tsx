@@ -151,7 +151,9 @@ export default async function PetDetailsPage(page: {
                 <h3 className='font-medium text-slate-800'>Health Records</h3>
               </div>
 
-              <AddHealthRecordButton>Add Record</AddHealthRecordButton>
+              <AddHealthRecordButton petId={id}>
+                Add Record
+              </AddHealthRecordButton>
             </div>
             <div className='p-3'>
               <PetTabs
