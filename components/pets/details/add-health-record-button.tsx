@@ -28,8 +28,16 @@ export function AddHealthRecordButton({
         <DropdownMenuItem asChild>
           <Link href={`/pets/${petId}/vaccinations/add`}>Vaccine</Link>
         </DropdownMenuItem>
-        <DropdownMenuItem>Anti-Echinococcus treatment</DropdownMenuItem>
-        <DropdownMenuItem>Anti-Parasite treatment</DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link href={`/pets/${petId}/treatments/echinococcus/add`}>
+            Anti-Echinococcus treatment
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link href={`/pets/${petId}/treatments/parasites/add`}>
+            Anti-Parasite treatment
+          </Link>
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

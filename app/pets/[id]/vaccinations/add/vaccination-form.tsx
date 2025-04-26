@@ -70,10 +70,27 @@ export default function VaccinationForm({ petId }: VaccinationFormProps) {
 
       if (result.success) {
         toast.success('Vaccination added successfully');
-        // Redirect back to the pet's vaccinations list
-        router.push(`/pets/${petId}`);
+        router.push(`/pets/${petId}#vaccinations`);
       } else {
-        toast.error(result.error || 'Failed to add vaccination');
+        if ('error' in result) {
+          toast.error(result.error || 'Failed to add vaccination');
+        } else if ('errors' in result) {
+          toast.error('Please correct the errors below');
+
+          Object.entries(result.errors).forEach(([key, value]) => {
+            const fieldName = key as keyof z.infer<
+              typeof vaccinationsInsertSchema
+            >;
+            if (fieldName in form.getValues()) {
+              form.setError(fieldName, {
+                type: 'server',
+                message: value.join(', '),
+              });
+            }
+          });
+        } else {
+          toast.error('Failed to add vaccination');
+        }
       }
     } catch (error) {
       toast.error('An unexpected error occurred');

@@ -1,18 +1,18 @@
 'use server';
 
 import { db } from '@passport/database';
+import { antiEchinococcusTreatmentTable } from '@passport/database/schema/anti-echinococcus-treatment';
 import { petsTable } from '@passport/database/schema/pet';
-import { vaccinationsTable } from '@passport/database/schema/vaccination';
 import { ActionResponse } from '@passport/lib/actions/types';
 import { handleZodError } from '@passport/lib/actions/error-handlers';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
-import { vaccinationsInsertSchema } from './schema';
+import { treatmentInsertSchema } from './schema';
 
-export async function addVaccination(
-  data: z.infer<typeof vaccinationsInsertSchema>,
+export async function addTreatment(
+  data: z.infer<typeof treatmentInsertSchema>,
 ): Promise<ActionResponse> {
-  const validationResult = await vaccinationsInsertSchema.safeParseAsync(data);
+  const validationResult = await treatmentInsertSchema.safeParseAsync(data);
 
   if (!validationResult.success) {
     console.error('Validation failed:', validationResult.error);
@@ -22,24 +22,20 @@ export async function addVaccination(
   try {
     const validatedData = validationResult.data;
 
-    await db.insert(vaccinationsTable).values({
+    await db.insert(antiEchinococcusTreatmentTable).values({
       name: validatedData.name,
       manufacturer: validatedData.manufacturer,
-      lotNumber: validatedData.lotNumber,
-      expiryDate: validatedData.expiryDate,
       administeredOn: validatedData.administeredOn,
       administeredBy: validatedData.administeredBy,
-      validFrom: validatedData.validFrom,
       validUntil: validatedData.validUntil,
       petId: petsTable.id.mapToDriverValue(validatedData.petId) as number,
-      type: validatedData.type,
     });
 
     revalidatePath(`/pets/${validatedData.petId}`);
 
     return { success: true };
   } catch (error) {
-    console.error('Failed to add vaccination:', error);
+    console.error('Failed to add treatment:', error);
 
     return {
       success: false,
