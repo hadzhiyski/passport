@@ -1,3 +1,136 @@
+import { Avatar, AvatarFallback } from '@passport/components/ui/avatar';
+import { Button } from '@passport/components/ui/button';
+import { Card, CardContent } from '@passport/components/ui/card';
+import { db } from '@passport/database';
+import { ownerTable } from '@passport/database/schema/owner';
+import { passportTable } from '@passport/database/schema/passport';
+import { petsTable } from '@passport/database/schema/pet';
+import { getSpeciesColor } from '@passport/lib/pet/utils';
+import { getUser } from '@passport/user';
+import { eq, or } from 'drizzle-orm';
+import { Mars, PawPrintIcon, PlusCircleIcon, Venus } from 'lucide-react';
+import Link from 'next/link';
+
 export default async function PetIndexPage() {
-  return <h1>Pet Index Page</h1>;
+  const user = await getUser();
+  if (!user) {
+    return (
+      <div className='container py-16 flex flex-col items-center'>
+        <h1 className='text-2xl font-bold'>Please log in to view your pets.</h1>
+      </div>
+    );
+  }
+
+  const pets = await db
+    .select({
+      id: petsTable.id,
+      name: petsTable.name,
+      species: petsTable.species,
+      breed: petsTable.breed,
+      sex: petsTable.sex,
+    })
+    .from(petsTable)
+    .innerJoin(passportTable, eq(petsTable.id, passportTable.petId))
+    .leftJoin(
+      ownerTable,
+      or(
+        eq(ownerTable.id, passportTable.owner1Id),
+        eq(ownerTable.id, passportTable.owner2Id),
+      ),
+    )
+    .where(eq(ownerTable.externalId, user.id))
+    .then((pets) =>
+      pets.map((pet) => ({
+        ...pet,
+        avatar: {
+          color: getSpeciesColor(pet.species),
+          inititals: pet.name.substring(0, 2).toUpperCase(),
+        },
+      })),
+    );
+
+  return (
+    <div className='container max-w-4xl mx-auto px-4 py-8'>
+      <div className='flex justify-between items-center mb-6'>
+        <h1 className='text-2xl font-bold text-slate-800'>My Pets</h1>
+        <Button asChild>
+          <Link href='/pets/add'>
+            <PlusCircleIcon className='h-5 w-5 mr-2' />
+            Add Pet
+          </Link>
+        </Button>
+      </div>
+
+      {pets.length === 0 ? (
+        <div className='rounded-xl border border-slate-200 p-8 text-center'>
+          <div className='bg-blue-100 text-blue-600 p-3 rounded-full w-fit mx-auto mb-4'>
+            <PawPrintIcon className='h-6 w-6' />
+          </div>
+          <h2 className='text-xl font-semibold text-slate-800 mb-2'>
+            No pets found
+          </h2>
+          <p className='text-slate-600 mb-6'>
+            You haven&apos;t added any pets to your account yet.
+          </p>
+          <Button asChild>
+            <Link href='/pets/add'>
+              <PlusCircleIcon className='h-5 w-5 mr-2' />
+              Add Your First Pet
+            </Link>
+          </Button>
+        </div>
+      ) : (
+        <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'>
+          {pets.map((pet) => (
+            <Link
+              href={`/pets/${pet.id}`}
+              key={pet.id}
+              className='transition-transform hover:scale-[1.02]'
+            >
+              <Card className='h-full border-slate-200 overflow-hidden hover:shadow-md transition-shadow'>
+                <CardContent>
+                  <div className='flex items-center gap-3'>
+                    <Avatar className={`h-12 w-12 ${pet.avatar.color}`}>
+                      <AvatarFallback
+                        className={`text-white font-medium ${pet.avatar.color}`}
+                      >
+                        {pet.avatar.inititals}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className='flex-1'>
+                      <div className='flex items-center justify-between'>
+                        <h2 className='text-lg font-semibold text-slate-800'>
+                          {pet.name}
+                        </h2>
+                        {pet.sex && (
+                          <div
+                            className={`rounded-full p-1.5 ${
+                              pet.sex === 'male'
+                                ? 'bg-blue-100 text-blue-600'
+                                : pet.sex === 'female'
+                                  ? 'bg-pink-100 text-pink-600'
+                                  : 'bg-gray-100 text-gray-600'
+                            }`}
+                          >
+                            {pet.sex === 'male' ? (
+                              <Mars size={14} />
+                            ) : pet.sex === 'female' ? (
+                              <Venus size={14} />
+                            ) : null}
+                          </div>
+                        )}
+                      </div>
+                      <p className='text-slate-600 text-sm'>
+                        {pet.breed || pet.species}
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
+          ))}
+        </div>
+      )}
+    </div>
+  );
 }
