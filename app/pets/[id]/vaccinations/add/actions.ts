@@ -3,14 +3,27 @@
 import { db } from '@passport/database';
 import { petsTable } from '@passport/database/schema/pet';
 import { vaccinationsTable } from '@passport/database/schema/vaccination';
-import { ActionResponse } from '@passport/lib/actions/types';
 import { handleZodError } from '@passport/lib/actions/error-handlers';
+import { ActionResponse } from '@passport/lib/actions/types';
+import { format } from 'date-fns';
 import { revalidatePath } from 'next/cache';
-import { z } from 'zod';
-import { vaccinationsInsertSchema } from './schema';
+import {
+  VaccinationData,
+  vaccinationsInsertSchema,
+  vaccinationsUpdateSchema,
+} from './schema';
+
+/**
+ * Formats a Date object to a string in the format 'YYYY-MM-DD' for PostgreSQL.
+ * @param {Date} date - The date to format.
+ * @returns {string} - The formatted date string.
+ */
+function formatDate(date: Date): string {
+  return format(date, 'yyyy-MM-dd');
+}
 
 export async function addVaccination(
-  data: z.infer<typeof vaccinationsInsertSchema>,
+  data: VaccinationData,
 ): Promise<ActionResponse> {
   const validationResult = await vaccinationsInsertSchema.safeParseAsync(data);
 
@@ -26,11 +39,13 @@ export async function addVaccination(
       name: validatedData.name,
       manufacturer: validatedData.manufacturer,
       lotNumber: validatedData.lotNumber,
-      expiryDate: validatedData.expiryDate,
-      administeredOn: validatedData.administeredOn,
+      expiryDate: formatDate(validatedData.expiryDate),
+      administeredOn: formatDate(validatedData.administeredOn),
       administeredBy: validatedData.administeredBy,
-      validFrom: validatedData.validFrom,
-      validUntil: validatedData.validUntil,
+      validFrom: validatedData.validFrom
+        ? formatDate(validatedData.validFrom)
+        : null,
+      validUntil: formatDate(validatedData.validUntil),
       petId: petsTable.id.mapToDriverValue(validatedData.petId) as number,
       type: validatedData.type,
     });
@@ -40,6 +55,49 @@ export async function addVaccination(
     return { success: true };
   } catch (error) {
     console.error('Failed to add vaccination:', error);
+
+    return {
+      success: false,
+      error:
+        error instanceof Error ? error.message : 'An unknown error occurred',
+    };
+  }
+}
+
+export async function editVaccination(
+  data: VaccinationData,
+): Promise<ActionResponse> {
+  const validationResult = await vaccinationsUpdateSchema.safeParseAsync(data);
+
+  if (!validationResult.success) {
+    console.error('Validation failed:', validationResult.error);
+    return handleZodError(validationResult.error);
+  }
+
+  try {
+    const validatedData = validationResult.data;
+
+    await db.update(vaccinationsTable).set({
+      id: validatedData.id,
+      name: validatedData.name,
+      manufacturer: validatedData.manufacturer,
+      lotNumber: validatedData.lotNumber,
+      expiryDate: formatDate(validatedData.expiryDate),
+      administeredOn: formatDate(validatedData.administeredOn),
+      administeredBy: validatedData.administeredBy,
+      validFrom: validatedData.validFrom
+        ? formatDate(validatedData.validFrom)
+        : null,
+      validUntil: formatDate(validatedData.validUntil),
+      petId: petsTable.id.mapToDriverValue(validatedData.petId) as number,
+      type: validatedData.type,
+    });
+
+    revalidatePath(`/pets/${validatedData.petId}`);
+
+    return { success: true };
+  } catch (error) {
+    console.error('Failed to update vaccination:', error);
 
     return {
       success: false,

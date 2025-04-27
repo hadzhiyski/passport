@@ -18,40 +18,55 @@ import { useState } from 'react';
 import { ControllerRenderProps, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
-import { addTreatment } from './actions';
+import { addTreatment, editTreatment } from './actions';
 import { treatmentInsertSchema } from './schema';
 
 interface TreatmentFormProps {
   petId: string;
+  initialData?: z.infer<typeof treatmentInsertSchema>;
 }
 
-export default function TreatmentForm({ petId }: TreatmentFormProps) {
+export default function TreatmentForm({
+  petId,
+  initialData,
+}: TreatmentFormProps) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const today = new Date();
+  const isEditMode = !!initialData;
+
+  const defaultValues = initialData || {
+    petId,
+    administeredBy: 1,
+    name: '',
+    manufacturer: '',
+    administeredOn: today,
+    validUntil: add(today, { months: 3 }),
+  };
+
   const form = useForm<z.infer<typeof treatmentInsertSchema>>({
     resolver: zodResolver(treatmentInsertSchema),
-    defaultValues: {
-      petId,
-      administeredBy: 1,
-      name: '',
-      manufacturer: '',
-      administeredOn: today,
-      validUntil: add(today, { months: 3 }).toISOString(),
-    },
+    defaultValues,
   });
 
   async function onSubmit(data: z.infer<typeof treatmentInsertSchema>) {
     setIsSubmitting(true);
     try {
-      const result = await addTreatment(data);
+      const result = isEditMode
+        ? await editTreatment(data)
+        : await addTreatment(data);
 
       if (result.success) {
-        toast.success('Treatment added successfully');
+        toast.success(
+          `Treatment ${isEditMode ? 'updated' : 'added'} successfully`,
+        );
         router.push(`/pets/${petId}#parasite`);
       } else {
         if ('error' in result) {
-          toast.error(result.error || 'Failed to add treatment');
+          toast.error(
+            result.error ||
+              `Failed to ${isEditMode ? 'update' : 'add'} treatment`,
+          );
         } else if ('errors' in result) {
           toast.error('Please correct the errors below');
 
@@ -67,12 +82,15 @@ export default function TreatmentForm({ petId }: TreatmentFormProps) {
             }
           });
         } else {
-          toast.error('Failed to add treatment');
+          toast.error(`Failed to ${isEditMode ? 'update' : 'add'} treatment`);
         }
       }
     } catch (error) {
       toast.error('An unexpected error occurred');
-      console.error('Error adding treatment:', error);
+      console.error(
+        `Error ${isEditMode ? 'updating' : 'adding'} treatment:`,
+        error,
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -119,12 +137,7 @@ export default function TreatmentForm({ petId }: TreatmentFormProps) {
               <FormItem className='flex flex-col space-y-3 gap-0'>
                 <FormLabel>Manufacturer</FormLabel>
                 <FormControl>
-                  <Input
-                    placeholder='Enter manufacturer (optional)'
-                    {...field}
-                    value={field.value || ''}
-                    onChange={(e) => field.onChange(e.target.value || null)}
-                  />
+                  <Input placeholder='Enter manufacturer' {...field} />
                 </FormControl>
                 <FormMessage className='text-red-500 text-sm mt-1' />
               </FormItem>
@@ -150,7 +163,7 @@ export default function TreatmentForm({ petId }: TreatmentFormProps) {
                 </FormLabel>
                 <FormControl>
                   <DatePicker
-                    date={field.value ? new Date(field.value) : new Date()}
+                    date={field.value instanceof Date ? field.value : today}
                     onChange={field.onChange}
                   />
                 </FormControl>
@@ -177,8 +190,8 @@ export default function TreatmentForm({ petId }: TreatmentFormProps) {
                 <FormControl>
                   <DatePicker
                     date={
-                      field.value
-                        ? new Date(field.value)
+                      field.value instanceof Date
+                        ? field.value
                         : add(new Date(), { months: 3 })
                     }
                     onChange={field.onChange}
@@ -206,7 +219,11 @@ export default function TreatmentForm({ petId }: TreatmentFormProps) {
             disabled={isSubmitting}
             className='min-w-[160px]'
           >
-            {isSubmitting ? 'Saving...' : 'Save Treatment'}
+            {isSubmitting
+              ? 'Saving...'
+              : isEditMode
+                ? 'Update Treatment'
+                : 'Save Treatment'}
           </Button>
         </div>
       </form>

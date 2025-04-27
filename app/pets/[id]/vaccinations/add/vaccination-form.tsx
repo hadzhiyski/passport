@@ -30,31 +30,39 @@ import { useState } from 'react';
 import { ControllerRenderProps, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
-import { addVaccination } from './actions';
+import { addVaccination, editVaccination } from './actions';
 import { vaccinationsInsertSchema } from './schema';
 
 interface VaccinationFormProps {
   petId: string;
+  initialData?: z.infer<typeof vaccinationsInsertSchema>;
 }
 
-export default function VaccinationForm({ petId }: VaccinationFormProps) {
+export default function VaccinationForm({
+  petId,
+  initialData,
+}: VaccinationFormProps) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const today = new Date();
+  const isEditMode = !!initialData;
+
+  const defaultValues = initialData || {
+    petId,
+    administeredBy: 1,
+    name: '',
+    manufacturer: '',
+    lotNumber: '',
+    type: 'other',
+    validFrom: add(today, { days: 1 }),
+    administeredOn: today,
+    expiryDate: add(today, { days: 1 }),
+    validUntil: add(today, { years: 1 }),
+  };
+
   const form = useForm<z.infer<typeof vaccinationsInsertSchema>>({
     resolver: zodResolver(vaccinationsInsertSchema),
-    defaultValues: {
-      petId,
-      administeredBy: 1,
-      name: '',
-      manufacturer: '',
-      lotNumber: '',
-      type: 'other',
-      validFrom: add(today, { days: 1 }).toISOString(),
-      administeredOn: today.toISOString(),
-      expiryDate: add(today, { days: 1 }).toISOString(),
-      validUntil: add(today, { years: 1 }).toISOString(),
-    },
+    defaultValues,
   });
 
   const vaccinationTypes = [
@@ -66,14 +74,21 @@ export default function VaccinationForm({ petId }: VaccinationFormProps) {
   async function onSubmit(data: z.infer<typeof vaccinationsInsertSchema>) {
     setIsSubmitting(true);
     try {
-      const result = await addVaccination(data);
+      const result = isEditMode
+        ? await editVaccination(data)
+        : await addVaccination(data);
 
       if (result.success) {
-        toast.success('Vaccination added successfully');
+        toast.success(
+          `Vaccination ${isEditMode ? 'updated' : 'added'} successfully`,
+        );
         router.push(`/pets/${petId}#vaccinations`);
       } else {
         if ('error' in result) {
-          toast.error(result.error || 'Failed to add vaccination');
+          toast.error(
+            result.error ||
+              `Failed to ${isEditMode ? 'update' : 'add'} vaccination`,
+          );
         } else if ('errors' in result) {
           toast.error('Please correct the errors below');
 
@@ -89,12 +104,15 @@ export default function VaccinationForm({ petId }: VaccinationFormProps) {
             }
           });
         } else {
-          toast.error('Failed to add vaccination');
+          toast.error(`Failed to ${isEditMode ? 'update' : 'add'} vaccination`);
         }
       }
     } catch (error) {
       toast.error('An unexpected error occurred');
-      console.error('Error adding vaccination:', error);
+      console.error(
+        `Error ${isEditMode ? 'updating' : 'adding'} vaccination:`,
+        error,
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -232,8 +250,8 @@ export default function VaccinationForm({ petId }: VaccinationFormProps) {
                 <FormControl>
                   <DatePicker
                     date={
-                      field.value
-                        ? new Date(field.value)
+                      field.value instanceof Date
+                        ? field.value
                         : add(new Date(), { days: 1 })
                     }
                     onChange={field.onChange}
@@ -283,7 +301,9 @@ export default function VaccinationForm({ petId }: VaccinationFormProps) {
                 </div>
                 <FormControl>
                   <DatePicker
-                    date={field.value ? new Date(field.value) : new Date()}
+                    date={
+                      field.value instanceof Date ? field.value : new Date()
+                    }
                     onChange={(value) => {
                       field.onChange(value);
                     }}
@@ -313,8 +333,8 @@ export default function VaccinationForm({ petId }: VaccinationFormProps) {
                 <FormControl>
                   <DatePicker
                     date={
-                      field.value
-                        ? new Date(field.value)
+                      field.value instanceof Date
+                        ? field.value
                         : add(new Date(), { years: 1 })
                     }
                     onChange={field.onChange}
@@ -345,7 +365,9 @@ export default function VaccinationForm({ petId }: VaccinationFormProps) {
                 </FormLabel>
                 <FormControl>
                   <DatePicker
-                    date={field.value ? new Date(field.value) : new Date()}
+                    date={
+                      field.value instanceof Date ? field.value : new Date()
+                    }
                     onChange={field.onChange}
                   />
                 </FormControl>
@@ -370,7 +392,11 @@ export default function VaccinationForm({ petId }: VaccinationFormProps) {
             disabled={isSubmitting}
             className='min-w-[160px]'
           >
-            {isSubmitting ? 'Saving...' : 'Save Vaccination'}
+            {isSubmitting
+              ? 'Saving...'
+              : isEditMode
+                ? 'Update Vaccination'
+                : 'Save Vaccination'}
           </Button>
         </div>
       </form>
