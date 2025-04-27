@@ -1,0 +1,2 @@
+ALTER TABLE "anti_echinococcus_treatments" ALTER COLUMN "administered_on" SET DATA TYPE date;--> statement-breakpoint
+ALTER TABLE "anti_parasite_treatments" ALTER COLUMN "administered_on" SET DATA TYPE date;

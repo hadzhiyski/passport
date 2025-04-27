@@ -35,7 +35,7 @@ export async function addTreatment(
     await db.insert(antiEchinococcusTreatmentsTable).values({
       name: validatedData.name,
       manufacturer: validatedData.manufacturer,
-      administeredOn: validatedData.administeredOn,
+      administeredOn: formatDate(validatedData.administeredOn),
       administeredBy: validatedData.administeredBy,
       validUntil: formatDate(validatedData.validUntil),
       petId: petsTable.id.mapToDriverValue(validatedData.petId) as number,
@@ -71,7 +71,7 @@ export async function editTreatment(
     await db.update(antiEchinococcusTreatmentsTable).set({
       name: validatedData.name,
       manufacturer: validatedData.manufacturer,
-      administeredOn: validatedData.administeredOn,
+      administeredOn: formatDate(validatedData.administeredOn),
       administeredBy: validatedData.administeredBy,
       validUntil: formatDate(validatedData.validUntil),
       petId: petsTable.id.mapToDriverValue(validatedData.petId) as number,

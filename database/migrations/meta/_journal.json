@@ -15,6 +15,13 @@
       "when": 1744193149225,
       "tag": "0001_align-treatments-vaccinations-types",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1745786541506,
+      "tag": "0002_parasite-tables-administered-on-date-type",
+      "breakpoints": true
     }
   ]
 }

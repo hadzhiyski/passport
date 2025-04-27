@@ -8,7 +8,7 @@ import { ActionResponse } from '@passport/lib/actions/types';
 import { format } from 'date-fns';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
-import { treatmentInsertSchema, TreatmentData } from './schema';
+import { TreatmentData, treatmentInsertSchema } from './schema';
 
 /**
  * Formats a Date object to a string in the format 'YYYY-MM-DD' for PostgreSQL.
@@ -35,7 +35,7 @@ export async function addTreatment(
     await db.insert(antiParasiteTreatmentsTable).values({
       name: validatedData.name,
       manufacturer: validatedData.manufacturer,
-      administeredOn: validatedData.administeredOn,
+      administeredOn: formatDate(validatedData.administeredOn),
       administeredBy: validatedData.administeredBy,
       validUntil: validatedData.validUntil
         ? formatDate(validatedData.validUntil)
@@ -73,7 +73,7 @@ export async function editTreatment(
     await db.update(antiParasiteTreatmentsTable).set({
       name: validatedData.name,
       manufacturer: validatedData.manufacturer,
-      administeredOn: validatedData.administeredOn,
+      administeredOn: formatDate(validatedData.administeredOn),
       administeredBy: validatedData.administeredBy,
       validUntil: validatedData.validUntil
         ? formatDate(validatedData.validUntil)
