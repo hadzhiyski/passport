@@ -1,7 +1,7 @@
 import { db } from '@passport/database';
-import { clinicalExaminationTable } from '@passport/database/schema/clinical-examination';
-import { petsTable } from '@passport/database/schema/pet';
-import { veterinarianTable } from '@passport/database/schema/veterinarian';
+import { clinicalExaminationsTable } from '@passport/database/schema/clinical-examinations';
+import { petsTable } from '@passport/database/schema/pets';
+import { veterinariansTable } from '@passport/database/schema/veterinarians';
 import { format } from 'date-fns';
 import { eq } from 'drizzle-orm';
 
@@ -12,17 +12,17 @@ export async function ClinicalExaminationsSection({
 }) {
   const examinations = await db
     .select({
-      date: clinicalExaminationTable.date,
-      veterinarian: veterinarianTable.name,
+      date: clinicalExaminationsTable.date,
+      veterinarian: veterinariansTable.name,
     })
-    .from(clinicalExaminationTable)
+    .from(clinicalExaminationsTable)
     .innerJoin(
-      veterinarianTable,
-      eq(clinicalExaminationTable.veterinarianId, veterinarianTable.id),
+      veterinariansTable,
+      eq(clinicalExaminationsTable.veterinarianId, veterinariansTable.id),
     )
     .where(
       eq(
-        clinicalExaminationTable.petId,
+        clinicalExaminationsTable.petId,
         petsTable.id.mapToDriverValue(petId) as number,
       ),
     );

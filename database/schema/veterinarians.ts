@@ -2,7 +2,7 @@ import { pgTable, primaryKey, text, varchar } from 'drizzle-orm/pg-core';
 import { auditTimestamps } from './timestamps';
 import { serialSqid } from './types/serial-sqid';
 
-export const veterinarianTable = pgTable(
+export const veterinariansTable = pgTable(
   'veterinarians',
   {
     id: serialSqid('veterinarians').notNull(),

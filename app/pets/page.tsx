@@ -2,9 +2,9 @@ import { Avatar, AvatarFallback } from '@passport/components/ui/avatar';
 import { Button } from '@passport/components/ui/button';
 import { Card, CardContent } from '@passport/components/ui/card';
 import { db } from '@passport/database';
-import { ownerTable } from '@passport/database/schema/owner';
-import { passportTable } from '@passport/database/schema/passport';
-import { petsTable } from '@passport/database/schema/pet';
+import { ownersTable } from '@passport/database/schema/owners';
+import { passportsTable } from '@passport/database/schema/passports';
+import { petsTable } from '@passport/database/schema/pets';
 import { getSpeciesColor } from '@passport/lib/pet/utils';
 import { getUser } from '@passport/user';
 import { eq, or } from 'drizzle-orm';
@@ -30,15 +30,15 @@ export default async function PetIndexPage() {
       sex: petsTable.sex,
     })
     .from(petsTable)
-    .innerJoin(passportTable, eq(petsTable.id, passportTable.petId))
+    .innerJoin(passportsTable, eq(petsTable.id, passportsTable.petId))
     .leftJoin(
-      ownerTable,
+      ownersTable,
       or(
-        eq(ownerTable.id, passportTable.owner1Id),
-        eq(ownerTable.id, passportTable.owner2Id),
+        eq(ownersTable.id, passportsTable.owner1Id),
+        eq(ownersTable.id, passportsTable.owner2Id),
       ),
     )
-    .where(eq(ownerTable.externalId, user.id))
+    .where(eq(ownersTable.externalId, user.id))
     .then((pets) =>
       pets.map((pet) => ({
         ...pet,

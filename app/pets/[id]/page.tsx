@@ -20,7 +20,7 @@ import {
 } from '@passport/components/ui/collapsible';
 import { Separator } from '@passport/components/ui/separator';
 import { db } from '@passport/database';
-import { petsTable } from '@passport/database/schema/pet';
+import { petsTable } from '@passport/database/schema/pets';
 import { format } from 'date-fns';
 import { eq } from 'drizzle-orm';
 import {

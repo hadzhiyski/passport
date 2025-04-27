@@ -1,8 +1,8 @@
 'use server';
 
 import { db } from '@passport/database';
-import { antiEchinococcusTreatmentTable } from '@passport/database/schema/anti-echinococcus-treatment';
-import { petsTable } from '@passport/database/schema/pet';
+import { antiEchinococcusTreatmentsTable } from '@passport/database/schema/anti-echinococcus-treatments';
+import { petsTable } from '@passport/database/schema/pets';
 import { handleZodError } from '@passport/lib/actions/error-handlers';
 import { ActionResponse } from '@passport/lib/actions/types';
 import { format } from 'date-fns';
@@ -32,7 +32,7 @@ export async function addTreatment(
   try {
     const validatedData = validationResult.data;
 
-    await db.insert(antiEchinococcusTreatmentTable).values({
+    await db.insert(antiEchinococcusTreatmentsTable).values({
       name: validatedData.name,
       manufacturer: validatedData.manufacturer,
       administeredOn: validatedData.administeredOn,
@@ -68,7 +68,7 @@ export async function editTreatment(
   try {
     const validatedData = validationResult.data;
 
-    await db.update(antiEchinococcusTreatmentTable).set({
+    await db.update(antiEchinococcusTreatmentsTable).set({
       name: validatedData.name,
       manufacturer: validatedData.manufacturer,
       administeredOn: validatedData.administeredOn,

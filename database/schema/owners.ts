@@ -8,7 +8,7 @@ import {
 import { auditTimestamps } from './timestamps';
 import { serialSqid } from './types/serial-sqid';
 
-export const ownerTable = pgTable(
+export const ownersTable = pgTable(
   'owners',
   {
     id: serialSqid('owners').notNull(),

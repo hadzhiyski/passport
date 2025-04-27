@@ -1,8 +1,8 @@
 import { SidebarGroup, SidebarMenu } from '@passport/components/ui/sidebar';
 import { db } from '@passport/database';
-import { ownerTable } from '@passport/database/schema/owner';
-import { passportTable } from '@passport/database/schema/passport';
-import { petsTable } from '@passport/database/schema/pet';
+import { ownersTable } from '@passport/database/schema/owners';
+import { passportsTable } from '@passport/database/schema/passports';
+import { petsTable } from '@passport/database/schema/pets';
 import { eq, or } from 'drizzle-orm';
 import PetNavItem from './pets-nav-item';
 
@@ -17,15 +17,15 @@ export async function PetsNav({ ownerId }: PetsNavProps) {
       name: petsTable.name,
     })
     .from(petsTable)
-    .innerJoin(passportTable, eq(petsTable.id, passportTable.petId))
+    .innerJoin(passportsTable, eq(petsTable.id, passportsTable.petId))
     .leftJoin(
-      ownerTable,
+      ownersTable,
       or(
-        eq(ownerTable.id, passportTable.owner1Id),
-        eq(ownerTable.id, passportTable.owner2Id),
+        eq(ownersTable.id, passportsTable.owner1Id),
+        eq(ownersTable.id, passportsTable.owner2Id),
       ),
     )
-    .where(eq(ownerTable.externalId, ownerId));
+    .where(eq(ownersTable.externalId, ownerId));
 
   return pets.length > 0 ? (
     <SidebarGroup>

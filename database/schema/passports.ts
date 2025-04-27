@@ -8,13 +8,13 @@ import {
   uniqueIndex,
   varchar,
 } from 'drizzle-orm/pg-core';
-import { ownerTable } from './owner';
-import { petsTable } from './pet';
+import { ownersTable } from './owners';
+import { petsTable } from './pets';
 import { auditTimestamps, softDeleteTimestamps } from './timestamps';
 import { serialSqid } from './types/serial-sqid';
-import { veterinarianTable } from './veterinarian';
+import { veterinariansTable } from './veterinarians';
 
-export const passportTable = pgTable(
+export const passportsTable = pgTable(
   'passports',
   {
     id: serialSqid('passports').notNull(),
@@ -35,15 +35,15 @@ export const passportTable = pgTable(
     foreignKey({ columns: [table.petId], foreignColumns: [petsTable.id] })
       .onUpdate('restrict')
       .onDelete('cascade'),
-    foreignKey({ columns: [table.owner1Id], foreignColumns: [ownerTable.id] })
+    foreignKey({ columns: [table.owner1Id], foreignColumns: [ownersTable.id] })
       .onUpdate('restrict')
       .onDelete('cascade'),
-    foreignKey({ columns: [table.owner2Id], foreignColumns: [ownerTable.id] })
+    foreignKey({ columns: [table.owner2Id], foreignColumns: [ownersTable.id] })
       .onUpdate('cascade')
       .onDelete('cascade'),
     foreignKey({
       columns: [table.issuedBy],
-      foreignColumns: [veterinarianTable.id],
+      foreignColumns: [veterinariansTable.id],
     })
       .onUpdate('restrict')
       .onDelete('cascade'),

@@ -1,8 +1,8 @@
 'use server';
 
 import { db } from '@passport/database';
-import { antiParasiteTreatmentTable } from '@passport/database/schema/anti-parasite-treatment';
-import { petsTable } from '@passport/database/schema/pet';
+import { antiParasiteTreatmentsTable } from '@passport/database/schema/anti-parasite-treatments';
+import { petsTable } from '@passport/database/schema/pets';
 import { handleZodError } from '@passport/lib/actions/error-handlers';
 import { ActionResponse } from '@passport/lib/actions/types';
 import { format } from 'date-fns';
@@ -32,7 +32,7 @@ export async function addTreatment(
   try {
     const validatedData = validationResult.data;
 
-    await db.insert(antiParasiteTreatmentTable).values({
+    await db.insert(antiParasiteTreatmentsTable).values({
       name: validatedData.name,
       manufacturer: validatedData.manufacturer,
       administeredOn: validatedData.administeredOn,
@@ -70,7 +70,7 @@ export async function editTreatment(
   try {
     const validatedData = validationResult.data;
 
-    await db.update(antiParasiteTreatmentTable).set({
+    await db.update(antiParasiteTreatmentsTable).set({
       name: validatedData.name,
       manufacturer: validatedData.manufacturer,
       administeredOn: validatedData.administeredOn,

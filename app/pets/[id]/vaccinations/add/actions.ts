@@ -1,8 +1,8 @@
 'use server';
 
 import { db } from '@passport/database';
-import { petsTable } from '@passport/database/schema/pet';
-import { vaccinationsTable } from '@passport/database/schema/vaccination';
+import { petsTable } from '@passport/database/schema/pets';
+import { vaccinationsTable } from '@passport/database/schema/vaccinations';
 import { handleZodError } from '@passport/lib/actions/error-handlers';
 import { ActionResponse } from '@passport/lib/actions/types';
 import { format } from 'date-fns';

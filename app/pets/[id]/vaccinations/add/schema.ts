@@ -1,4 +1,4 @@
-import { vaccinationTypeEnum } from '@passport/database/schema/vaccination';
+import { vaccinationTypeEnum } from '@passport/database/schema/vaccinations';
 import { z } from 'zod';
 
 const baseVaccinationsSchema = z.object({

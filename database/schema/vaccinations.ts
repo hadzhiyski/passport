@@ -9,9 +9,9 @@ import {
   serial,
   varchar,
 } from 'drizzle-orm/pg-core';
-import { petsTable } from './pet';
+import { petsTable } from './pets';
 import { auditTimestamps } from './timestamps';
-import { veterinarianTable } from './veterinarian';
+import { veterinariansTable } from './veterinarians';
 import { sql } from 'drizzle-orm';
 
 export const vaccinationTypeEnum = pgEnum('vaccination_type', [
@@ -46,7 +46,7 @@ export const vaccinationsTable = pgTable(
       .onDelete('cascade'),
     foreignKey({
       columns: [table.administeredBy],
-      foreignColumns: [veterinarianTable.id],
+      foreignColumns: [veterinariansTable.id],
     })
       .onUpdate('restrict')
       .onDelete('cascade'),

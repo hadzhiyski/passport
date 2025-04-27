@@ -22,7 +22,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@passport/components/ui/tooltip';
-import { vaccinationTypeEnum } from '@passport/database/schema/vaccination';
+import { vaccinationTypeEnum } from '@passport/database/schema/vaccinations';
 import { add } from 'date-fns';
 import { InfoIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';

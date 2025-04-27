@@ -1,9 +1,9 @@
 import { Badge } from '@passport/components/ui/badge';
 import { Button } from '@passport/components/ui/button';
 import { db } from '@passport/database';
-import { antiEchinococcusTreatmentTable } from '@passport/database/schema/anti-echinococcus-treatment';
-import { petsTable } from '@passport/database/schema/pet';
-import { veterinarianTable } from '@passport/database/schema/veterinarian';
+import { antiEchinococcusTreatmentsTable } from '@passport/database/schema/anti-echinococcus-treatments';
+import { petsTable } from '@passport/database/schema/pets';
+import { veterinariansTable } from '@passport/database/schema/veterinarians';
 import { format } from 'date-fns';
 import { desc, eq } from 'drizzle-orm';
 import { ZapIcon } from 'lucide-react';
@@ -18,9 +18,9 @@ export async function EchinococcusTreatmentSection({
 }) {
   const PAGE_SIZE = 3;
   const count = await db.$count(
-    antiEchinococcusTreatmentTable,
+    antiEchinococcusTreatmentsTable,
     eq(
-      antiEchinococcusTreatmentTable.petId,
+      antiEchinococcusTreatmentsTable.petId,
       petsTable.id.mapToDriverValue(petId) as number,
     ),
   );
@@ -47,25 +47,25 @@ export async function EchinococcusTreatmentSection({
   const totalPages = Math.ceil(count / PAGE_SIZE);
   const treatments = await db
     .select({
-      id: antiEchinococcusTreatmentTable.id,
-      name: antiEchinococcusTreatmentTable.name,
-      manufacturer: antiEchinococcusTreatmentTable.manufacturer,
-      administeredOn: antiEchinococcusTreatmentTable.administeredOn,
-      administeredBy: veterinarianTable.name,
-      validUntil: antiEchinococcusTreatmentTable.validUntil,
+      id: antiEchinococcusTreatmentsTable.id,
+      name: antiEchinococcusTreatmentsTable.name,
+      manufacturer: antiEchinococcusTreatmentsTable.manufacturer,
+      administeredOn: antiEchinococcusTreatmentsTable.administeredOn,
+      administeredBy: veterinariansTable.name,
+      validUntil: antiEchinococcusTreatmentsTable.validUntil,
     })
-    .from(antiEchinococcusTreatmentTable)
+    .from(antiEchinococcusTreatmentsTable)
     .leftJoin(
-      veterinarianTable,
-      eq(antiEchinococcusTreatmentTable.administeredBy, veterinarianTable.id),
+      veterinariansTable,
+      eq(antiEchinococcusTreatmentsTable.administeredBy, veterinariansTable.id),
     )
     .where(
       eq(
-        antiEchinococcusTreatmentTable.petId,
+        antiEchinococcusTreatmentsTable.petId,
         petsTable.id.mapToDriverValue(petId) as number,
       ),
     )
-    .orderBy(desc(antiEchinococcusTreatmentTable.administeredOn))
+    .orderBy(desc(antiEchinococcusTreatmentsTable.administeredOn))
     .offset((page - 1) * PAGE_SIZE)
     .limit(PAGE_SIZE);
 

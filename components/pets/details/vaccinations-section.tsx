@@ -1,9 +1,9 @@
 import { Badge } from '@passport/components/ui/badge';
 import { Button } from '@passport/components/ui/button';
 import { db } from '@passport/database';
-import { petsTable } from '@passport/database/schema/pet';
-import { vaccinationsTable } from '@passport/database/schema/vaccination';
-import { veterinarianTable } from '@passport/database/schema/veterinarian';
+import { petsTable } from '@passport/database/schema/pets';
+import { vaccinationsTable } from '@passport/database/schema/vaccinations';
+import { veterinariansTable } from '@passport/database/schema/veterinarians';
 import { format } from 'date-fns';
 import { desc, eq } from 'drizzle-orm';
 import { ShieldIcon } from 'lucide-react';
@@ -55,8 +55,8 @@ export async function VaccinationsSection({
       expiryDate: vaccinationsTable.expiryDate,
       administeredOn: vaccinationsTable.administeredOn,
       administeredBy: {
-        id: veterinarianTable.id,
-        name: veterinarianTable.name,
+        id: veterinariansTable.id,
+        name: veterinariansTable.name,
       },
       validFrom: vaccinationsTable.validFrom,
       validUntil: vaccinationsTable.validUntil,
@@ -64,8 +64,8 @@ export async function VaccinationsSection({
     })
     .from(vaccinationsTable)
     .innerJoin(
-      veterinarianTable,
-      eq(vaccinationsTable.administeredBy, veterinarianTable.id),
+      veterinariansTable,
+      eq(vaccinationsTable.administeredBy, veterinariansTable.id),
     )
     .where(
       eq(

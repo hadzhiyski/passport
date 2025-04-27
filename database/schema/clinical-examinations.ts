@@ -5,22 +5,17 @@ import {
   pgTable,
   primaryKey,
   serial,
-  timestamp,
-  varchar,
 } from 'drizzle-orm/pg-core';
-import { petsTable } from './pet';
+import { petsTable } from './pets';
 import { auditTimestamps } from './timestamps';
-import { veterinarianTable } from './veterinarian';
+import { veterinariansTable } from './veterinarians';
 
-export const antiEchinococcusTreatmentTable = pgTable(
-  'anti_echinococcus_treatments',
+export const clinicalExaminationsTable = pgTable(
+  'clinical_examinations',
   {
     id: serial().notNull(),
-    name: varchar({ length: 255 }).notNull(),
-    manufacturer: varchar({ length: 255 }),
-    administeredOn: timestamp().notNull(),
-    administeredBy: integer(),
-    validUntil: date(),
+    date: date().notNull(),
+    veterinarianId: integer().notNull(),
     petId: integer().notNull(),
     ...auditTimestamps,
   },
@@ -30,8 +25,8 @@ export const antiEchinococcusTreatmentTable = pgTable(
       .onUpdate('restrict')
       .onDelete('cascade'),
     foreignKey({
-      columns: [table.administeredBy],
-      foreignColumns: [veterinarianTable.id],
+      columns: [table.veterinarianId],
+      foreignColumns: [veterinariansTable.id],
     })
       .onUpdate('restrict')
       .onDelete('cascade'),

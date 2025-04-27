@@ -1,9 +1,9 @@
 import { Badge } from '@passport/components/ui/badge';
 import { Button } from '@passport/components/ui/button';
 import { db } from '@passport/database';
-import { antiParasiteTreatmentTable } from '@passport/database/schema/anti-parasite-treatment';
-import { petsTable } from '@passport/database/schema/pet';
-import { veterinarianTable } from '@passport/database/schema/veterinarian';
+import { antiParasiteTreatmentsTable } from '@passport/database/schema/anti-parasite-treatments';
+import { petsTable } from '@passport/database/schema/pets';
+import { veterinariansTable } from '@passport/database/schema/veterinarians';
 import { format } from 'date-fns';
 import { desc, eq } from 'drizzle-orm';
 import { BugIcon } from 'lucide-react';
@@ -18,9 +18,9 @@ export async function GeneralParasiteTreatmentSection({
 }) {
   const PAGE_SIZE = 3;
   const count = await db.$count(
-    antiParasiteTreatmentTable,
+    antiParasiteTreatmentsTable,
     eq(
-      antiParasiteTreatmentTable.petId,
+      antiParasiteTreatmentsTable.petId,
       petsTable.id.mapToDriverValue(petId) as number,
     ),
   );
@@ -47,25 +47,25 @@ export async function GeneralParasiteTreatmentSection({
   const totalPages = Math.ceil(count / PAGE_SIZE);
   const treatments = await db
     .select({
-      id: antiParasiteTreatmentTable.id,
-      name: antiParasiteTreatmentTable.name,
-      manufacturer: antiParasiteTreatmentTable.manufacturer,
-      administeredOn: antiParasiteTreatmentTable.administeredOn,
-      administeredBy: veterinarianTable.name,
-      validUntil: antiParasiteTreatmentTable.validUntil,
+      id: antiParasiteTreatmentsTable.id,
+      name: antiParasiteTreatmentsTable.name,
+      manufacturer: antiParasiteTreatmentsTable.manufacturer,
+      administeredOn: antiParasiteTreatmentsTable.administeredOn,
+      administeredBy: veterinariansTable.name,
+      validUntil: antiParasiteTreatmentsTable.validUntil,
     })
-    .from(antiParasiteTreatmentTable)
+    .from(antiParasiteTreatmentsTable)
     .leftJoin(
-      veterinarianTable,
-      eq(antiParasiteTreatmentTable.administeredBy, veterinarianTable.id),
+      veterinariansTable,
+      eq(antiParasiteTreatmentsTable.administeredBy, veterinariansTable.id),
     )
     .where(
       eq(
-        antiParasiteTreatmentTable.petId,
+        antiParasiteTreatmentsTable.petId,
         petsTable.id.mapToDriverValue(petId) as number,
       ),
     )
-    .orderBy(desc(antiParasiteTreatmentTable.administeredOn))
+    .orderBy(desc(antiParasiteTreatmentsTable.administeredOn))
     .offset((page - 1) * PAGE_SIZE)
     .limit(PAGE_SIZE);
 

@@ -8,14 +8,14 @@ import {
   varchar,
 } from 'drizzle-orm/pg-core';
 import { auditTimestamps } from './timestamps';
-import { petsTable } from './pet';
+import { petsTable } from './pets';
 
 export const petMarkingType = pgEnum('pet_marking_type', [
   'microchip',
   'tattoo',
 ]);
 
-export const petMarkingTable = pgTable(
+export const petMarkingsTable = pgTable(
   'pet_markings',
   {
     id: integer().notNull(),
