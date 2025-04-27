@@ -5,19 +5,10 @@ import { antiEchinococcusTreatmentsTable } from '@passport/database/schema/anti-
 import { petsTable } from '@passport/database/schema/pets';
 import { handleZodError } from '@passport/lib/actions/error-handlers';
 import { ActionResponse } from '@passport/lib/actions/types';
-import { format } from 'date-fns';
+import { formatDate } from '@passport/lib/actions/utils/date';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { TreatmentData, treatmentInsertSchema } from './schema';
-
-/**
- * Formats a Date object to a string in the format 'YYYY-MM-DD' for PostgreSQL.
- * @param {Date} date - The date to format.
- * @returns {string} - The formatted date string.
- */
-function formatDate(date: Date): string {
-  return format(date, 'yyyy-MM-dd');
-}
 
 export async function addTreatment(
   data: z.infer<typeof treatmentInsertSchema>,

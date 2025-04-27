@@ -5,22 +5,13 @@ import { petsTable } from '@passport/database/schema/pets';
 import { vaccinationsTable } from '@passport/database/schema/vaccinations';
 import { handleZodError } from '@passport/lib/actions/error-handlers';
 import { ActionResponse } from '@passport/lib/actions/types';
-import { format } from 'date-fns';
+import { formatDate } from '@passport/lib/actions/utils/date';
 import { revalidatePath } from 'next/cache';
 import {
   VaccinationData,
   vaccinationsInsertSchema,
   vaccinationsUpdateSchema,
 } from './schema';
-
-/**
- * Formats a Date object to a string in the format 'YYYY-MM-DD' for PostgreSQL.
- * @param {Date} date - The date to format.
- * @returns {string} - The formatted date string.
- */
-function formatDate(date: Date): string {
-  return format(date, 'yyyy-MM-dd');
-}
 
 export async function addVaccination(
   data: VaccinationData,
