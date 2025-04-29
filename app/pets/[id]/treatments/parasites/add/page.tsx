@@ -1,4 +1,4 @@
-import TreatmentForm from './treatment-form';
+import TreatmentForm from '../treatment-form';
 
 export default async function AddParasiteTreatmentPage({
   params,

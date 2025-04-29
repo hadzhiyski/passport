@@ -1,31 +1,31 @@
 import { Badge } from '@passport/components/ui/badge';
 import { Button } from '@passport/components/ui/button';
 import { db } from '@passport/database';
-import { ownerTable } from '@passport/database/schema/owner';
-import { passportTable } from '@passport/database/schema/passport';
-import { petsTable } from '@passport/database/schema/pet';
-import { petMarkingTable } from '@passport/database/schema/pet-marking';
-import { veterinarianTable } from '@passport/database/schema/veterinarian';
+import { ownersTable } from '@passport/database/schema/owners';
+import { passportsTable } from '@passport/database/schema/passports';
+import { petMarkingsTable } from '@passport/database/schema/pet-markings';
+import { petsTable } from '@passport/database/schema/pets';
+import { veterinariansTable } from '@passport/database/schema/veterinarians';
 import { format } from 'date-fns';
 import { eq, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import { BookIcon, HeartPulseIcon, UserIcon, UserPlusIcon } from 'lucide-react';
 
 export async function PassportSection({ petId }: { petId: string }) {
-  const owner1Table = alias(ownerTable, 'owner1');
-  const owner2Table = alias(ownerTable, 'owner2');
+  const owner1Table = alias(ownersTable, 'owner1');
+  const owner2Table = alias(ownersTable, 'owner2');
 
   try {
     const passportSelect = await db
       .select({
-        id: passportTable.id,
-        serialNumber: passportTable.serialNumber,
-        issueDate: passportTable.issueDate,
+        id: passportsTable.id,
+        serialNumber: passportsTable.serialNumber,
+        issueDate: passportsTable.issueDate,
         marking: {
-          code: petMarkingTable.code,
-          type: petMarkingTable.type,
-          place: petMarkingTable.place,
-          applicationDate: petMarkingTable.applicationDate,
+          code: petMarkingsTable.code,
+          type: petMarkingsTable.type,
+          place: petMarkingsTable.place,
+          applicationDate: petMarkingsTable.applicationDate,
         },
         owner1: {
           id: owner1Table.id,
@@ -40,20 +40,23 @@ export async function PassportSection({ petId }: { petId: string }) {
           ),
         },
         vet: {
-          id: veterinarianTable.id,
-          name: veterinarianTable.name,
+          id: veterinariansTable.id,
+          name: veterinariansTable.name,
         },
       })
-      .from(passportTable)
+      .from(passportsTable)
       .innerJoin(
-        veterinarianTable,
-        eq(passportTable.issuedBy, veterinarianTable.id),
+        veterinariansTable,
+        eq(passportsTable.issuedBy, veterinariansTable.id),
       )
-      .innerJoin(owner1Table, eq(passportTable.owner1Id, owner1Table.id))
-      .leftJoin(owner2Table, eq(passportTable.owner2Id, owner2Table.id))
-      .leftJoin(petMarkingTable, eq(passportTable.petId, petMarkingTable.id))
+      .innerJoin(owner1Table, eq(passportsTable.owner1Id, owner1Table.id))
+      .leftJoin(owner2Table, eq(passportsTable.owner2Id, owner2Table.id))
+      .leftJoin(petMarkingsTable, eq(passportsTable.petId, petMarkingsTable.id))
       .where(
-        eq(passportTable.petId, petsTable.id.mapToDriverValue(petId) as number),
+        eq(
+          passportsTable.petId,
+          petsTable.id.mapToDriverValue(petId) as number,
+        ),
       );
 
     if (passportSelect.length === 0) {

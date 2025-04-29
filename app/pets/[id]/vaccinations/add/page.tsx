@@ -1,4 +1,4 @@
-import VaccinationForm from './vaccination-form';
+import VaccinationForm from '../vaccination-form';
 
 export default async function AddVaccinationPage({
   params,
