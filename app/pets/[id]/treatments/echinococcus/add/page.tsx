@@ -1,4 +1,4 @@
-import TreatmentForm from '../treatment-form';
+import TreatmentForm from '@passport/components/treatments/echinococcus/treatment-form';
 
 export default async function AddEchinococcusTreatmentPage({
   params,

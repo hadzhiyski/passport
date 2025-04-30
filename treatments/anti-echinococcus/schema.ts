@@ -2,15 +2,12 @@ import { z } from 'zod';
 
 export const treatmentInsertSchema = z.object({
   name: z.string().trim().min(1, 'Treatment name cannot be empty'),
-  manufacturer: z.string().trim().optional(),
+  manufacturer: z.string().trim().nullable(),
   administeredOn: z.coerce.date({
     required_error: 'Administration date is required',
     invalid_type_error: 'Administration date must be a valid date',
   }),
-  administeredBy: z
-    .number()
-    .int()
-    .positive('Administrator ID must be a positive integer'),
+  administeredBy: z.string().trim().min(1, 'Administrator ID cannot be empty'),
   validUntil: z.coerce.date({
     required_error: 'Valid until date is required',
     invalid_type_error: 'Valid until date must be a valid date',
@@ -20,7 +17,7 @@ export const treatmentInsertSchema = z.object({
 
 // Extend the insert schema and add the ID field for updates
 export const treatmentUpdateSchema = treatmentInsertSchema.extend({
-  id: z.number().int().positive('Treatment ID must be a positive integer'),
+  id: z.string().trim().min(1, 'Treatment ID cannot be empty'),
 });
 
 export type TreatmentData = z.infer<typeof treatmentInsertSchema>;

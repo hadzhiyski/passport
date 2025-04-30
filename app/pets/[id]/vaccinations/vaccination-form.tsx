@@ -23,6 +23,7 @@ import {
   TooltipTrigger,
 } from '@passport/components/ui/tooltip';
 import { vaccinationTypeEnum } from '@passport/database/schema/vaccinations';
+import { VETERINARIAN_ID_1 } from '@passport/treatments/constants';
 import { add } from 'date-fns';
 import { InfoIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -49,7 +50,7 @@ export default function VaccinationForm({
 
   const defaultValues = initialData || {
     petId,
-    administeredBy: 1,
+    administeredBy: VETERINARIAN_ID_1,
     name: '',
     manufacturer: '',
     lotNumber: '',

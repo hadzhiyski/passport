@@ -1,25 +1,24 @@
 import {
   date,
   foreignKey,
-  integer,
   pgTable,
   primaryKey,
-  serial,
   varchar,
 } from 'drizzle-orm/pg-core';
 import { petsTable } from './pets';
 import { auditTimestamps } from './timestamps';
+import { integerSqid, serialSqid } from './types/sqid';
 import { veterinariansTable } from './veterinarians';
 
 export const antiParasiteTreatmentsTable = pgTable(
   'anti_parasite_treatments',
   {
-    id: serial().notNull(),
+    id: serialSqid('anti_parasite_treatments').notNull(),
     name: varchar({ length: 255 }).notNull(),
     manufacturer: varchar({ length: 255 }),
     administeredOn: date().notNull(),
-    administeredBy: integer(),
-    petId: integer().notNull(),
+    administeredBy: integerSqid('veterinarians'),
+    petId: integerSqid('pets').notNull(),
     validUntil: date(),
     ...auditTimestamps,
   },

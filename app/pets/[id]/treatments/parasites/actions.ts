@@ -2,7 +2,6 @@
 
 import { db } from '@passport/database';
 import { antiParasiteTreatmentsTable } from '@passport/database/schema/anti-parasite-treatments';
-import { petsTable } from '@passport/database/schema/pets';
 import { handleZodError } from '@passport/lib/actions/error-handlers';
 import { ActionResponse } from '@passport/lib/actions/types';
 import { formatDate } from '@passport/lib/actions/utils/date';
@@ -31,7 +30,7 @@ export async function addTreatment(
       validUntil: validatedData.validUntil
         ? formatDate(validatedData.validUntil)
         : null,
-      petId: petsTable.id.mapToDriverValue(validatedData.petId) as number,
+      petId: validatedData.petId,
     });
 
     revalidatePath(`/pets/${validatedData.petId}`);
@@ -69,7 +68,7 @@ export async function editTreatment(
       validUntil: validatedData.validUntil
         ? formatDate(validatedData.validUntil)
         : null,
-      petId: petsTable.id.mapToDriverValue(validatedData.petId) as number,
+      petId: validatedData.petId,
     });
 
     revalidatePath(`/pets/${validatedData.petId}`);

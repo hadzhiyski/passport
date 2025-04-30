@@ -4,7 +4,6 @@ import { db } from '@passport/database';
 import { ownersTable } from '@passport/database/schema/owners';
 import { passportsTable } from '@passport/database/schema/passports';
 import { petMarkingsTable } from '@passport/database/schema/pet-markings';
-import { petsTable } from '@passport/database/schema/pets';
 import { veterinariansTable } from '@passport/database/schema/veterinarians';
 import { format } from 'date-fns';
 import { eq, sql } from 'drizzle-orm';
@@ -52,12 +51,7 @@ export async function PassportSection({ petId }: { petId: string }) {
       .innerJoin(owner1Table, eq(passportsTable.owner1Id, owner1Table.id))
       .leftJoin(owner2Table, eq(passportsTable.owner2Id, owner2Table.id))
       .leftJoin(petMarkingsTable, eq(passportsTable.petId, petMarkingsTable.id))
-      .where(
-        eq(
-          passportsTable.petId,
-          petsTable.id.mapToDriverValue(petId) as number,
-        ),
-      );
+      .where(eq(passportsTable.petId, petId));
 
     if (passportSelect.length === 0) {
       return (

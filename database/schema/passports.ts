@@ -2,7 +2,6 @@ import { sql } from 'drizzle-orm';
 import {
   date,
   foreignKey,
-  integer,
   pgTable,
   primaryKey,
   uniqueIndex,
@@ -11,7 +10,7 @@ import {
 import { ownersTable } from './owners';
 import { petsTable } from './pets';
 import { auditTimestamps, softDeleteTimestamps } from './timestamps';
-import { serialSqid } from './types/serial-sqid';
+import { integerSqid, serialSqid } from './types/sqid';
 import { veterinariansTable } from './veterinarians';
 
 export const passportsTable = pgTable(
@@ -20,10 +19,10 @@ export const passportsTable = pgTable(
     id: serialSqid('passports').notNull(),
     serialNumber: varchar({ length: 255 }).notNull(),
     issueDate: date().notNull(),
-    issuedBy: integer().notNull(),
-    petId: integer().notNull(),
-    owner1Id: integer().notNull(),
-    owner2Id: integer(),
+    issuedBy: integerSqid('veterinarians').notNull(),
+    petId: integerSqid('pets').notNull(),
+    owner1Id: integerSqid('owners').notNull(),
+    owner2Id: integerSqid('owners'),
     ...auditTimestamps,
     ...softDeleteTimestamps,
   },

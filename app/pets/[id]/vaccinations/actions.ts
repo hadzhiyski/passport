@@ -1,11 +1,11 @@
 'use server';
 
 import { db } from '@passport/database';
-import { petsTable } from '@passport/database/schema/pets';
 import { vaccinationsTable } from '@passport/database/schema/vaccinations';
 import { handleZodError } from '@passport/lib/actions/error-handlers';
 import { ActionResponse } from '@passport/lib/actions/types';
 import { formatDate } from '@passport/lib/actions/utils/date';
+import { eq } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 import {
   VaccinationData,
@@ -37,7 +37,7 @@ export async function addVaccination(
         ? formatDate(validatedData.validFrom)
         : null,
       validUntil: formatDate(validatedData.validUntil),
-      petId: petsTable.id.mapToDriverValue(validatedData.petId) as number,
+      petId: validatedData.petId,
       type: validatedData.type,
     });
 
@@ -68,21 +68,23 @@ export async function editVaccination(
   try {
     const validatedData = validationResult.data;
 
-    await db.update(vaccinationsTable).set({
-      id: validatedData.id,
-      name: validatedData.name,
-      manufacturer: validatedData.manufacturer,
-      lotNumber: validatedData.lotNumber,
-      expiryDate: formatDate(validatedData.expiryDate),
-      administeredOn: formatDate(validatedData.administeredOn),
-      administeredBy: validatedData.administeredBy,
-      validFrom: validatedData.validFrom
-        ? formatDate(validatedData.validFrom)
-        : null,
-      validUntil: formatDate(validatedData.validUntil),
-      petId: petsTable.id.mapToDriverValue(validatedData.petId) as number,
-      type: validatedData.type,
-    });
+    await db
+      .update(vaccinationsTable)
+      .set({
+        name: validatedData.name,
+        manufacturer: validatedData.manufacturer,
+        lotNumber: validatedData.lotNumber,
+        expiryDate: formatDate(validatedData.expiryDate),
+        administeredOn: formatDate(validatedData.administeredOn),
+        administeredBy: validatedData.administeredBy,
+        validFrom: validatedData.validFrom
+          ? formatDate(validatedData.validFrom)
+          : null,
+        validUntil: formatDate(validatedData.validUntil),
+        petId: validatedData.petId,
+        type: validatedData.type,
+      })
+      .where(eq(vaccinationsTable.id, validatedData.id));
 
     revalidatePath(`/pets/${validatedData.petId}`);
 

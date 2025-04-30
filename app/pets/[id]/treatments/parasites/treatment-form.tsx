@@ -12,6 +12,7 @@ import {
   FormMessage,
 } from '@passport/components/ui/form';
 import { Input } from '@passport/components/ui/input';
+import { VETERINARIAN_ID_1 } from '@passport/treatments/constants';
 import { add } from 'date-fns';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -37,7 +38,7 @@ export default function TreatmentForm({
 
   const defaultValues = initialData || {
     petId,
-    administeredBy: 1,
+    administeredBy: VETERINARIAN_ID_1,
     name: '',
     manufacturer: '',
     administeredOn: today,

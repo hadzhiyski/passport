@@ -1,7 +1,6 @@
 import { Badge } from '@passport/components/ui/badge';
 import { Button } from '@passport/components/ui/button';
 import { db } from '@passport/database';
-import { petsTable } from '@passport/database/schema/pets';
 import { vaccinationsTable } from '@passport/database/schema/vaccinations';
 import { veterinariansTable } from '@passport/database/schema/veterinarians';
 import { format } from 'date-fns';
@@ -24,8 +23,9 @@ export async function VaccinationsSection({
   const PAGE_SIZE = 3;
   const count = await db.$count(
     vaccinationsTable,
-    eq(vaccinationsTable.petId, petsTable.id.mapToDriverValue(petId) as number),
+    eq(vaccinationsTable.petId, petId),
   );
+
   if (count === 0) {
     return (
       <div className='flex flex-col items-center text-center p-6'>
@@ -67,12 +67,7 @@ export async function VaccinationsSection({
       veterinariansTable,
       eq(vaccinationsTable.administeredBy, veterinariansTable.id),
     )
-    .where(
-      eq(
-        vaccinationsTable.petId,
-        petsTable.id.mapToDriverValue(petId) as number,
-      ),
-    )
+    .where(eq(vaccinationsTable.petId, petId))
     .orderBy(desc(vaccinationsTable.validUntil), desc(vaccinationsTable.id))
     .offset((page - 1) * PAGE_SIZE)
     .limit(PAGE_SIZE);

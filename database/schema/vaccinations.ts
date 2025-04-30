@@ -1,18 +1,17 @@
+import { sql } from 'drizzle-orm';
 import {
   check,
   date,
   foreignKey,
-  integer,
   pgEnum,
   pgTable,
   primaryKey,
-  serial,
   varchar,
 } from 'drizzle-orm/pg-core';
 import { petsTable } from './pets';
 import { auditTimestamps } from './timestamps';
+import { integerSqid, serialSqid } from './types/sqid';
 import { veterinariansTable } from './veterinarians';
-import { sql } from 'drizzle-orm';
 
 export const vaccinationTypeEnum = pgEnum('vaccination_type', [
   'rabies',
@@ -22,16 +21,16 @@ export const vaccinationTypeEnum = pgEnum('vaccination_type', [
 export const vaccinationsTable = pgTable(
   'vaccinations',
   {
-    id: serial().notNull(),
+    id: serialSqid('vaccinations').notNull(),
     name: varchar({ length: 255 }).notNull(),
     manufacturer: varchar({ length: 255 }).notNull(),
     lotNumber: varchar({ length: 255 }).notNull(),
     expiryDate: date().notNull(),
     administeredOn: date().notNull(),
-    administeredBy: integer().notNull(),
+    administeredBy: integerSqid('veterinarians').notNull(),
     validFrom: date(),
     validUntil: date().notNull(),
-    petId: integer().notNull(),
+    petId: integerSqid('pets').notNull(),
     type: vaccinationTypeEnum().notNull(),
     ...auditTimestamps,
   },

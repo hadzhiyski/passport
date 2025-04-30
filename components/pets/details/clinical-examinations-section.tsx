@@ -1,6 +1,5 @@
 import { db } from '@passport/database';
 import { clinicalExaminationsTable } from '@passport/database/schema/clinical-examinations';
-import { petsTable } from '@passport/database/schema/pets';
 import { veterinariansTable } from '@passport/database/schema/veterinarians';
 import { format } from 'date-fns';
 import { eq } from 'drizzle-orm';
@@ -20,12 +19,7 @@ export async function ClinicalExaminationsSection({
       veterinariansTable,
       eq(clinicalExaminationsTable.veterinarianId, veterinariansTable.id),
     )
-    .where(
-      eq(
-        clinicalExaminationsTable.petId,
-        petsTable.id.mapToDriverValue(petId) as number,
-      ),
-    );
+    .where(eq(clinicalExaminationsTable.petId, petId));
 
   if (examinations.length === 0) {
     return (

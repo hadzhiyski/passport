@@ -1,14 +1,14 @@
 import {
   date,
   foreignKey,
-  integer,
   pgEnum,
   pgTable,
   primaryKey,
   varchar,
 } from 'drizzle-orm/pg-core';
-import { auditTimestamps } from './timestamps';
 import { petsTable } from './pets';
+import { auditTimestamps } from './timestamps';
+import { integerSqid } from './types/sqid';
 
 export const petMarkingType = pgEnum('pet_marking_type', [
   'microchip',
@@ -18,7 +18,7 @@ export const petMarkingType = pgEnum('pet_marking_type', [
 export const petMarkingsTable = pgTable(
   'pet_markings',
   {
-    id: integer().notNull(),
+    id: integerSqid('pets').notNull(),
     code: varchar({ length: 255 }).notNull(),
     place: varchar({ length: 255 }).notNull(),
     type: petMarkingType().notNull().default('microchip'),

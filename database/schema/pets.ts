@@ -7,7 +7,7 @@ import {
   varchar,
 } from 'drizzle-orm/pg-core';
 import { auditTimestamps } from './timestamps';
-import { serialSqid } from './types/serial-sqid';
+import { serialSqid } from './types/sqid';
 
 export const petSpecies = pgEnum('pet_species', ['dog', 'cat']);
 export const petSex = pgEnum('pet_sex', ['male', 'female']);

@@ -13,10 +13,7 @@ const baseVaccinationsSchema = z.object({
     required_error: 'Administration date is required',
     invalid_type_error: 'Administration date must be a valid date',
   }),
-  administeredBy: z
-    .number()
-    .int()
-    .positive('Administrator ID must be a positive integer'),
+  administeredBy: z.string().trim().min(1, 'Administrator ID cannot be empty'),
   validFrom: z.coerce
     .date({
       invalid_type_error: 'Valid from date must be a valid date',
@@ -52,7 +49,7 @@ export const vaccinationsInsertSchema = baseVaccinationsSchema.refine(
 // Extend the insert schema and add the ID field
 export const vaccinationsUpdateSchema = baseVaccinationsSchema
   .extend({
-    id: z.number().int().positive('Vaccination ID must be a positive integer'),
+    id: z.string().trim().min(1, 'Vaccination ID cannot be empty'),
   })
   .refine(rabiesVaccinationValidFromCheck);
 

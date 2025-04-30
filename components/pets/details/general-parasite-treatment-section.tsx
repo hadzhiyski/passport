@@ -2,7 +2,6 @@ import { Badge } from '@passport/components/ui/badge';
 import { Button } from '@passport/components/ui/button';
 import { db } from '@passport/database';
 import { antiParasiteTreatmentsTable } from '@passport/database/schema/anti-parasite-treatments';
-import { petsTable } from '@passport/database/schema/pets';
 import { veterinariansTable } from '@passport/database/schema/veterinarians';
 import { format } from 'date-fns';
 import { desc, eq } from 'drizzle-orm';
@@ -19,10 +18,7 @@ export async function GeneralParasiteTreatmentSection({
   const PAGE_SIZE = 3;
   const count = await db.$count(
     antiParasiteTreatmentsTable,
-    eq(
-      antiParasiteTreatmentsTable.petId,
-      petsTable.id.mapToDriverValue(petId) as number,
-    ),
+    eq(antiParasiteTreatmentsTable.petId, petId),
   );
   if (count === 0) {
     return (
@@ -59,12 +55,7 @@ export async function GeneralParasiteTreatmentSection({
       veterinariansTable,
       eq(antiParasiteTreatmentsTable.administeredBy, veterinariansTable.id),
     )
-    .where(
-      eq(
-        antiParasiteTreatmentsTable.petId,
-        petsTable.id.mapToDriverValue(petId) as number,
-      ),
-    )
+    .where(eq(antiParasiteTreatmentsTable.petId, petId))
     .orderBy(desc(antiParasiteTreatmentsTable.administeredOn))
     .offset((page - 1) * PAGE_SIZE)
     .limit(PAGE_SIZE);

@@ -1,22 +1,16 @@
-import {
-  date,
-  foreignKey,
-  integer,
-  pgTable,
-  primaryKey,
-  serial,
-} from 'drizzle-orm/pg-core';
+import { date, foreignKey, pgTable, primaryKey } from 'drizzle-orm/pg-core';
 import { petsTable } from './pets';
 import { auditTimestamps } from './timestamps';
+import { integerSqid, serialSqid } from './types/sqid';
 import { veterinariansTable } from './veterinarians';
 
 export const clinicalExaminationsTable = pgTable(
   'clinical_examinations',
   {
-    id: serial().notNull(),
+    id: serialSqid('clinical_examinations').notNull(),
     date: date().notNull(),
-    veterinarianId: integer().notNull(),
-    petId: integer().notNull(),
+    veterinarianId: integerSqid('veterinarians').notNull(),
+    petId: integerSqid('pets').notNull(),
     ...auditTimestamps,
   },
   (table) => [

@@ -6,7 +6,7 @@ import {
   varchar,
 } from 'drizzle-orm/pg-core';
 import { auditTimestamps } from './timestamps';
-import { serialSqid } from './types/serial-sqid';
+import { serialSqid } from './types/sqid';
 
 export const ownersTable = pgTable(
   'owners',

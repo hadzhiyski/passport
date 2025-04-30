@@ -1,14 +1,16 @@
 'use server';
 
+import {
+  TreatmentData,
+  treatmentInsertSchema,
+} from '@passport/treatments/anti-echinococcus/schema';
 import { db } from '@passport/database';
 import { antiEchinococcusTreatmentsTable } from '@passport/database/schema/anti-echinococcus-treatments';
-import { petsTable } from '@passport/database/schema/pets';
 import { handleZodError } from '@passport/lib/actions/error-handlers';
 import { ActionResponse } from '@passport/lib/actions/types';
 import { formatDate } from '@passport/lib/actions/utils/date';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
-import { TreatmentData, treatmentInsertSchema } from './schema';
 
 export async function addTreatment(
   data: z.infer<typeof treatmentInsertSchema>,
@@ -29,7 +31,7 @@ export async function addTreatment(
       administeredOn: formatDate(validatedData.administeredOn),
       administeredBy: validatedData.administeredBy,
       validUntil: formatDate(validatedData.validUntil),
-      petId: petsTable.id.mapToDriverValue(validatedData.petId) as number,
+      petId: validatedData.petId,
     });
 
     revalidatePath(`/pets/${validatedData.petId}`);
@@ -65,7 +67,7 @@ export async function editTreatment(
       administeredOn: formatDate(validatedData.administeredOn),
       administeredBy: validatedData.administeredBy,
       validUntil: formatDate(validatedData.validUntil),
-      petId: petsTable.id.mapToDriverValue(validatedData.petId) as number,
+      petId: validatedData.petId,
     });
 
     revalidatePath(`/pets/${validatedData.petId}`);

@@ -1,6 +1,10 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
+import {
+  addTreatment,
+  editTreatment,
+} from '@passport/app/pets/[id]/treatments/echinococcus/actions';
 import DatePicker from '@passport/components/date-picker';
 import { Button } from '@passport/components/ui/button';
 import {
@@ -12,18 +16,21 @@ import {
   FormMessage,
 } from '@passport/components/ui/form';
 import { Input } from '@passport/components/ui/input';
+import {
+  treatmentInsertSchema,
+  treatmentUpdateSchema,
+} from '@passport/treatments/anti-echinococcus/schema';
+import { VETERINARIAN_ID_1 } from '@passport/treatments/constants';
 import { add } from 'date-fns';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { ControllerRenderProps, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
-import { addTreatment, editTreatment } from './actions';
-import { treatmentInsertSchema } from './schema';
 
 interface TreatmentFormProps {
   petId: string;
-  initialData?: z.infer<typeof treatmentInsertSchema>;
+  initialData?: z.infer<typeof treatmentUpdateSchema>;
 }
 
 export default function TreatmentForm({
@@ -37,19 +44,21 @@ export default function TreatmentForm({
 
   const defaultValues = initialData || {
     petId,
-    administeredBy: 1,
+    administeredBy: VETERINARIAN_ID_1,
     name: '',
-    manufacturer: '',
+    manufacturer: null,
     administeredOn: today,
     validUntil: add(today, { months: 3 }),
   };
 
-  const form = useForm<z.infer<typeof treatmentInsertSchema>>({
-    resolver: zodResolver(treatmentInsertSchema),
+  const formSchema = isEditMode ? treatmentUpdateSchema : treatmentInsertSchema;
+
+  const form = useForm({
+    resolver: zodResolver(formSchema),
     defaultValues,
   });
 
-  async function onSubmit(data: z.infer<typeof treatmentInsertSchema>) {
+  async function onSubmit(data: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
     try {
       const result = isEditMode
@@ -70,17 +79,16 @@ export default function TreatmentForm({
         } else if ('errors' in result) {
           toast.error('Please correct the errors below');
 
-          Object.entries(result.errors).forEach(([key, value]) => {
-            const fieldName = key as keyof z.infer<
-              typeof treatmentInsertSchema
-            >;
-            if (fieldName in form.getValues()) {
-              form.setError(fieldName, {
+          const fields = Object.keys(form.getValues());
+          for (const [key, value] of Object.entries(result.errors)) {
+            const fieldName = key as string;
+            if (fields.includes(fieldName)) {
+              form.setError(fieldName as keyof typeof data, {
                 type: 'server',
                 message: value.join(', '),
               });
             }
-          });
+          }
         } else {
           toast.error(`Failed to ${isEditMode ? 'update' : 'add'} treatment`);
         }
