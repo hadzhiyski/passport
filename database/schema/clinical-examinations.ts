@@ -8,7 +8,7 @@ export const clinicalExaminationsTable = pgTable(
   'clinical_examinations',
   {
     id: serialSqid('clinical_examinations').notNull(),
-    date: date().notNull(),
+    date: date({ mode: 'date' }).notNull(),
     veterinarianId: integerSqid('veterinarians').notNull(),
     petId: integerSqid('pets').notNull(),
     ...auditTimestamps,

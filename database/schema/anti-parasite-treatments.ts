@@ -16,10 +16,10 @@ export const antiParasiteTreatmentsTable = pgTable(
     id: serialSqid('anti_parasite_treatments').notNull(),
     name: varchar({ length: 255 }).notNull(),
     manufacturer: varchar({ length: 255 }),
-    administeredOn: date().notNull(),
+    administeredOn: date({ mode: 'date' }).notNull(),
     administeredBy: integerSqid('veterinarians'),
     petId: integerSqid('pets').notNull(),
-    validUntil: date(),
+    validUntil: date({ mode: 'date' }).notNull(),
     ...auditTimestamps,
   },
   (table) => [

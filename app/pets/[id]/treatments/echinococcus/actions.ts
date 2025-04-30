@@ -1,14 +1,13 @@
 'use server';
 
-import {
-  TreatmentData,
-  treatmentInsertSchema,
-} from '@passport/treatments/anti-echinococcus/schema';
 import { db } from '@passport/database';
 import { antiEchinococcusTreatmentsTable } from '@passport/database/schema/anti-echinococcus-treatments';
 import { handleZodError } from '@passport/lib/actions/error-handlers';
 import { ActionResponse } from '@passport/lib/actions/types';
-import { formatDate } from '@passport/lib/actions/utils/date';
+import {
+  TreatmentData,
+  treatmentInsertSchema,
+} from '@passport/treatments/anti-echinococcus/schema';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 
@@ -28,9 +27,9 @@ export async function addTreatment(
     await db.insert(antiEchinococcusTreatmentsTable).values({
       name: validatedData.name,
       manufacturer: validatedData.manufacturer,
-      administeredOn: formatDate(validatedData.administeredOn),
+      administeredOn: validatedData.administeredOn,
       administeredBy: validatedData.administeredBy,
-      validUntil: formatDate(validatedData.validUntil),
+      validUntil: validatedData.validUntil,
       petId: validatedData.petId,
     });
 
@@ -64,9 +63,9 @@ export async function editTreatment(
     await db.update(antiEchinococcusTreatmentsTable).set({
       name: validatedData.name,
       manufacturer: validatedData.manufacturer,
-      administeredOn: formatDate(validatedData.administeredOn),
+      administeredOn: validatedData.administeredOn,
       administeredBy: validatedData.administeredBy,
-      validUntil: formatDate(validatedData.validUntil),
+      validUntil: validatedData.validUntil,
       petId: validatedData.petId,
     });
 

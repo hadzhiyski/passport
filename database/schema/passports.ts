@@ -18,7 +18,7 @@ export const passportsTable = pgTable(
   {
     id: serialSqid('passports').notNull(),
     serialNumber: varchar({ length: 255 }).notNull(),
-    issueDate: date().notNull(),
+    issueDate: date({ mode: 'date' }).notNull(),
     issuedBy: integerSqid('veterinarians').notNull(),
     petId: integerSqid('pets').notNull(),
     owner1Id: integerSqid('owners').notNull(),

@@ -2,7 +2,6 @@
 
 import { db } from '@passport/database';
 import { antiEchinococcusTreatmentsTable } from '@passport/database/schema/anti-echinococcus-treatments';
-import { formatDate } from '@passport/lib/actions/utils/date';
 import { treatmentUpdateSchema } from '@passport/treatments/anti-echinococcus/schema';
 import { eq } from 'drizzle-orm';
 import { z } from 'zod';
@@ -23,9 +22,9 @@ export async function updateEchinococcusTreatment(
       .set({
         name: validatedData.name,
         manufacturer: validatedData.manufacturer,
-        administeredOn: formatDate(validatedData.administeredOn),
+        administeredOn: validatedData.administeredOn,
         administeredBy: validatedData.administeredBy,
-        validUntil: formatDate(validatedData.validUntil),
+        validUntil: validatedData.validUntil,
         updatedAt: new Date(),
       })
       .where(eq(antiEchinococcusTreatmentsTable.id, treatmentId));

@@ -4,7 +4,6 @@ import { db } from '@passport/database';
 import { vaccinationsTable } from '@passport/database/schema/vaccinations';
 import { handleZodError } from '@passport/lib/actions/error-handlers';
 import { ActionResponse } from '@passport/lib/actions/types';
-import { formatDate } from '@passport/lib/actions/utils/date';
 import { eq } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 import {
@@ -30,13 +29,11 @@ export async function addVaccination(
       name: validatedData.name,
       manufacturer: validatedData.manufacturer,
       lotNumber: validatedData.lotNumber,
-      expiryDate: formatDate(validatedData.expiryDate),
-      administeredOn: formatDate(validatedData.administeredOn),
+      expiryDate: validatedData.expiryDate,
+      administeredOn: validatedData.administeredOn,
       administeredBy: validatedData.administeredBy,
-      validFrom: validatedData.validFrom
-        ? formatDate(validatedData.validFrom)
-        : null,
-      validUntil: formatDate(validatedData.validUntil),
+      validFrom: validatedData.validFrom ? validatedData.validFrom : null,
+      validUntil: validatedData.validUntil,
       petId: validatedData.petId,
       type: validatedData.type,
     });
@@ -74,13 +71,11 @@ export async function editVaccination(
         name: validatedData.name,
         manufacturer: validatedData.manufacturer,
         lotNumber: validatedData.lotNumber,
-        expiryDate: formatDate(validatedData.expiryDate),
-        administeredOn: formatDate(validatedData.administeredOn),
+        expiryDate: validatedData.expiryDate,
+        administeredOn: validatedData.administeredOn,
         administeredBy: validatedData.administeredBy,
-        validFrom: validatedData.validFrom
-          ? formatDate(validatedData.validFrom)
-          : null,
-        validUntil: formatDate(validatedData.validUntil),
+        validFrom: validatedData.validFrom ? validatedData.validFrom : null,
+        validUntil: validatedData.validUntil,
         petId: validatedData.petId,
         type: validatedData.type,
       })

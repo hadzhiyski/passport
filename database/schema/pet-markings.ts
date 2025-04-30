@@ -22,7 +22,7 @@ export const petMarkingsTable = pgTable(
     code: varchar({ length: 255 }).notNull(),
     place: varchar({ length: 255 }).notNull(),
     type: petMarkingType().notNull().default('microchip'),
-    applicationDate: date().notNull(),
+    applicationDate: date({ mode: 'date' }).notNull(),
     ...auditTimestamps,
   },
   (table) => [

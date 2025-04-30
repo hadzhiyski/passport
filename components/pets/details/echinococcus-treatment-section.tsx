@@ -1,26 +1,33 @@
 import { Badge } from '@passport/components/ui/badge';
 import { Button } from '@passport/components/ui/button';
-import { db } from '@passport/database';
-import { antiEchinococcusTreatmentsTable } from '@passport/database/schema/anti-echinococcus-treatments';
-import { veterinariansTable } from '@passport/database/schema/veterinarians';
 import { format } from 'date-fns';
-import { desc, eq } from 'drizzle-orm';
 import { ZapIcon } from 'lucide-react';
 import { PetSectionPagination } from './pagination';
 
+export type EchinococcusTreatmentProps = {
+  id: string;
+  name: string;
+  manufacturer: string | null;
+  administeredOn: Date;
+  administeredBy: string | null;
+  validUntil: Date | null;
+};
+
+export interface EchinococcusTreatmentSectionProps {
+  query: Promise<{ total: number; treatments: EchinococcusTreatmentProps[] }>;
+  currentPage?: number;
+  pageSize?: number;
+}
+
 export async function EchinococcusTreatmentSection({
-  petId,
-  page = 1,
-}: {
-  petId: string;
-  page?: number;
-}) {
-  const PAGE_SIZE = 3;
-  const count = await db.$count(
-    antiEchinococcusTreatmentsTable,
-    eq(antiEchinococcusTreatmentsTable.petId, petId),
-  );
-  if (count === 0) {
+  query,
+  currentPage = 1,
+  pageSize = 3,
+}: EchinococcusTreatmentSectionProps) {
+  const { total, treatments } = await query;
+  const totalPages = Math.ceil(total / pageSize);
+
+  if (total === 0) {
     return (
       <div className='flex flex-col items-center text-center p-6'>
         <div className='bg-orange-100 text-orange-600 p-3 rounded-full mb-3'>
@@ -39,26 +46,6 @@ export async function EchinococcusTreatmentSection({
       </div>
     );
   }
-
-  const totalPages = Math.ceil(count / PAGE_SIZE);
-  const treatments = await db
-    .select({
-      id: antiEchinococcusTreatmentsTable.id,
-      name: antiEchinococcusTreatmentsTable.name,
-      manufacturer: antiEchinococcusTreatmentsTable.manufacturer,
-      administeredOn: antiEchinococcusTreatmentsTable.administeredOn,
-      administeredBy: veterinariansTable.name,
-      validUntil: antiEchinococcusTreatmentsTable.validUntil,
-    })
-    .from(antiEchinococcusTreatmentsTable)
-    .leftJoin(
-      veterinariansTable,
-      eq(antiEchinococcusTreatmentsTable.administeredBy, veterinariansTable.id),
-    )
-    .where(eq(antiEchinococcusTreatmentsTable.petId, petId))
-    .orderBy(desc(antiEchinococcusTreatmentsTable.administeredOn))
-    .offset((page - 1) * PAGE_SIZE)
-    .limit(PAGE_SIZE);
 
   return (
     <div className='space-y-4'>
@@ -113,7 +100,7 @@ export async function EchinococcusTreatmentSection({
       ))}
 
       <PetSectionPagination
-        currentPage={page}
+        currentPage={currentPage}
         totalPages={totalPages}
         paramName='echp'
         anchorId='echinococcus'

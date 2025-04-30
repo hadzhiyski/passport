@@ -1,25 +1,19 @@
-import { db } from '@passport/database';
-import { clinicalExaminationsTable } from '@passport/database/schema/clinical-examinations';
-import { veterinariansTable } from '@passport/database/schema/veterinarians';
 import { format } from 'date-fns';
-import { eq } from 'drizzle-orm';
+
+export type ClinicalExaminationProps = {
+  id: string;
+  date: Date;
+  veterinarian: string;
+};
+
+export interface ClinicalExaminationsSectionProps {
+  query: Promise<ClinicalExaminationProps[]>;
+}
 
 export async function ClinicalExaminationsSection({
-  petId,
-}: {
-  petId: string;
-}) {
-  const examinations = await db
-    .select({
-      date: clinicalExaminationsTable.date,
-      veterinarian: veterinariansTable.name,
-    })
-    .from(clinicalExaminationsTable)
-    .innerJoin(
-      veterinariansTable,
-      eq(clinicalExaminationsTable.veterinarianId, veterinariansTable.id),
-    )
-    .where(eq(clinicalExaminationsTable.petId, petId));
+  query,
+}: ClinicalExaminationsSectionProps) {
+  const examinations = await query;
 
   if (examinations.length === 0) {
     return (
@@ -44,7 +38,7 @@ export async function ClinicalExaminationsSection({
             <div>
               <span className='text-slate-500 text-sm block'>Date</span>
               <span className='font-medium'>
-                {format(new Date(exam.date), 'MMM d, yyyy')}
+                {format(exam.date, 'MMM d, yyyy')}
               </span>
             </div>
             <div>

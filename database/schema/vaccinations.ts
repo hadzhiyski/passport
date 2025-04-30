@@ -1,4 +1,4 @@
-import { sql } from 'drizzle-orm';
+import { relations, sql } from 'drizzle-orm';
 import {
   check,
   date,
@@ -25,11 +25,11 @@ export const vaccinationsTable = pgTable(
     name: varchar({ length: 255 }).notNull(),
     manufacturer: varchar({ length: 255 }).notNull(),
     lotNumber: varchar({ length: 255 }).notNull(),
-    expiryDate: date().notNull(),
-    administeredOn: date().notNull(),
+    expiryDate: date({ mode: 'date' }).notNull(),
+    administeredOn: date({ mode: 'date' }).notNull(),
     administeredBy: integerSqid('veterinarians').notNull(),
-    validFrom: date(),
-    validUntil: date().notNull(),
+    validFrom: date({ mode: 'date' }),
+    validUntil: date({ mode: 'date' }).notNull(),
     petId: integerSqid('pets').notNull(),
     type: vaccinationTypeEnum().notNull(),
     ...auditTimestamps,

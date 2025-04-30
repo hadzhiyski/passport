@@ -4,7 +4,6 @@ import { db } from '@passport/database';
 import { antiParasiteTreatmentsTable } from '@passport/database/schema/anti-parasite-treatments';
 import { handleZodError } from '@passport/lib/actions/error-handlers';
 import { ActionResponse } from '@passport/lib/actions/types';
-import { formatDate } from '@passport/lib/actions/utils/date';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { TreatmentData, treatmentInsertSchema } from './schema';
@@ -25,11 +24,9 @@ export async function addTreatment(
     await db.insert(antiParasiteTreatmentsTable).values({
       name: validatedData.name,
       manufacturer: validatedData.manufacturer,
-      administeredOn: formatDate(validatedData.administeredOn),
+      administeredOn: validatedData.administeredOn,
       administeredBy: validatedData.administeredBy,
-      validUntil: validatedData.validUntil
-        ? formatDate(validatedData.validUntil)
-        : null,
+      validUntil: validatedData.validUntil,
       petId: validatedData.petId,
     });
 
@@ -63,11 +60,9 @@ export async function editTreatment(
     await db.update(antiParasiteTreatmentsTable).set({
       name: validatedData.name,
       manufacturer: validatedData.manufacturer,
-      administeredOn: formatDate(validatedData.administeredOn),
+      administeredOn: validatedData.administeredOn,
       administeredBy: validatedData.administeredBy,
-      validUntil: validatedData.validUntil
-        ? formatDate(validatedData.validUntil)
-        : null,
+      validUntil: validatedData.validUntil,
       petId: validatedData.petId,
     });
 
