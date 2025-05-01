@@ -16,7 +16,9 @@ export default async function PetIndexPage() {
   if (!user) {
     return (
       <div className='container py-16 flex flex-col items-center'>
-        <h1 className='text-2xl font-bold'>Please log in to view your pets.</h1>
+        <h1 className='text-2xl font-bold text-foreground'>
+          Please log in to view your pets.
+        </h1>
       </div>
     );
   }
@@ -52,7 +54,7 @@ export default async function PetIndexPage() {
   return (
     <div className='container max-w-4xl mx-auto px-4 py-8'>
       <div className='flex justify-between items-center mb-6'>
-        <h1 className='text-2xl font-bold text-slate-800'>My Pets</h1>
+        <h1 className='text-2xl font-bold text-foreground'>My Pets</h1>
         <Button asChild>
           <Link href='/pets/add'>
             <PlusCircleIcon className='h-5 w-5 mr-2' />
@@ -62,14 +64,14 @@ export default async function PetIndexPage() {
       </div>
 
       {pets.length === 0 ? (
-        <div className='rounded-xl border border-slate-200 p-8 text-center'>
-          <div className='bg-blue-100 text-blue-600 p-3 rounded-full w-fit mx-auto mb-4'>
+        <div className='rounded-xl border border-border p-8 text-center'>
+          <div className='bg-primary/10 text-primary p-3 rounded-full w-fit mx-auto mb-4'>
             <PawPrintIcon className='h-6 w-6' />
           </div>
-          <h2 className='text-xl font-semibold text-slate-800 mb-2'>
+          <h2 className='text-xl font-semibold text-foreground mb-2'>
             No pets found
           </h2>
-          <p className='text-slate-600 mb-6'>
+          <p className='text-muted-foreground mb-6'>
             You haven&apos;t added any pets to your account yet.
           </p>
           <Button asChild>
@@ -87,29 +89,27 @@ export default async function PetIndexPage() {
               key={pet.id}
               className='transition-transform hover:scale-[1.02]'
             >
-              <Card className='h-full border-slate-200 overflow-hidden hover:shadow-md transition-shadow'>
+              <Card className='h-full border-border overflow-hidden hover:shadow-md transition-shadow'>
                 <CardContent>
-                  <div className='flex items-center gap-3'>
+                  <div className='flex items-center gap-4 pt-6'>
                     <Avatar className={`h-12 w-12 ${pet.avatar.color}`}>
-                      <AvatarFallback
-                        className={`text-white font-medium ${pet.avatar.color}`}
-                      >
+                      <AvatarFallback className='text-white font-medium'>
                         {pet.avatar.inititals}
                       </AvatarFallback>
                     </Avatar>
                     <div className='flex-1'>
                       <div className='flex items-center justify-between'>
-                        <h2 className='text-lg font-semibold text-slate-800'>
+                        <h2 className='text-lg font-semibold text-foreground'>
                           {pet.name}
                         </h2>
                         {pet.sex && (
                           <div
                             className={`rounded-full p-1.5 ${
                               pet.sex === 'male'
-                                ? 'bg-blue-100 text-blue-600'
+                                ? 'bg-primary/10 text-primary'
                                 : pet.sex === 'female'
-                                  ? 'bg-pink-100 text-pink-600'
-                                  : 'bg-gray-100 text-gray-600'
+                                  ? 'bg-primary/10 text-primary'
+                                  : 'bg-muted text-muted-foreground'
                             }`}
                           >
                             {pet.sex === 'male' ? (
@@ -120,7 +120,7 @@ export default async function PetIndexPage() {
                           </div>
                         )}
                       </div>
-                      <p className='text-slate-600 text-sm'>
+                      <p className='text-muted-foreground text-sm'>
                         {pet.breed || pet.species}
                       </p>
                     </div>

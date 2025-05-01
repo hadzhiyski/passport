@@ -55,7 +55,7 @@ export default async function PetDetailsLayout(page: {
       <div className='flex justify-between items-center mb-6'>
         <Link
           href='/pets'
-          className='text-slate-600 hover:text-slate-900 flex items-center gap-1 transition-colors'
+          className='text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors'
         >
           <ArrowLeftIcon className='h-4 w-4' />
           <span>Back to pets</span>
@@ -67,7 +67,7 @@ export default async function PetDetailsLayout(page: {
         </Button>
       </div>
 
-      <Card className='overflow-hidden shadow-lg border-0 rounded-xl'>
+      <Card className='overflow-hidden shadow-lg border-border rounded-xl'>
         <CardHeader className='p-0'>
           <PetHero pet={pet} />
         </CardHeader>
@@ -76,25 +76,25 @@ export default async function PetDetailsLayout(page: {
 
           <Collapsible
             defaultOpen={Boolean(pet.notes)}
-            className='bg-white rounded-xl p-6 border border-slate-200'
+            className='rounded-xl p-6 border border-border'
           >
             <CollapsibleTrigger className='w-full'>
               <div className='flex items-center justify-between'>
                 <div className='flex items-center gap-2 mb-3'>
-                  <div className='bg-purple-100 text-purple-600 p-2 rounded-full'>
+                  <div className='text-primary p-2 rounded-full'>
                     <ClipboardIcon className='h-5 w-5' />
                   </div>
-                  <h3 className='font-medium text-slate-800'>Notes</h3>
+                  <h3 className='font-medium text-foreground'>Notes</h3>
                 </div>
-                <div className='text-slate-400'>
+                <div>
                   <ChevronDownIcon className='h-5 w-5 transition-transform duration-200 collapsible-icon' />
                 </div>
               </div>
             </CollapsibleTrigger>
             <CollapsibleContent>
               <Separator className='mb-4' />
-              <div className='prose prose-slate max-w-none'>
-                <p className='text-slate-700 leading-relaxed whitespace-pre-line'>
+              <div className='prose prose-slate max-w-none dark:prose-invert'>
+                <p className='leading-relaxed whitespace-pre-line text-foreground'>
                   {pet.notes || 'No notes available.'}
                 </p>
               </div>
@@ -102,15 +102,15 @@ export default async function PetDetailsLayout(page: {
           </Collapsible>
           {page.children}
         </CardContent>
-        <CardFooter className='px-8 py-4 text-sm text-slate-500 border-t border-slate-100'>
+        <CardFooter className='px-8 py-4 text-sm border-t border-border'>
           <div className='flex flex-col sm:flex-row sm:justify-between w-full gap-2'>
-            <span>
+            <span className='text-muted-foreground'>
               Last updated:{' '}
               {pet.updatedAt
                 ? format(new Date(pet.updatedAt), 'MMMM d, yyyy')
                 : 'Unknown'}
             </span>
-            <span className='text-slate-400'>Pet ID: {id}</span>
+            <span className='text-muted-foreground'>Pet ID: {id}</span>
           </div>
         </CardFooter>
       </Card>

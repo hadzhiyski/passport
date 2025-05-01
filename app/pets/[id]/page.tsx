@@ -62,7 +62,7 @@ export default async function PetDetailsPage(page: {
     <>
       <div
         id='passport'
-        className='bg-white rounded-xl border border-slate-200 scroll-mt-20'
+        className='rounded-xl border border-slate-200 scroll-mt-20'
       >
         <div className='flex items-center justify-between p-6 border-b border-slate-100'>
           <div className='flex items-center gap-2'>

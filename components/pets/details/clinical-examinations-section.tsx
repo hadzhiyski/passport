@@ -1,3 +1,4 @@
+import { Button } from '@passport/components/ui/button';
 import { format } from 'date-fns';
 import { StethoscopeIcon } from 'lucide-react';
 import { PetSectionPagination } from './pagination';
@@ -28,14 +29,16 @@ export async function ClinicalExaminationsSection({
   return (
     <div
       id='examinations'
-      className='bg-white rounded-xl border border-slate-200 scroll-mt-20'
+      className='rounded-xl border border-border bg-card scroll-mt-20'
     >
-      <div className='flex items-center justify-between p-6 border-b border-slate-100'>
+      <div className='flex items-center justify-between p-6 border-b border-border'>
         <div className='flex items-center gap-2'>
-          <div className='bg-orange-100 text-orange-600 p-2 rounded-full'>
+          <div className='bg-primary/10 text-primary p-2 rounded-full'>
             <StethoscopeIcon className='h-5 w-5' />
           </div>
-          <h3 className='font-medium text-slate-800'>Clinical Examinations</h3>
+          <h3 className='font-medium text-card-foreground'>
+            Clinical Examinations
+          </h3>
         </div>
         {totalPages > 1 ? (
           <ViewAll anchor='examinations' value={currentPage} param='x' />
@@ -43,8 +46,23 @@ export async function ClinicalExaminationsSection({
       </div>
       <div className='p-3'>
         {total === 0 ? (
-          <div className='text-center py-12 text-slate-500'>
-            No clinical examinations recorded.
+          <div className='flex flex-col items-center text-center p-6'>
+            <div className='bg-primary/10 text-primary p-3 rounded-full mb-3'>
+              <StethoscopeIcon className='h-6 w-6' />
+            </div>
+            <h3 className='font-medium text-card-foreground mb-2'>
+              No Clinical Examinations
+            </h3>
+            <p className='text-muted-foreground mb-4'>
+              Add your pet&apos;s clinical examinations to track their health
+              history.
+            </p>
+            <Button
+              variant='outline'
+              className='text-primary border-primary/20'
+            >
+              Add Examination
+            </Button>
           </div>
         ) : null}
         {total > 0 ? (
@@ -52,24 +70,28 @@ export async function ClinicalExaminationsSection({
             {examinations.map((exam, index) => (
               <div
                 key={index}
-                className='border border-slate-100 rounded-lg p-4 shadow-sm'
+                className='rounded-lg p-4 border border-border bg-card/50'
               >
                 <div className='grid grid-cols-1 md:grid-cols-4 gap-4'>
-                  <div className='text-slate-700 bg-slate-50 p-3 rounded italic text-sm md:col-span-2'>
+                  <div className='text-card-foreground bg-muted/50 p-3 rounded italic text-sm md:col-span-2'>
                     The animal shows no signs of diseases and is fit to be
                     transported for the intended journey.
                   </div>
                   <div>
-                    <span className='text-slate-500 text-sm block'>Date</span>
-                    <span className='font-medium'>
+                    <span className='text-muted-foreground text-sm block'>
+                      Date
+                    </span>
+                    <span className='font-medium text-card-foreground'>
                       {format(exam.date, 'MMM d, yyyy')}
                     </span>
                   </div>
                   <div>
-                    <span className='text-slate-500 text-sm block'>
+                    <span className='text-muted-foreground text-sm block'>
                       Veterinarian
                     </span>
-                    <span className='font-medium'>{exam.veterinarian}</span>
+                    <span className='font-medium text-card-foreground'>
+                      {exam.veterinarian}
+                    </span>
                   </div>
                 </div>
               </div>
