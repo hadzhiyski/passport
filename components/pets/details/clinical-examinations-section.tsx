@@ -1,6 +1,7 @@
 import { Button } from '@passport/components/ui/button';
 import { format } from 'date-fns';
-import { StethoscopeIcon } from 'lucide-react';
+import { PlusIcon, StethoscopeIcon } from 'lucide-react';
+import Link from 'next/link';
 import { PetSectionPagination } from './pagination';
 import { ViewAll } from './view-all';
 
@@ -15,6 +16,7 @@ export interface ClinicalExaminationsSectionProps {
   currentPage?: number | 'all';
   pageSize?: number;
   paginationSearchParam?: string;
+  petId: string;
 }
 
 export async function ClinicalExaminationsSection({
@@ -22,6 +24,7 @@ export async function ClinicalExaminationsSection({
   currentPage = 1,
   pageSize = 3,
   paginationSearchParam = 'x',
+  petId,
 }: ClinicalExaminationsSectionProps) {
   const { total, examinations } = await query;
   const totalPages = Math.ceil(total / pageSize);
@@ -40,9 +43,23 @@ export async function ClinicalExaminationsSection({
             Clinical Examinations
           </h3>
         </div>
-        {totalPages > 1 ? (
-          <ViewAll anchor='examinations' value={currentPage} param='x' />
-        ) : null}
+        <div className='flex items-center gap-2'>
+          {total > 0 && (
+            <Button
+              variant='ghost'
+              asChild
+              aria-label='Add clinical examination'
+              title='Add clinical examination'
+            >
+              <Link href={`/pets/${petId}/clinical-examinations/add`}>
+                <PlusIcon className='h-4 w-4' />
+              </Link>
+            </Button>
+          )}
+          {totalPages > 1 ? (
+            <ViewAll anchor='examinations' value={currentPage} param='x' />
+          ) : null}
+        </div>
       </div>
       <div className='p-3'>
         {total === 0 ? (
@@ -60,8 +77,11 @@ export async function ClinicalExaminationsSection({
             <Button
               variant='outline'
               className='text-primary border-primary/20'
+              asChild
             >
-              Add Examination
+              <Link href={`/pets/${petId}/clinical-examinations/add`}>
+                Add Examination
+              </Link>
             </Button>
           </div>
         ) : null}

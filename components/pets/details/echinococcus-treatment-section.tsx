@@ -1,6 +1,7 @@
 import { Button } from '@passport/components/ui/button';
 import { format } from 'date-fns';
-import { ZapIcon } from 'lucide-react';
+import { PlusIcon, ZapIcon } from 'lucide-react';
+import Link from 'next/link';
 import { PetSectionPagination } from './pagination';
 import { ViewAll } from './view-all';
 
@@ -18,6 +19,7 @@ export interface EchinococcusTreatmentSectionProps {
   currentPage?: number | 'all';
   pageSize?: number;
   paginationSearchParam?: string;
+  petId: string;
 }
 
 export async function EchinococcusTreatmentSection({
@@ -25,6 +27,7 @@ export async function EchinococcusTreatmentSection({
   currentPage = 1,
   pageSize = 3,
   paginationSearchParam = 'e',
+  petId,
 }: EchinococcusTreatmentSectionProps) {
   const { total, treatments } = await query;
   const totalPages = Math.ceil(total / pageSize);
@@ -43,9 +46,23 @@ export async function EchinococcusTreatmentSection({
             Anti-Echinococcus Treatments
           </h3>
         </div>
-        {totalPages > 1 ? (
-          <ViewAll anchor='anti-echinococcus' value={currentPage} param='e' />
-        ) : null}
+        <div className='flex items-center gap-2'>
+          {total > 0 && (
+            <Button
+              variant='ghost'
+              asChild
+              aria-label='Add echinococcus treatment'
+              title='Add echinococcus treatment'
+            >
+              <Link href={`/pets/${petId}/treatments/echinococcus/add`}>
+                <PlusIcon className='h-4 w-4' />
+              </Link>
+            </Button>
+          )}
+          {totalPages > 1 ? (
+            <ViewAll anchor='anti-echinococcus' value={currentPage} param='e' />
+          ) : null}
+        </div>
       </div>
       <div className='p-3'>
         {total === 0 ? (
@@ -63,8 +80,11 @@ export async function EchinococcusTreatmentSection({
             <Button
               variant='outline'
               className='text-primary border-primary/20'
+              asChild
             >
-              Add Treatment
+              <Link href={`/pets/${petId}/treatments/echinococcus/add`}>
+                Add Treatment
+              </Link>
             </Button>
           </div>
         ) : null}

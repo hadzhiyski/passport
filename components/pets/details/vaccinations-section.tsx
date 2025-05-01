@@ -1,7 +1,8 @@
 import { Badge } from '@passport/components/ui/badge';
 import { Button } from '@passport/components/ui/button';
 import { format } from 'date-fns';
-import { ShieldIcon } from 'lucide-react';
+import { PlusIcon, ShieldIcon } from 'lucide-react';
+import Link from 'next/link';
 import { PetSectionPagination } from './pagination';
 import { ViewAll } from './view-all';
 
@@ -30,6 +31,7 @@ export interface VaccinationsSectionProps {
   currentPage?: number | 'all';
   pageSize?: number;
   paginationSearchParam?: string;
+  petId: string;
 }
 
 export async function VaccinationsSection({
@@ -37,6 +39,7 @@ export async function VaccinationsSection({
   currentPage = 1,
   pageSize = 3,
   paginationSearchParam = 'v',
+  petId,
 }: VaccinationsSectionProps) {
   const { total, vaccinations } = await query;
   const totalPages = Math.ceil(total / pageSize);
@@ -53,9 +56,23 @@ export async function VaccinationsSection({
           </div>
           <h3 className='font-medium text-card-foreground'>Vaccinations</h3>
         </div>
-        {totalPages > 1 ? (
-          <ViewAll anchor='vaccinations' value={currentPage} param='v' />
-        ) : null}
+        <div className='flex items-center gap-2'>
+          {total > 0 && (
+            <Button
+              variant='ghost'
+              asChild
+              aria-label='Add vaccination'
+              title='Add vaccination'
+            >
+              <Link href={`/pets/${petId}/vaccinations/add`}>
+                <PlusIcon className='h-4 w-4' />
+              </Link>
+            </Button>
+          )}
+          {totalPages > 1 ? (
+            <ViewAll anchor='vaccinations' value={currentPage} param='v' />
+          ) : null}
+        </div>
       </div>
       <div className='p-3'>
         {total === 0 ? (
@@ -72,8 +89,11 @@ export async function VaccinationsSection({
             <Button
               variant='outline'
               className='text-primary border-primary/20'
+              asChild
             >
-              Add Vaccination
+              <Link href={`/pets/${petId}/vaccinations/add`}>
+                Add Vaccination
+              </Link>
             </Button>
           </div>
         ) : null}

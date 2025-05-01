@@ -85,6 +85,7 @@ export default async function PetDetailsPage(page: {
           query={vaccinationsSelect}
           currentPage={vaxPage}
           pageSize={VAX_SECTION_PAGE_SIZE}
+          petId={id}
         />
       </Suspense>
       <Suspense fallback={<ParasiteTreatmentLoadingSkeleton />}>
@@ -92,6 +93,7 @@ export default async function PetDetailsPage(page: {
           query={echinococcusSelect}
           currentPage={echPage}
           pageSize={ECHINOCOCCUS_SECTION_PAGE_SIZE}
+          petId={id}
         />
       </Suspense>
       <Suspense fallback={<ParasiteTreatmentLoadingSkeleton />}>
@@ -99,6 +101,7 @@ export default async function PetDetailsPage(page: {
           query={generalParasiteSelect}
           currentPage={parPage}
           pageSize={GENERAL_PARASITE_SECTION_PAGE_SIZE}
+          petId={id}
         />
       </Suspense>
       <Suspense fallback={<ClinicalExaminationsLoadingSkeleton />}>
@@ -106,6 +109,7 @@ export default async function PetDetailsPage(page: {
           query={examinationsSelect}
           currentPage={examPage}
           pageSize={EXAMINATIONS_SECTION_PAGE_SIZE}
+          petId={id}
         />
       </Suspense>
     </>
