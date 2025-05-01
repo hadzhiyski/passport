@@ -26,14 +26,16 @@ export type VaccinationProps = {
 
 export interface VaccinationsSectionProps {
   query: Promise<{ total: number; vaccinations: VaccinationProps[] }>;
-  currentPage?: number;
+  currentPage?: number | 'all';
   pageSize?: number;
+  paginationSearchParam?: string;
 }
 
 export async function VaccinationsSection({
   query,
   currentPage = 1,
   pageSize = 3,
+  paginationSearchParam = 'v',
 }: VaccinationsSectionProps) {
   const { total, vaccinations } = await query;
   const totalPages = Math.ceil(total / pageSize);
@@ -124,12 +126,14 @@ export async function VaccinationsSection({
         </div>
       ))}
 
-      <PetSectionPagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        paramName='vaxp'
-        anchorId='vaccinations'
-      />
+      {typeof currentPage === 'number' ? (
+        <PetSectionPagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          paramName={paginationSearchParam}
+          anchorId='vaccinations'
+        />
+      ) : null}
     </div>
   );
 }

@@ -1,3 +1,4 @@
+import { fetchClinicalExaminationsWithTotals } from '@passport/clinical-examinations/pet-details';
 import { ClinicalExaminationsLoadingSkeleton } from '@passport/components/pets/details/clinical-examination-loading';
 import { ClinicalExaminationsSection } from '@passport/components/pets/details/clinical-examinations-section';
 import { EchinococcusTreatmentSection } from '@passport/components/pets/details/echinococcus-treatment-section';
@@ -7,17 +8,11 @@ import { PassportLoadingSkeleton } from '@passport/components/pets/details/passp
 import { PassportSection } from '@passport/components/pets/details/passport-section';
 import { VaccinationsLoadingSkeleton } from '@passport/components/pets/details/vaccinations-loading';
 import { VaccinationsSection } from '@passport/components/pets/details/vaccinations-section';
-import { db } from '@passport/database';
-import { antiEchinococcusTreatmentsTable } from '@passport/database/schema/anti-echinococcus-treatments';
-import { antiParasiteTreatmentsTable } from '@passport/database/schema/anti-parasite-treatments';
-import { clinicalExaminationsTable } from '@passport/database/schema/clinical-examinations';
-import { ownersTable } from '@passport/database/schema/owners';
-import { passportsTable } from '@passport/database/schema/passports';
-import { petMarkingsTable } from '@passport/database/schema/pet-markings';
-import { vaccinationsTable } from '@passport/database/schema/vaccinations';
-import { veterinariansTable } from '@passport/database/schema/veterinarians';
-import { desc, eq, sql } from 'drizzle-orm';
-import { alias } from 'drizzle-orm/pg-core';
+import { ViewAll } from '@passport/components/pets/details/view-all';
+import { fetchPassport } from '@passport/passports/pet-details';
+import { fetchAntiEchinococcusWithTotals } from '@passport/treatments/anti-echinococcus/pet-details';
+import { fetchAntiParasitesWithTotals } from '@passport/treatments/anti-parasites/pet-details';
+import { fetchVaccinationsWithTotals } from '@passport/vaccinations/pet-details';
 import {
   BookIcon,
   BugIcon,
@@ -35,174 +30,40 @@ const EXAMINATIONS_SECTION_PAGE_SIZE = 3;
 export default async function PetDetailsPage(page: {
   params: Promise<{ id: string }>;
   searchParams: Promise<{
-    vaxp?: string;
-    echp?: string;
-    parp?: string;
-    exap?: string;
+    v?: string;
+    e?: string;
+    p?: string;
+    x?: string;
   }>;
 }) {
   const { id } = await page.params;
-  const { vaxp, echp, parp, exap } = await page.searchParams;
-  const vaxPage = vaxp ? parseInt(vaxp) : 1;
-  const echPage = echp ? parseInt(echp) : 1;
-  const parPage = parp ? parseInt(parp) : 1;
-  const examPage = exap ? parseInt(exap) : 1;
+  const { v, e, p, x } = await page.searchParams;
+  const vaxPage = v && v === 'all' ? v : Number(v || '') || 1;
+  const echPage = e && e === 'all' ? e : Number(e || '') || 1;
+  const parPage = p && p === 'all' ? p : Number(p || '') || 1;
+  const examPage = x && x === 'all' ? x : Number(x || '') || 1;
 
-  const owner1Table = alias(ownersTable, 'owner1');
-  const owner2Table = alias(ownersTable, 'owner2');
-  const passportSelect = db
-    .select({
-      id: passportsTable.id,
-      serialNumber: passportsTable.serialNumber,
-      issueDate: passportsTable.issueDate,
-      marking: {
-        code: petMarkingsTable.code,
-        type: petMarkingsTable.type,
-        place: petMarkingsTable.place,
-        applicationDate: petMarkingsTable.applicationDate,
-      },
-      owner1: {
-        id: owner1Table.id,
-        name: sql`concat_ws(' ', ${owner1Table.firstname}, ${owner1Table.lastname})`.mapWith(
-          String,
-        ),
-      },
-      owner2: {
-        id: owner2Table.id,
-        name: sql`concat_ws(' ', ${owner2Table.firstname}, ${owner2Table.lastname})`.mapWith(
-          String,
-        ),
-      },
-      vet: {
-        id: veterinariansTable.id,
-        name: veterinariansTable.name,
-      },
-    })
-    .from(passportsTable)
-    .innerJoin(
-      veterinariansTable,
-      eq(passportsTable.issuedBy, veterinariansTable.id),
-    )
-    .innerJoin(owner1Table, eq(passportsTable.owner1Id, owner1Table.id))
-    .leftJoin(owner2Table, eq(passportsTable.owner2Id, owner2Table.id))
-    .leftJoin(petMarkingsTable, eq(passportsTable.petId, petMarkingsTable.id))
-    .where(eq(passportsTable.petId, id));
-
-  const vaccinationsSelect = Promise.all([
-    db.$count(vaccinationsTable, eq(vaccinationsTable.petId, id)),
-    db
-      .select({
-        id: vaccinationsTable.id,
-        name: vaccinationsTable.name,
-        manufacturer: vaccinationsTable.manufacturer,
-        lotNumber: vaccinationsTable.lotNumber,
-        expiryDate: vaccinationsTable.expiryDate,
-        administeredOn: vaccinationsTable.administeredOn,
-        administeredBy: {
-          id: veterinariansTable.id,
-          name: veterinariansTable.name,
-        },
-        validFrom: vaccinationsTable.validFrom,
-        validUntil: vaccinationsTable.validUntil,
-        type: vaccinationsTable.type,
-      })
-      .from(vaccinationsTable)
-      .innerJoin(
-        veterinariansTable,
-        eq(vaccinationsTable.administeredBy, veterinariansTable.id),
-      )
-      .where(eq(vaccinationsTable.petId, id))
-      .orderBy(desc(vaccinationsTable.validUntil), desc(vaccinationsTable.id))
-      .offset((vaxPage - 1) * VAX_SECTION_PAGE_SIZE)
-      .limit(VAX_SECTION_PAGE_SIZE),
-  ]).then(([total, vaccinations]) => ({
-    total,
-    vaccinations,
-  }));
-
-  const echinococcusSelect = Promise.all([
-    db.$count(
-      antiEchinococcusTreatmentsTable,
-      eq(antiEchinococcusTreatmentsTable.petId, id),
-    ),
-    db
-      .select({
-        id: antiEchinococcusTreatmentsTable.id,
-        name: antiEchinococcusTreatmentsTable.name,
-        manufacturer: antiEchinococcusTreatmentsTable.manufacturer,
-        administeredOn: antiEchinococcusTreatmentsTable.administeredOn,
-        administeredBy: veterinariansTable.name,
-        validUntil: antiEchinococcusTreatmentsTable.validUntil,
-      })
-      .from(antiEchinococcusTreatmentsTable)
-      .innerJoin(
-        veterinariansTable,
-        eq(
-          antiEchinococcusTreatmentsTable.administeredBy,
-          veterinariansTable.id,
-        ),
-      )
-      .where(eq(antiEchinococcusTreatmentsTable.petId, id))
-      .orderBy(desc(antiEchinococcusTreatmentsTable.administeredOn))
-      .offset((echPage - 1) * ECHINOCOCCUS_SECTION_PAGE_SIZE)
-      .limit(ECHINOCOCCUS_SECTION_PAGE_SIZE),
-  ]).then(([total, treatments]) => ({
-    total,
-    treatments,
-  }));
-
-  const generalParasiteSelect = Promise.all([
-    db.$count(
-      antiParasiteTreatmentsTable,
-      eq(antiParasiteTreatmentsTable.petId, id),
-    ),
-    db
-      .select({
-        id: antiParasiteTreatmentsTable.id,
-        name: antiParasiteTreatmentsTable.name,
-        manufacturer: antiParasiteTreatmentsTable.manufacturer,
-        administeredOn: antiParasiteTreatmentsTable.administeredOn,
-        administeredBy: veterinariansTable.name,
-        validUntil: antiParasiteTreatmentsTable.validUntil,
-      })
-      .from(antiParasiteTreatmentsTable)
-      .innerJoin(
-        veterinariansTable,
-        eq(antiParasiteTreatmentsTable.administeredBy, veterinariansTable.id),
-      )
-      .where(eq(antiParasiteTreatmentsTable.petId, id))
-      .orderBy(desc(antiParasiteTreatmentsTable.administeredOn))
-      .offset((parPage - 1) * GENERAL_PARASITE_SECTION_PAGE_SIZE)
-      .limit(GENERAL_PARASITE_SECTION_PAGE_SIZE),
-  ]).then(([total, treatments]) => ({
-    total,
-    treatments,
-  }));
-
-  const examinationsSelect = Promise.all([
-    db.$count(
-      clinicalExaminationsTable,
-      eq(clinicalExaminationsTable.petId, id),
-    ),
-    db
-      .select({
-        id: clinicalExaminationsTable.id,
-        date: clinicalExaminationsTable.date,
-        veterinarian: veterinariansTable.name,
-      })
-      .from(clinicalExaminationsTable)
-      .innerJoin(
-        veterinariansTable,
-        eq(clinicalExaminationsTable.veterinarianId, veterinariansTable.id),
-      )
-      .where(eq(clinicalExaminationsTable.petId, id))
-      .orderBy(desc(clinicalExaminationsTable.date))
-      .offset((examPage - 1) * EXAMINATIONS_SECTION_PAGE_SIZE)
-      .limit(EXAMINATIONS_SECTION_PAGE_SIZE),
-  ]).then(([total, examinations]) => ({
-    total,
-    examinations,
-  }));
+  const passportSelect = fetchPassport(id);
+  const vaccinationsSelect = fetchVaccinationsWithTotals(
+    id,
+    vaxPage,
+    VAX_SECTION_PAGE_SIZE,
+  );
+  const echinococcusSelect = fetchAntiEchinococcusWithTotals(
+    id,
+    echPage,
+    ECHINOCOCCUS_SECTION_PAGE_SIZE,
+  );
+  const generalParasiteSelect = fetchAntiParasitesWithTotals(
+    id,
+    parPage,
+    GENERAL_PARASITE_SECTION_PAGE_SIZE,
+  );
+  const examinationsSelect = fetchClinicalExaminationsWithTotals(
+    id,
+    examPage,
+    EXAMINATIONS_SECTION_PAGE_SIZE,
+  );
 
   return (
     <>
@@ -237,6 +98,7 @@ export default async function PetDetailsPage(page: {
             </div>
             <h3 className='font-medium text-slate-800'>Vaccinations</h3>
           </div>
+          <ViewAll anchor='vaccinations' value={vaxPage} param='v' />
         </div>
         <div className='p-3'>
           <Suspense fallback={<VaccinationsLoadingSkeleton />}>
@@ -262,6 +124,7 @@ export default async function PetDetailsPage(page: {
               Anti-Echinococcus Treatments
             </h3>
           </div>
+          <ViewAll anchor='anti-echinococcus' value={echPage} param='e' />
         </div>
         <div className='p-3'>
           <Suspense fallback={<ParasiteTreatmentLoadingSkeleton />}>
@@ -287,6 +150,7 @@ export default async function PetDetailsPage(page: {
               Anti-Parasite Treatments
             </h3>
           </div>
+          <ViewAll anchor='anti-parasites' value={parPage} param='p' />
         </div>
         <div className='p-3'>
           <Suspense fallback={<ParasiteTreatmentLoadingSkeleton />}>
@@ -312,6 +176,7 @@ export default async function PetDetailsPage(page: {
               Clinical Examinations
             </h3>
           </div>
+          <ViewAll anchor='examinations' value={examPage} param='x' />
 
           {/* <Button
                 variant='outline'

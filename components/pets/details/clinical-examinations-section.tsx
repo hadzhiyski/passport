@@ -9,14 +9,16 @@ export type ClinicalExaminationProps = {
 
 export interface ClinicalExaminationsSectionProps {
   query: Promise<{ total: number; examinations: ClinicalExaminationProps[] }>;
-  currentPage?: number;
+  currentPage?: number | 'all';
   pageSize?: number;
+  paginationSearchParam?: string;
 }
 
 export async function ClinicalExaminationsSection({
   query,
   currentPage = 1,
   pageSize = 3,
+  paginationSearchParam = 'x',
 }: ClinicalExaminationsSectionProps) {
   const { total, examinations } = await query;
   const totalPages = Math.ceil(total / pageSize);
@@ -55,12 +57,14 @@ export async function ClinicalExaminationsSection({
         </div>
       ))}
 
-      <PetSectionPagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        paramName='exap'
-        anchorId='examinations'
-      />
+      {typeof currentPage === 'number' ? (
+        <PetSectionPagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          paramName={paginationSearchParam}
+          anchorId='examinations'
+        />
+      ) : null}
     </div>
   );
 }

@@ -14,14 +14,16 @@ export type EchinococcusTreatmentProps = {
 
 export interface EchinococcusTreatmentSectionProps {
   query: Promise<{ total: number; treatments: EchinococcusTreatmentProps[] }>;
-  currentPage?: number;
+  currentPage?: number | 'all';
   pageSize?: number;
+  paginationSearchParam?: string;
 }
 
 export async function EchinococcusTreatmentSection({
   query,
   currentPage = 1,
   pageSize = 3,
+  paginationSearchParam = 'e',
 }: EchinococcusTreatmentSectionProps) {
   const { total, treatments } = await query;
   const totalPages = Math.ceil(total / pageSize);
@@ -91,12 +93,14 @@ export async function EchinococcusTreatmentSection({
         </div>
       ))}
 
-      <PetSectionPagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        paramName='echp'
-        anchorId='echinococcus'
-      />
+      {typeof currentPage === 'number' ? (
+        <PetSectionPagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          paramName={paginationSearchParam}
+          anchorId='echinococcus'
+        />
+      ) : null}
     </div>
   );
 }

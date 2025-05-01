@@ -17,14 +17,16 @@ export interface GeneralParasiteTreatmentSectionProps {
     total: number;
     treatments: GeneralParasiteTreatmentProps[];
   }>;
-  currentPage?: number;
+  currentPage?: number | 'all';
   pageSize?: number;
+  paginationSearchParam?: string;
 }
 
 export async function GeneralParasiteTreatmentSection({
   query,
   currentPage = 1,
   pageSize = 3,
+  paginationSearchParam = 'p',
 }: GeneralParasiteTreatmentSectionProps) {
   const { total, treatments } = await query;
   if (total === 0) {
@@ -93,12 +95,14 @@ export async function GeneralParasiteTreatmentSection({
           </div>
         </div>
       ))}
-      <PetSectionPagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        paramName='parp'
-        anchorId='parasite'
-      />
+      {typeof currentPage === 'number' ? (
+        <PetSectionPagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          paramName={paginationSearchParam}
+          anchorId='parasite'
+        />
+      ) : null}
     </div>
   );
 }
