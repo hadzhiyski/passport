@@ -1,5 +1,6 @@
 import { PetCards } from '@passport/components/pets/details/pet-cards';
 import { PetHero } from '@passport/components/pets/details/pet-hero';
+import { PetSectionNav } from '@passport/components/pets/details/pet-section-nav';
 import { Button } from '@passport/components/ui/button';
 import {
   Card,
@@ -74,32 +75,42 @@ export default async function PetDetailsLayout(page: {
         <CardContent className='p-6 lg:p-8 space-y-8'>
           <PetCards pet={pet} />
 
-          <Collapsible
-            defaultOpen={Boolean(pet.notes)}
-            className='rounded-xl p-6 border border-border'
+          <div
+            id='section-navigation'
+            className='sticky top-16 -mx-6 px-6 py-2 bg-background/95 backdrop-blur-sm z-5 border-b border-border'
           >
-            <CollapsibleTrigger className='w-full'>
-              <div className='flex items-center justify-between'>
-                <div className='flex items-center gap-2 mb-3'>
-                  <div className='text-primary p-2 rounded-full'>
-                    <ClipboardIcon className='h-5 w-5' />
+            <PetSectionNav petId={id} />
+          </div>
+
+          {pet.notes ? (
+            <Collapsible
+              defaultOpen={true}
+              className='rounded-xl p-6 border border-border'
+            >
+              <CollapsibleTrigger className='w-full'>
+                <div className='flex items-center justify-between'>
+                  <div className='flex items-center gap-2 mb-3'>
+                    <div className='text-primary p-2 rounded-full'>
+                      <ClipboardIcon className='h-5 w-5' />
+                    </div>
+                    <h3 className='font-medium text-foreground'>Notes</h3>
                   </div>
-                  <h3 className='font-medium text-foreground'>Notes</h3>
+                  <div>
+                    <ChevronDownIcon className='h-5 w-5 transition-transform duration-200 collapsible-icon' />
+                  </div>
                 </div>
-                <div>
-                  <ChevronDownIcon className='h-5 w-5 transition-transform duration-200 collapsible-icon' />
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <Separator className='mb-4' />
+                <div className='prose prose-slate max-w-none dark:prose-invert'>
+                  <p className='leading-relaxed whitespace-pre-line text-foreground'>
+                    {pet.notes}
+                  </p>
                 </div>
-              </div>
-            </CollapsibleTrigger>
-            <CollapsibleContent>
-              <Separator className='mb-4' />
-              <div className='prose prose-slate max-w-none dark:prose-invert'>
-                <p className='leading-relaxed whitespace-pre-line text-foreground'>
-                  {pet.notes || 'No notes available.'}
-                </p>
-              </div>
-            </CollapsibleContent>
-          </Collapsible>
+              </CollapsibleContent>
+            </Collapsible>
+          ) : null}
+
           {page.children}
         </CardContent>
         <CardFooter className='px-8 py-4 text-sm border-t border-border'>
