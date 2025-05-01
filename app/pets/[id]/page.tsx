@@ -30,16 +30,23 @@ import { Suspense } from 'react';
 const VAX_SECTION_PAGE_SIZE = 3;
 const ECHINOCOCCUS_SECTION_PAGE_SIZE = 3;
 const GENERAL_PARASITE_SECTION_PAGE_SIZE = 3;
+const EXAMINATIONS_SECTION_PAGE_SIZE = 3;
 
 export default async function PetDetailsPage(page: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ vaxp?: string; echp?: string; parp?: string }>;
+  searchParams: Promise<{
+    vaxp?: string;
+    echp?: string;
+    parp?: string;
+    exap?: string;
+  }>;
 }) {
   const { id } = await page.params;
-  const { vaxp, echp, parp } = await page.searchParams;
+  const { vaxp, echp, parp, exap } = await page.searchParams;
   const vaxPage = vaxp ? parseInt(vaxp) : 1;
   const echPage = echp ? parseInt(echp) : 1;
   const parPage = parp ? parseInt(parp) : 1;
+  const examPage = exap ? parseInt(exap) : 1;
 
   const owner1Table = alias(ownersTable, 'owner1');
   const owner2Table = alias(ownersTable, 'owner2');
@@ -80,18 +87,6 @@ export default async function PetDetailsPage(page: {
     .leftJoin(owner2Table, eq(passportsTable.owner2Id, owner2Table.id))
     .leftJoin(petMarkingsTable, eq(passportsTable.petId, petMarkingsTable.id))
     .where(eq(passportsTable.petId, id));
-  const examinationsSelect = db
-    .select({
-      id: clinicalExaminationsTable.id,
-      date: clinicalExaminationsTable.date,
-      veterinarian: veterinariansTable.name,
-    })
-    .from(clinicalExaminationsTable)
-    .innerJoin(
-      veterinariansTable,
-      eq(clinicalExaminationsTable.veterinarianId, veterinariansTable.id),
-    )
-    .where(eq(clinicalExaminationsTable.petId, id));
 
   const vaccinationsSelect = Promise.all([
     db.$count(vaccinationsTable, eq(vaccinationsTable.petId, id)),
@@ -182,6 +177,31 @@ export default async function PetDetailsPage(page: {
   ]).then(([total, treatments]) => ({
     total,
     treatments,
+  }));
+
+  const examinationsSelect = Promise.all([
+    db.$count(
+      clinicalExaminationsTable,
+      eq(clinicalExaminationsTable.petId, id),
+    ),
+    db
+      .select({
+        id: clinicalExaminationsTable.id,
+        date: clinicalExaminationsTable.date,
+        veterinarian: veterinariansTable.name,
+      })
+      .from(clinicalExaminationsTable)
+      .innerJoin(
+        veterinariansTable,
+        eq(clinicalExaminationsTable.veterinarianId, veterinariansTable.id),
+      )
+      .where(eq(clinicalExaminationsTable.petId, id))
+      .orderBy(desc(clinicalExaminationsTable.date))
+      .offset((examPage - 1) * EXAMINATIONS_SECTION_PAGE_SIZE)
+      .limit(EXAMINATIONS_SECTION_PAGE_SIZE),
+  ]).then(([total, examinations]) => ({
+    total,
+    examinations,
   }));
 
   return (
@@ -303,7 +323,11 @@ export default async function PetDetailsPage(page: {
         </div>
         <div className='p-3'>
           <Suspense fallback={<ClinicalExaminationsLoadingSkeleton />}>
-            <ClinicalExaminationsSection query={examinationsSelect} />
+            <ClinicalExaminationsSection
+              query={examinationsSelect}
+              currentPage={examPage}
+              pageSize={EXAMINATIONS_SECTION_PAGE_SIZE}
+            />
           </Suspense>
         </div>
       </div>

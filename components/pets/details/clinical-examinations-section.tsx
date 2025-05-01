@@ -1,4 +1,5 @@
 import { format } from 'date-fns';
+import { PetSectionPagination } from './pagination';
 
 export type ClinicalExaminationProps = {
   id: string;
@@ -7,15 +8,20 @@ export type ClinicalExaminationProps = {
 };
 
 export interface ClinicalExaminationsSectionProps {
-  query: Promise<ClinicalExaminationProps[]>;
+  query: Promise<{ total: number; examinations: ClinicalExaminationProps[] }>;
+  currentPage?: number;
+  pageSize?: number;
 }
 
 export async function ClinicalExaminationsSection({
   query,
+  currentPage = 1,
+  pageSize = 3,
 }: ClinicalExaminationsSectionProps) {
-  const examinations = await query;
+  const { total, examinations } = await query;
+  const totalPages = Math.ceil(total / pageSize);
 
-  if (examinations.length === 0) {
+  if (total === 0) {
     return (
       <div className='text-center py-12 text-slate-500'>
         No clinical examinations recorded.
@@ -48,6 +54,13 @@ export async function ClinicalExaminationsSection({
           </div>
         </div>
       ))}
+
+      <PetSectionPagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        paramName='exap'
+        anchorId='examinations'
+      />
     </div>
   );
 }
