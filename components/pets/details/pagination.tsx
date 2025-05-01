@@ -53,7 +53,7 @@ export function PetSectionPagination({
     }
   };
 
-  return (
+  return totalPages > 1 ? (
     <Pagination className='mt-6'>
       <PaginationContent>
         <PaginationItem>
@@ -108,5 +108,5 @@ export function PetSectionPagination({
         </PaginationItem>
       </PaginationContent>
     </Pagination>
-  );
+  ) : null;
 }
