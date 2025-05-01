@@ -12,16 +12,16 @@ function isExpired(date: Date | null): boolean {
 export type VaccinationProps = {
   id: string;
   name: string;
-  manufacturer: string | null;
-  lotNumber: string | null;
-  administeredOn: Date | null;
+  manufacturer: string;
+  lotNumber: string;
+  administeredOn: Date;
   administeredBy: {
     id: string;
     name: string;
   };
   validFrom: Date | null;
-  validUntil: Date | null;
-  type: string | null;
+  validUntil: Date;
+  type: string;
 };
 
 export interface VaccinationsSectionProps {
@@ -68,9 +68,9 @@ export async function VaccinationsSection({
             <h4 className='font-medium text-slate-800'>{vaccination.name}</h4>
             <Badge
               variant='outline'
-              className='bg-slate-100 text-slate-700 w-fit'
+              className='bg-slate-100 text-slate-700 w-fit capitalize'
             >
-              {vaccination.type || 'Vaccination'}
+              {vaccination.type}
             </Badge>
           </div>
 
@@ -78,23 +78,21 @@ export async function VaccinationsSection({
             <div className='flex justify-between'>
               <span className='text-slate-500'>Manufacturer:</span>
               <span className='text-slate-700 font-medium'>
-                {vaccination.manufacturer || 'N/A'}
+                {vaccination.manufacturer}
               </span>
             </div>
 
             <div className='flex justify-between'>
               <span className='text-slate-500'>Lot Number:</span>
               <span className='text-slate-700 font-medium'>
-                {vaccination.lotNumber || 'N/A'}
+                {vaccination.lotNumber}
               </span>
             </div>
 
             <div className='flex justify-between'>
               <span className='text-slate-500'>Administered On:</span>
               <span className='text-slate-700 font-medium'>
-                {vaccination.administeredOn
-                  ? format(new Date(vaccination.administeredOn), 'MMM d, yyyy')
-                  : 'N/A'}
+                {format(vaccination.administeredOn, 'MMM d, yyyy')}
               </span>
             </div>
 
@@ -119,9 +117,7 @@ export async function VaccinationsSection({
               <span
                 className={`font-medium ${isExpired(vaccination.validUntil) ? 'text-red-600' : 'text-slate-700'}`}
               >
-                {vaccination.validUntil
-                  ? format(new Date(vaccination.validUntil), 'MMM d, yyyy')
-                  : 'N/A'}
+                {format(vaccination.validUntil, 'MMM d, yyyy')}
               </span>
             </div>
           </div>

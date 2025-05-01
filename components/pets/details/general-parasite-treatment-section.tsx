@@ -1,4 +1,3 @@
-import { Badge } from '@passport/components/ui/badge';
 import { Button } from '@passport/components/ui/button';
 import { format } from 'date-fns';
 import { BugIcon } from 'lucide-react';
@@ -9,8 +8,8 @@ export type GeneralParasiteTreatmentProps = {
   name: string;
   manufacturer: string | null;
   administeredOn: Date;
-  administeredBy: string | null;
-  validUntil: Date | null;
+  administeredBy: string;
+  validUntil: Date;
 };
 
 export interface GeneralParasiteTreatmentSectionProps {
@@ -61,13 +60,6 @@ export async function GeneralParasiteTreatmentSection({
             <h4 className='font-medium text-slate-800'>
               {treatment.name || 'Unnamed Treatment'}
             </h4>
-            <Badge
-              variant='outline'
-              className='bg-amber-100 text-amber-700 w-fit'
-            >
-              <BugIcon className='h-3 w-3 mr-1' />
-              Anti-Parasite
-            </Badge>
           </div>
 
           <div className='grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-2 text-sm'>
@@ -81,9 +73,7 @@ export async function GeneralParasiteTreatmentSection({
             <div className='flex justify-between'>
               <span className='text-slate-500'>Valid Until:</span>
               <span className='text-slate-700 font-medium'>
-                {treatment.validUntil
-                  ? format(treatment.validUntil, 'MMM d, yyyy')
-                  : 'Not Available'}
+                {format(treatment.validUntil, 'MMM d, yyyy')}
               </span>
             </div>
 
@@ -97,7 +87,7 @@ export async function GeneralParasiteTreatmentSection({
             <div className='flex justify-between'>
               <span className='text-slate-500'>Administered By:</span>
               <span className='text-slate-700 font-medium'>
-                {treatment.administeredBy || 'Not Available'}
+                {treatment.administeredBy}
               </span>
             </div>
           </div>

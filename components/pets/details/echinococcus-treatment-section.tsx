@@ -1,4 +1,3 @@
-import { Badge } from '@passport/components/ui/badge';
 import { Button } from '@passport/components/ui/button';
 import { format } from 'date-fns';
 import { ZapIcon } from 'lucide-react';
@@ -9,8 +8,8 @@ export type EchinococcusTreatmentProps = {
   name: string;
   manufacturer: string | null;
   administeredOn: Date;
-  administeredBy: string | null;
-  validUntil: Date | null;
+  administeredBy: string;
+  validUntil: Date;
 };
 
 export interface EchinococcusTreatmentSectionProps {
@@ -56,13 +55,6 @@ export async function EchinococcusTreatmentSection({
         >
           <div className='flex flex-col sm:flex-row sm:justify-between gap-2 mb-2'>
             <h4 className='font-medium text-slate-800'>{treatment.name}</h4>
-            <Badge
-              variant='outline'
-              className='bg-orange-100 text-orange-700 w-fit'
-            >
-              <ZapIcon className='h-3 w-3 mr-1' />
-              Anti-Echinococcus
-            </Badge>
           </div>
 
           <div className='grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-2 text-sm'>
@@ -92,7 +84,7 @@ export async function EchinococcusTreatmentSection({
             <div className='flex justify-between'>
               <span className='text-slate-500'>Administered By:</span>
               <span className='text-slate-700 font-medium'>
-                {treatment.administeredBy || 'Not Available'}
+                {treatment.administeredBy}
               </span>
             </div>
           </div>

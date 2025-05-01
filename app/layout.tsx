@@ -40,13 +40,13 @@ export default async function RootLayout({
         <ThemeProvider attribute='class'>
           <SidebarProvider>
             <AppSidebar />
-            <SidebarInset>
+            <SidebarInset className='flex flex-col'>
               <header className='flex sticky top-0 bg-background h-16 shrink-0 items-center gap-2 border-b px-4 z-10'>
                 <SidebarTrigger className='-ml-1' />
                 <Separator orientation='vertical' className='mr-2 h-4' />
                 <AppBreadcrumbList />
               </header>
-              <div className='pt-4'>{children}</div>
+              <div className='flex-1 overflow-auto p-4'>{children}</div>
             </SidebarInset>
           </SidebarProvider>
           <Toaster theme='light' richColors closeButton />
