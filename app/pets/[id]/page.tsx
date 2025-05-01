@@ -8,18 +8,11 @@ import { PassportLoadingSkeleton } from '@passport/components/pets/details/passp
 import { PassportSection } from '@passport/components/pets/details/passport-section';
 import { VaccinationsLoadingSkeleton } from '@passport/components/pets/details/vaccinations-loading';
 import { VaccinationsSection } from '@passport/components/pets/details/vaccinations-section';
-import { ViewAll } from '@passport/components/pets/details/view-all';
 import { fetchPassport } from '@passport/passports/pet-details';
 import { fetchAntiEchinococcusWithTotals } from '@passport/treatments/anti-echinococcus/pet-details';
 import { fetchAntiParasitesWithTotals } from '@passport/treatments/anti-parasites/pet-details';
 import { fetchVaccinationsWithTotals } from '@passport/vaccinations/pet-details';
-import {
-  BookIcon,
-  BugIcon,
-  ShieldIcon,
-  StethoscopeIcon,
-  ZapIcon,
-} from 'lucide-react';
+import { BookIcon } from 'lucide-react';
 import { Suspense } from 'react';
 
 const VAX_SECTION_PAGE_SIZE = 3;
@@ -87,115 +80,34 @@ export default async function PetDetailsPage(page: {
         </div>
       </div>
 
-      <div
-        id='vaccinations'
-        className='bg-white rounded-xl border border-slate-200 scroll-mt-20'
-      >
-        <div className='flex items-center justify-between p-6 border-b border-slate-100'>
-          <div className='flex items-center gap-2'>
-            <div className='bg-emerald-100 text-emerald-600 p-2 rounded-full'>
-              <ShieldIcon className='h-5 w-5' />
-            </div>
-            <h3 className='font-medium text-slate-800'>Vaccinations</h3>
-          </div>
-          <ViewAll anchor='vaccinations' value={vaxPage} param='v' />
-        </div>
-        <div className='p-3'>
-          <Suspense fallback={<VaccinationsLoadingSkeleton />}>
-            <VaccinationsSection
-              query={vaccinationsSelect}
-              currentPage={vaxPage}
-              pageSize={VAX_SECTION_PAGE_SIZE}
-            />
-          </Suspense>
-        </div>
-      </div>
-
-      <div
-        id='anti-echinococcus'
-        className='bg-white rounded-xl border border-slate-200 scroll-mt-20'
-      >
-        <div className='flex items-center justify-between p-6 border-b border-slate-100'>
-          <div className='flex items-center gap-2'>
-            <div className='bg-orange-100 text-orange-600 p-2 rounded-full'>
-              <ZapIcon className='h-5 w-5' />
-            </div>
-            <h3 className='font-medium text-slate-800'>
-              Anti-Echinococcus Treatments
-            </h3>
-          </div>
-          <ViewAll anchor='anti-echinococcus' value={echPage} param='e' />
-        </div>
-        <div className='p-3'>
-          <Suspense fallback={<ParasiteTreatmentLoadingSkeleton />}>
-            <EchinococcusTreatmentSection
-              query={echinococcusSelect}
-              currentPage={echPage}
-              pageSize={ECHINOCOCCUS_SECTION_PAGE_SIZE}
-            />
-          </Suspense>
-        </div>
-      </div>
-
-      <div
-        id='anti-parasites'
-        className='bg-white rounded-xl border border-slate-200 scroll-mt-20'
-      >
-        <div className='flex items-center justify-between p-6 border-b border-slate-100'>
-          <div className='flex items-center gap-2'>
-            <div className='bg-amber-100 text-amber-600 p-2 rounded-full'>
-              <BugIcon className='h-5 w-5' />
-            </div>
-            <h3 className='font-medium text-slate-800'>
-              Anti-Parasite Treatments
-            </h3>
-          </div>
-          <ViewAll anchor='anti-parasites' value={parPage} param='p' />
-        </div>
-        <div className='p-3'>
-          <Suspense fallback={<ParasiteTreatmentLoadingSkeleton />}>
-            <GeneralParasiteTreatmentSection
-              query={generalParasiteSelect}
-              currentPage={parPage}
-              pageSize={GENERAL_PARASITE_SECTION_PAGE_SIZE}
-            />
-          </Suspense>
-        </div>
-      </div>
-
-      <div
-        id='examinations'
-        className='bg-white rounded-xl border border-slate-200 scroll-mt-20'
-      >
-        <div className='flex items-center justify-between p-6 border-b border-slate-100'>
-          <div className='flex items-center gap-2'>
-            <div className='bg-orange-100 text-orange-600 p-2 rounded-full'>
-              <StethoscopeIcon className='h-5 w-5' />
-            </div>
-            <h3 className='font-medium text-slate-800'>
-              Clinical Examinations
-            </h3>
-          </div>
-          <ViewAll anchor='examinations' value={examPage} param='x' />
-
-          {/* <Button
-                variant='outline'
-                size='sm'
-                className='text-orange-600 border-orange-200'
-              >
-                Add Examination
-              </Button> */}
-        </div>
-        <div className='p-3'>
-          <Suspense fallback={<ClinicalExaminationsLoadingSkeleton />}>
-            <ClinicalExaminationsSection
-              query={examinationsSelect}
-              currentPage={examPage}
-              pageSize={EXAMINATIONS_SECTION_PAGE_SIZE}
-            />
-          </Suspense>
-        </div>
-      </div>
+      <Suspense fallback={<VaccinationsLoadingSkeleton />}>
+        <VaccinationsSection
+          query={vaccinationsSelect}
+          currentPage={vaxPage}
+          pageSize={VAX_SECTION_PAGE_SIZE}
+        />
+      </Suspense>
+      <Suspense fallback={<ParasiteTreatmentLoadingSkeleton />}>
+        <EchinococcusTreatmentSection
+          query={echinococcusSelect}
+          currentPage={echPage}
+          pageSize={ECHINOCOCCUS_SECTION_PAGE_SIZE}
+        />
+      </Suspense>
+      <Suspense fallback={<ParasiteTreatmentLoadingSkeleton />}>
+        <GeneralParasiteTreatmentSection
+          query={generalParasiteSelect}
+          currentPage={parPage}
+          pageSize={GENERAL_PARASITE_SECTION_PAGE_SIZE}
+        />
+      </Suspense>
+      <Suspense fallback={<ClinicalExaminationsLoadingSkeleton />}>
+        <ClinicalExaminationsSection
+          query={examinationsSelect}
+          currentPage={examPage}
+          pageSize={EXAMINATIONS_SECTION_PAGE_SIZE}
+        />
+      </Suspense>
     </>
   );
 }
