@@ -1,13 +1,37 @@
-import { SidebarGroup, SidebarMenu } from '@passport/components/ui/sidebar';
 import { db } from '@passport/database';
 import { ownersTable } from '@passport/database/schema/owners';
 import { passportsTable } from '@passport/database/schema/passports';
 import { petsTable } from '@passport/database/schema/pets';
 import { eq, or } from 'drizzle-orm';
 import PetNavItem from './pets-nav-item';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from './ui/dropdown-menu';
+import { Avatar, AvatarFallback } from './ui/avatar';
+import { MoreHorizontal } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
+import Link from 'next/link';
 
 export interface PetsNavProps {
   ownerId: string;
+}
+
+const MAX_VISIBLE_PETS = 3;
+
+function getInitials(name: string): string {
+  const nameParts = name.split(' ');
+
+  if (nameParts.length === 1) {
+    return name.substring(0, 2).toUpperCase();
+  } else {
+    return nameParts
+      .map((part) => part.charAt(0).toUpperCase())
+      .join('')
+      .substring(0, 2);
+  }
 }
 
 export async function PetsNav({ ownerId }: PetsNavProps) {
@@ -27,13 +51,58 @@ export async function PetsNav({ ownerId }: PetsNavProps) {
     )
     .where(eq(ownersTable.externalId, ownerId));
 
-  return pets.length > 0 ? (
-    <SidebarGroup>
-      <SidebarMenu>
-        {pets.map((pet) => (
-          <PetNavItem key={pet.id} pet={pet} />
-        ))}
-      </SidebarMenu>
-    </SidebarGroup>
-  ) : null;
+  if (pets.length === 0) return null;
+
+  const visiblePets = pets.slice(0, MAX_VISIBLE_PETS);
+  const additionalPets =
+    pets.length > MAX_VISIBLE_PETS ? pets.slice(MAX_VISIBLE_PETS) : [];
+
+  return (
+    <nav className='flex items-center space-x-2' aria-label='Pets navigation'>
+      {visiblePets.map((pet) => (
+        <PetNavItem key={pet.id} pet={pet} />
+      ))}
+
+      {additionalPets.length > 0 && (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <div>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Avatar className='cursor-pointer hover:opacity-80'>
+                    <AvatarFallback className='bg-muted'>
+                      <MoreHorizontal size={16} />
+                    </AvatarFallback>
+                  </Avatar>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <span>
+                    {additionalPets.length} more{' '}
+                    {additionalPets.length === 1 ? 'pet' : 'pets'}
+                  </span>
+                </TooltipContent>
+              </Tooltip>
+            </div>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align='end' className='max-h-60 overflow-y-auto'>
+            {additionalPets.map((pet) => (
+              <DropdownMenuItem key={pet.id} asChild>
+                <Link
+                  href={`/pets/${pet.id}`}
+                  className='flex items-center gap-2'
+                >
+                  <Avatar className='h-6 w-6'>
+                    <AvatarFallback className='text-xs'>
+                      {getInitials(pet.name)}
+                    </AvatarFallback>
+                  </Avatar>
+                  <span>{pet.name}</span>
+                </Link>
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      )}
+    </nav>
+  );
 }

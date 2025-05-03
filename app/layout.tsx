@@ -1,16 +1,10 @@
-import { AppBreadcrumbList } from '@passport/components/app-breadcrumb-list';
-import { AppSidebar } from '@passport/components/app-sidebar';
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from '@passport/components/ui/sidebar';
+import { HeaderNav } from '@passport/components/header-nav';
+import { ThemeProvider } from '@passport/components/theme-provider';
 import { Toaster } from '@passport/components/ui/sonner';
-import { Separator } from '@radix-ui/react-separator';
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
+import Link from 'next/link';
 import './globals.css';
-import { ThemeProvider } from '@passport/components/theme-provider';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -38,17 +32,28 @@ export default async function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <ThemeProvider attribute='class'>
-          <SidebarProvider defaultOpen={false}>
-            <AppSidebar />
-            <SidebarInset className='flex flex-col'>
-              <header className='flex sticky top-0 bg-background h-16 shrink-0 items-center gap-2 border-b px-4 z-10'>
-                <SidebarTrigger className='-ml-1' />
-                <Separator orientation='vertical' className='mr-2 h-4' />
-                <AppBreadcrumbList />
-              </header>
-              <div className='flex-1 overflow-auto p-4'>{children}</div>
-            </SidebarInset>
-          </SidebarProvider>
+          <div className='flex flex-col min-h-svh'>
+            <header className='sticky top-0 bg-background h-16 shrink-0 border-b px-4 z-10 flex items-center'>
+              <HeaderNav />
+            </header>
+            <main className='flex-1 overflow-auto p-4'>{children}</main>
+            <footer className='bg-accent py-6 text-background dark:text-foreground'>
+              <div className='container mx-auto px-6 md:px-12 flex flex-col md:flex-row justify-between items-center text-sm'>
+                <nav className='flex gap-6 items-center'>
+                  <Link href='/about'>About</Link>
+                  <Link href='/contact'>Contact</Link>
+                  <Link href='/privacy'>Privacy</Link>
+                  <Link href='/terms'>Terms</Link>
+                  <button
+                    aria-label='Toggle dark mode'
+                    className='p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600'
+                  >
+                    <div className='w-5 h-5 rounded-full' />
+                  </button>
+                </nav>
+              </div>
+            </footer>
+          </div>
           <Toaster theme='light' richColors closeButton />
         </ThemeProvider>
       </body>

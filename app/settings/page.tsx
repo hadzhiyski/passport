@@ -17,8 +17,6 @@ export default function SettingsPage() {
           <section>
             <ThemeSwitcher />
           </section>
-
-          {/* Additional settings sections can be added here */}
         </div>
       </div>
     </div>

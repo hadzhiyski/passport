@@ -2,13 +2,8 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import {
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
-} from './ui/sidebar';
+import { Avatar, AvatarFallback } from './ui/avatar';
+import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
 
 export interface PetNavItemProps {
   pet: {
@@ -17,50 +12,50 @@ export interface PetNavItemProps {
   };
 }
 
+// Helper function to get initials from pet name
+function getInitials(name: string): string {
+  const nameParts = name.split(' ');
+
+  if (nameParts.length === 1) {
+    // For single name pets, take first two characters
+    return name.substring(0, 2).toUpperCase();
+  } else {
+    // For multiple name pets, take first letter of each part
+    return nameParts
+      .map((part) => part.charAt(0).toUpperCase())
+      .join('')
+      .substring(0, 2); // Limit to 2 characters
+  }
+}
+
 export default function PetNavItem({ pet }: PetNavItemProps) {
   const path = usePathname();
+  const isActive =
+    path === `/pets/${pet.id}` || path.startsWith(`/pets/${pet.id}/`);
+
   return (
-    <SidebarMenuItem>
-      <SidebarMenuButton
-        asChild
-        className='font-medium'
-        isActive={path === `/pets/${pet.id}`}
-      >
-        <Link href={`/pets/${pet.id}`}>{pet.name}</Link>
-      </SidebarMenuButton>
-      <SidebarMenuSub className='ml-0 border-l-0 px-1.5'>
-        <SidebarMenuSubItem>
-          <SidebarMenuSubButton asChild>
-            <Link href={`/pets/${pet.id}#passport`}>Passport</Link>
-          </SidebarMenuSubButton>
-        </SidebarMenuSubItem>
-        <SidebarMenuSubItem>
-          <SidebarMenuSubButton asChild>
-            <Link href={`/pets/${pet.id}#vaccinations`}>Vaccinations</Link>
-          </SidebarMenuSubButton>
-        </SidebarMenuSubItem>
-        <SidebarMenuSubItem>
-          <SidebarMenuSubButton asChild>
-            <Link href={`/pets/${pet.id}#anti-echinococcus`}>
-              Anti-Echinococcus Treatments
-            </Link>
-          </SidebarMenuSubButton>
-        </SidebarMenuSubItem>
-        <SidebarMenuSubItem>
-          <SidebarMenuSubButton asChild>
-            <Link href={`/pets/${pet.id}#anti-parasites`}>
-              Anti-Parasite Treatments
-            </Link>
-          </SidebarMenuSubButton>
-        </SidebarMenuSubItem>
-        <SidebarMenuSubItem>
-          <SidebarMenuSubButton asChild>
-            <Link href={`/pets/${pet.id}#examinations`}>
-              Clinical Examinations
-            </Link>
-          </SidebarMenuSubButton>
-        </SidebarMenuSubItem>
-      </SidebarMenuSub>
-    </SidebarMenuItem>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <Link href={`/pets/${pet.id}`}>
+          <Avatar
+            className={`cursor-pointer transition-all ${isActive ? 'ring-2 ring-primary ring-offset-2' : 'hover:opacity-80'}`}
+          >
+            <AvatarFallback
+              className={
+                isActive ? 'bg-primary text-primary-foreground' : 'bg-muted'
+              }
+            >
+              {getInitials(pet.name)}
+            </AvatarFallback>
+          </Avatar>
+        </Link>
+      </TooltipTrigger>
+      <TooltipContent>
+        <div className='flex flex-col'>
+          <span>{pet.name}</span>
+          <span className='text-xs opacity-70'>Click to view details</span>
+        </div>
+      </TooltipContent>
+    </Tooltip>
   );
 }
