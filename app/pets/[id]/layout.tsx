@@ -130,7 +130,7 @@ export default async function PetDetailsLayout(page: {
             <CardContent className='p-0'>
               <div
                 id='section-navigation'
-                className='sticky top-0 px-4 py-3 bg-background/95 backdrop-blur-sm z-10 border-b border-border'
+                className='sticky top-0 px-4 py-3 bg-background/95 backdrop-blur-sm z-50 border-b border-border'
               >
                 <PetSectionNav petId={id} />
               </div>

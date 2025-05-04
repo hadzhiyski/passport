@@ -33,7 +33,7 @@ export default async function RootLayout({
       >
         <ThemeProvider attribute='class'>
           <div className='flex flex-col min-h-svh'>
-            <header className='sticky top-0 bg-background h-16 shrink-0 border-b px-4 z-10 flex items-center'>
+            <header className='sticky top-0 bg-background h-16 shrink-0 border-b px-4 z-100 flex items-center'>
               <HeaderNav />
             </header>
             <main className='flex-1 overflow-auto p-4'>{children}</main>
