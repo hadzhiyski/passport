@@ -69,24 +69,23 @@ export default async function PetDetailsPage(page: {
         />
       </Suspense>
 
-      <div className='grid grid-cols-1 xl:grid-cols-2 gap-8'>
-        <Suspense fallback={<EchinococcusTreatmentSkeleton />}>
-          <EchinococcusTreatmentSection
-            query={echinococcusSelect}
-            currentPage={echPage}
-            pageSize={ECHINOCOCCUS_SECTION_PAGE_SIZE}
-            petId={id}
-          />
-        </Suspense>
-        <Suspense fallback={<GeneralParasiteTreatmentSkeleton />}>
-          <GeneralParasiteTreatmentSection
-            query={generalParasiteSelect}
-            currentPage={parPage}
-            pageSize={GENERAL_PARASITE_SECTION_PAGE_SIZE}
-            petId={id}
-          />
-        </Suspense>
-      </div>
+      <Suspense fallback={<EchinococcusTreatmentSkeleton />}>
+        <EchinococcusTreatmentSection
+          query={echinococcusSelect}
+          currentPage={echPage}
+          pageSize={ECHINOCOCCUS_SECTION_PAGE_SIZE}
+          petId={id}
+        />
+      </Suspense>
+
+      <Suspense fallback={<GeneralParasiteTreatmentSkeleton />}>
+        <GeneralParasiteTreatmentSection
+          query={generalParasiteSelect}
+          currentPage={parPage}
+          pageSize={GENERAL_PARASITE_SECTION_PAGE_SIZE}
+          petId={id}
+        />
+      </Suspense>
 
       <Suspense fallback={<ClinicalExaminationsSkeleton />}>
         <ClinicalExaminationsSection
