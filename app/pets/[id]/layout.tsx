@@ -1,19 +1,17 @@
 import { PetHero } from '@passport/components/pets/details/layout';
 import { PassportSkeleton } from '@passport/components/pets/details/loaders';
 import { PassportSection } from '@passport/components/pets/details/sections';
-import { PassportEditButton } from '@passport/components/pets/details/ui';
-import { Card, CardContent, CardFooter } from '@passport/components/ui/card';
 import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from '@passport/components/ui/collapsible';
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from '@passport/components/ui/card';
 import { db } from '@passport/database';
 import { petsTable } from '@passport/database/schema/pets';
 import { fetchPassport } from '@passport/passports/pet-details';
 import { format } from 'date-fns';
 import { eq } from 'drizzle-orm';
-import { BookIcon, ChevronDownIcon, ClipboardIcon } from 'lucide-react';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 
@@ -41,69 +39,35 @@ export default async function PetDetailsLayout(page: {
   }
   const pet = petSelect[0];
 
-  const passportSelect = fetchPassport(id);
+  const passport = fetchPassport(id);
 
   return (
     <div className='container mx-auto px-4 py-4'>
       <div className='flex flex-col lg:flex-row gap-6'>
         <div className='w-full lg:w-80 xl:w-96 flex-shrink-0'>
-          <div className='space-y-6'>
-            <Card className='overflow-hidden shadow-lg border-border rounded-xl'>
+          <Card className='overflow-hidden shadow-lg border-border rounded-xl'>
+            <CardHeader>
               <PetHero pet={pet} />
-            </Card>
-
-            <Card className='overflow-hidden shadow-lg border-border rounded-xl'>
-              <div className='bg-card border-border'>
-                <div className='flex items-center justify-between p-4 border-b border-border'>
-                  <div className='flex items-center gap-2'>
-                    <div className='bg-primary/10 text-primary p-2 rounded-full'>
-                      <BookIcon className='h-5 w-5' />
+            </CardHeader>
+            <CardContent>
+              {pet.notes ? (
+                <div className='text-sm mb-4'>
+                  <div className='flex flex-col'>
+                    <div className='flex items-center'>
+                      <div className='flex items-center gap-2 text-card-foreground font-semibold'>
+                        <span>Notes</span>
+                      </div>
                     </div>
-                    <h3 className='font-medium text-card-foreground'>
-                      Passport Details
-                    </h3>
+                    <p className='text-sm text-muted-foreground'>{pet.notes}</p>
                   </div>
-                  <Suspense>
-                    <PassportEditButton petId={id} />
-                  </Suspense>
                 </div>
-                <div className='p-4'>
-                  <Suspense fallback={<PassportSkeleton />}>
-                    <PassportSection query={passportSelect} />
-                  </Suspense>
-                </div>
-              </div>
-            </Card>
+              ) : null}
 
-            {pet.notes ? (
-              <Card className='overflow-hidden shadow-lg border-border rounded-xl'>
-                <Collapsible defaultOpen={true}>
-                  <CollapsibleTrigger className='w-full'>
-                    <div className='flex items-center justify-between p-4 border-b border-border'>
-                      <div className='flex items-center gap-2'>
-                        <div className='text-primary p-2 rounded-full'>
-                          <ClipboardIcon className='h-5 w-5' />
-                        </div>
-                        <h3 className='font-medium text-foreground'>Notes</h3>
-                      </div>
-                      <div>
-                        <ChevronDownIcon className='h-5 w-5 transition-transform duration-200 collapsible-icon' />
-                      </div>
-                    </div>
-                  </CollapsibleTrigger>
-                  <CollapsibleContent>
-                    <div className='p-4'>
-                      <div className='prose prose-slate max-w-none dark:prose-invert'>
-                        <p className='leading-relaxed whitespace-pre-line text-foreground'>
-                          {pet.notes}
-                        </p>
-                      </div>
-                    </div>
-                  </CollapsibleContent>
-                </Collapsible>
-              </Card>
-            ) : null}
-          </div>
+              <Suspense fallback={<PassportSkeleton />}>
+                <PassportSection query={passport} />
+              </Suspense>
+            </CardContent>
+          </Card>
         </div>
 
         <div className='flex-1'>
