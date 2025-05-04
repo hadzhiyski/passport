@@ -10,13 +10,10 @@ export async function updateEchinococcusTreatment(
   data: z.infer<typeof treatmentUpdateSchema>,
 ) {
   try {
-    // Validate the incoming data
     const validatedData = treatmentUpdateSchema.parse(data);
 
-    // Hard-code administeredBy value to 1 as per requirements
     const treatmentId = validatedData.id;
 
-    // Update the treatment record
     await db
       .update(antiEchinococcusTreatmentsTable)
       .set({

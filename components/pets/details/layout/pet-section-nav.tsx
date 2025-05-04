@@ -2,14 +2,9 @@
 
 import { Button } from '@passport/components/ui/button';
 import { cn } from '@passport/lib/utils';
-import {
-  BadgeMinus,
-  BadgePlus,
-  ScrollText,
-  Shield,
-  Stethoscope,
-} from 'lucide-react';
+import { BadgeMinus, BadgePlus, Shield, Stethoscope } from 'lucide-react';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 
 type SectionInfo = {
   id: string;
@@ -23,10 +18,22 @@ interface PetSectionNavProps {
 }
 
 export function PetSectionNav({ petId, className }: PetSectionNavProps) {
-  const currentHash = typeof window !== 'undefined' ? window.location.hash : '';
+  const [currentHash, setCurrentHash] = useState('');
+
+  useEffect(() => {
+    const updateHash = () => {
+      setCurrentHash(window.location.hash);
+    };
+
+    updateHash();
+
+    window.addEventListener('hashchange', updateHash);
+    return () => {
+      window.removeEventListener('hashchange', updateHash);
+    };
+  }, []);
 
   const sections: SectionInfo[] = [
-    { id: 'passport', label: 'Passport', icon: <ScrollText size={16} /> },
     { id: 'vaccinations', label: 'Vaccinations', icon: <Shield size={16} /> },
     {
       id: 'anti-echinococcus',
@@ -42,7 +49,12 @@ export function PetSectionNav({ petId, className }: PetSectionNavProps) {
   ];
 
   return (
-    <div className={cn('flex gap-4 justify-center pb-2 px-2', className)}>
+    <div
+      className={cn(
+        'flex gap-2 overflow-x-auto pb-2 scrollbar-hide',
+        className,
+      )}
+    >
       {sections.map((section) => (
         <Button
           key={section.id}

@@ -42,7 +42,6 @@ export function PetSectionPagination({
     const url = `${pathname}?${createQueryString(paramName, newPage.toString())}${anchorId ? `#${anchorId}` : ''}`;
     router.push(url, { scroll: false });
 
-    // Manually scroll to the anchor if needed
     if (anchorId) {
       setTimeout(() => {
         const element = document.getElementById(anchorId);

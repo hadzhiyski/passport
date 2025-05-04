@@ -1,4 +1,4 @@
-export function ParasiteTreatmentLoadingSkeleton() {
+export function GeneralParasiteTreatmentSkeleton() {
   return (
     <div className='animate-pulse space-y-4'>
       {[1, 2].map((i) => (

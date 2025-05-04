@@ -6,7 +6,6 @@ import Image from 'next/image';
 export default function LearnMorePage() {
   return (
     <main className='flex flex-col min-h-screen'>
-      {/* Hero Section */}
       <section className='max-w-7xl mx-auto py-16 px-4 grid gap-8 md:grid-cols-2 items-center'>
         <div>
           <h1 className='text-4xl font-bold mb-4'>Learn More About Passport</h1>

@@ -15,7 +15,6 @@ export const treatmentInsertSchema = z.object({
   petId: z.string().trim().min(1, 'Pet ID cannot be empty'),
 });
 
-// Extend the insert schema and add the ID field for updates
 export const treatmentUpdateSchema = treatmentInsertSchema.extend({
   id: z.string().trim().min(1, 'Treatment ID cannot be empty'),
 });

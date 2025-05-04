@@ -2,6 +2,7 @@ import { db } from '@passport/database';
 import { ownersTable } from '@passport/database/schema/owners';
 import { passportsTable } from '@passport/database/schema/passports';
 import { petsTable } from '@passport/database/schema/pets';
+import { getInitials } from '@passport/lib/pet/initials';
 import { eq, or } from 'drizzle-orm';
 import PetNavItem from './pets-nav-item';
 import {
@@ -20,19 +21,6 @@ export interface PetsNavProps {
 }
 
 const MAX_VISIBLE_PETS = 3;
-
-function getInitials(name: string): string {
-  const nameParts = name.split(' ');
-
-  if (nameParts.length === 1) {
-    return name.substring(0, 2).toUpperCase();
-  } else {
-    return nameParts
-      .map((part) => part.charAt(0).toUpperCase())
-      .join('')
-      .substring(0, 2);
-  }
-}
 
 export async function PetsNav({ ownerId }: PetsNavProps) {
   const pets = await db

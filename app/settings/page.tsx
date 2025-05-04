@@ -1,8 +1,6 @@
 import { ThemeSwitcher } from '@passport/components/settings/theme-switcher';
 
 export default function SettingsPage() {
-  // You can add your server-side code here later to fetch preferences & settings
-
   return (
     <div className='px-4 sm:px-6 md:px-8'>
       <div className='max-w-4xl mx-auto py-6 space-y-8'>

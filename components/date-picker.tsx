@@ -17,7 +17,6 @@ export default function DatePicker({
   onChange,
   isDateDisabled,
 }: DatePickerProps) {
-  // Convert string to Date if needed
   const dateValue = date
     ? typeof date === 'string'
       ? new Date(date)

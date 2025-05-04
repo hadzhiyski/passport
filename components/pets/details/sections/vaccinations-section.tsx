@@ -1,10 +1,16 @@
 import { Badge } from '@passport/components/ui/badge';
 import { Button } from '@passport/components/ui/button';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@passport/components/ui/tooltip';
 import { format } from 'date-fns';
 import { PlusIcon, ShieldIcon } from 'lucide-react';
 import Link from 'next/link';
-import { PetSectionPagination } from './pagination';
-import { ViewAll } from './view-all';
+import { PetSectionPagination } from '../ui/pagination';
+import { ViewAll } from '../ui/view-all';
 
 function isExpired(date: Date | null): boolean {
   if (!date) return false;
@@ -49,7 +55,7 @@ export async function VaccinationsSection({
       id='vaccinations'
       className='rounded-xl border border-border bg-card scroll-mt-20'
     >
-      <div className='flex items-center justify-between p-6 border-b border-border'>
+      <div className='flex items-center justify-between p-4 border-b border-border'>
         <div className='flex items-center gap-2'>
           <div className='bg-primary/10 text-primary p-2 rounded-full'>
             <ShieldIcon className='h-5 w-5' />
@@ -58,23 +64,53 @@ export async function VaccinationsSection({
         </div>
         <div className='flex items-center gap-2'>
           {total > 0 && (
-            <Button
-              variant='ghost'
-              asChild
-              aria-label='Add vaccination'
-              title='Add vaccination'
-            >
-              <Link href={`/pets/${petId}/vaccinations/add`}>
-                <PlusIcon className='h-4 w-4' />
-              </Link>
-            </Button>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant='ghost'
+                    size='sm'
+                    asChild
+                    aria-label='Add vaccination'
+                    title='Add vaccination'
+                  >
+                    <Link
+                      href={`/pets/${petId}/vaccinations/add`}
+                      className='flex items-center'
+                    >
+                      <PlusIcon className='h-4 w-4' />
+                    </Link>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Add new vaccination</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           )}
           {totalPages > 1 ? (
-            <ViewAll anchor='vaccinations' value={currentPage} param='v' />
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <ViewAll
+                    anchor='vaccinations'
+                    value={currentPage}
+                    param='v'
+                  />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>
+                    {currentPage === 'all'
+                      ? 'Show paginated view'
+                      : 'Show all vaccinations'}
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           ) : null}
         </div>
       </div>
-      <div className='p-3'>
+      <div className='p-4'>
         {total === 0 ? (
           <div className='flex flex-col items-center text-center p-6'>
             <div className='bg-primary/10 text-primary p-3 rounded-full mb-3'>

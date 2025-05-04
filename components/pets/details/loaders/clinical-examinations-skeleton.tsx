@@ -1,6 +1,6 @@
 import { Skeleton } from '@passport/components/ui/skeleton';
 
-export function ClinicalExaminationsLoadingSkeleton() {
+export function ClinicalExaminationsSkeleton() {
   return (
     <div className='grid grid-cols-1 gap-6'>
       {[1, 2, 3].map((i) => (

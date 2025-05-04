@@ -1,4 +1,4 @@
-export function VaccinationsLoadingSkeleton() {
+export function VaccinationsSkeleton() {
   return (
     <div className='space-y-4 animate-pulse'>
       {[...Array(2)].map((_, i) => (

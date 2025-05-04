@@ -1,5 +1,6 @@
 'use client';
 
+import { getInitials } from '@passport/lib/pet/initials';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Avatar, AvatarFallback } from './ui/avatar';
@@ -10,22 +11,6 @@ export interface PetNavItemProps {
     id: string;
     name: string;
   };
-}
-
-// Helper function to get initials from pet name
-function getInitials(name: string): string {
-  const nameParts = name.split(' ');
-
-  if (nameParts.length === 1) {
-    // For single name pets, take first two characters
-    return name.substring(0, 2).toUpperCase();
-  } else {
-    // For multiple name pets, take first letter of each part
-    return nameParts
-      .map((part) => part.charAt(0).toUpperCase())
-      .join('')
-      .substring(0, 2); // Limit to 2 characters
-  }
 }
 
 export default function PetNavItem({ pet }: PetNavItemProps) {

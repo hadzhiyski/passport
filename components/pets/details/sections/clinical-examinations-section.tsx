@@ -1,9 +1,15 @@
 import { Button } from '@passport/components/ui/button';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@passport/components/ui/tooltip';
 import { format } from 'date-fns';
 import { PlusIcon, StethoscopeIcon } from 'lucide-react';
 import Link from 'next/link';
-import { PetSectionPagination } from './pagination';
-import { ViewAll } from './view-all';
+import { PetSectionPagination } from '../ui/pagination';
+import { ViewAll } from '../ui/view-all';
 
 export type ClinicalExaminationProps = {
   id: string;
@@ -34,7 +40,7 @@ export async function ClinicalExaminationsSection({
       id='examinations'
       className='rounded-xl border border-border bg-card scroll-mt-20'
     >
-      <div className='flex items-center justify-between p-6 border-b border-border'>
+      <div className='flex items-center justify-between p-4 border-b border-border'>
         <div className='flex items-center gap-2'>
           <div className='bg-primary/10 text-primary p-2 rounded-full'>
             <StethoscopeIcon className='h-5 w-5' />
@@ -45,25 +51,55 @@ export async function ClinicalExaminationsSection({
         </div>
         <div className='flex items-center gap-2'>
           {total > 0 && (
-            <Button
-              variant='ghost'
-              asChild
-              aria-label='Add clinical examination'
-              title='Add clinical examination'
-            >
-              <Link href={`/pets/${petId}/clinical-examinations/add`}>
-                <PlusIcon className='h-4 w-4' />
-              </Link>
-            </Button>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant='ghost'
+                    size='sm'
+                    asChild
+                    aria-label='Add clinical examination'
+                    title='Add clinical examination'
+                  >
+                    <Link
+                      href={`/pets/${petId}/clinical-examinations/add`}
+                      className='flex items-center'
+                    >
+                      <PlusIcon className='h-4 w-4' />
+                    </Link>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Add new clinical examination</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           )}
           {totalPages > 1 ? (
-            <ViewAll anchor='examinations' value={currentPage} param='x' />
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <ViewAll
+                    anchor='examinations'
+                    value={currentPage}
+                    param='x'
+                  />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>
+                    {currentPage === 'all'
+                      ? 'Show paginated view'
+                      : 'Show all clinical examinations'}
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           ) : null}
         </div>
       </div>
-      <div className='p-3'>
+      <div className='p-4'>
         {total === 0 ? (
-          <div className='flex flex-col items-center text-center p-6'>
+          <div className='flex flex-col items-center text-center p-4'>
             <div className='bg-primary/10 text-primary p-3 rounded-full mb-3'>
               <StethoscopeIcon className='h-6 w-6' />
             </div>

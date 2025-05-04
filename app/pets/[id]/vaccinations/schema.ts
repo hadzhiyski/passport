@@ -30,7 +30,6 @@ const baseVaccinationsSchema = z.object({
   }),
 });
 
-// ValidFrom date is required for rabies vaccinations
 function rabiesVaccinationValidFromCheck(
   data: z.infer<typeof baseVaccinationsSchema>,
 ) {
@@ -46,7 +45,6 @@ export const vaccinationsInsertSchema = baseVaccinationsSchema.refine(
   rabiesVaccinationValidFromCheck,
 );
 
-// Extend the insert schema and add the ID field
 export const vaccinationsUpdateSchema = baseVaccinationsSchema
   .extend({
     id: z.string().trim().min(1, 'Vaccination ID cannot be empty'),

@@ -16,12 +16,10 @@ export function ThemeSwitcher() {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
-  // useEffect only runs on the client, so now we can safely show the UI
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  // Avoid hydration mismatch by only rendering once mounted
   if (!mounted) return null;
 
   return (

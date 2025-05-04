@@ -14,56 +14,56 @@ export interface PetCardsProps {
 export function PetCards({ pet }: PetCardsProps) {
   const petAge = getHumanReadeableAge(pet.dob);
   return (
-    <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5'>
-      <div className='rounded-xl p-5 border border-border bg-card/50 shadow-sm'>
+    <div className='space-y-4'>
+      <div className='rounded-xl p-4 border border-border bg-card/50 shadow-sm'>
         <div className='flex items-center gap-2 mb-1'>
           <div className='bg-primary/10 text-primary p-2 rounded-full'>
-            <CalendarIcon className='h-5 w-5' />
+            <CalendarIcon className='h-4 w-4' />
           </div>
           <h3 className='font-medium text-card-foreground'>Birth Date</h3>
         </div>
-        <div className='mt-3 text-card-foreground font-medium'>
+        <div className='mt-2 text-card-foreground font-medium'>
           {pet.dob ? format(new Date(pet.dob), 'MMMM d, yyyy') : 'Unknown'}
         </div>
         {pet.dob && (
-          <div className='mt-1 text-sm text-muted-foreground'>{petAge} old</div>
+          <div className='text-sm text-muted-foreground'>{petAge} old</div>
         )}
       </div>
 
-      <div className='rounded-xl p-5 border border-border bg-card/50 shadow-sm'>
+      <div className='rounded-xl p-4 border border-border bg-card/50 shadow-sm'>
         <div className='flex items-center gap-2 mb-1'>
           <div className='bg-primary/10 text-primary p-2 rounded-full'>
-            {pet.sex === 'male' ? <MarsIcon className='h-5 w-5' /> : null}
-            {pet.sex === 'female' ? <VenusIcon className='h-5 w-5' /> : null}
+            {pet.sex === 'male' ? <MarsIcon className='h-4 w-4' /> : null}
+            {pet.sex === 'female' ? <VenusIcon className='h-4 w-4' /> : null}
           </div>
           <h3 className='font-medium text-card-foreground'>Sex</h3>
         </div>
-        <div className='mt-3 flex items-center gap-2'>
+        <div className='mt-2 flex items-center gap-2'>
           <span className='text-card-foreground font-medium capitalize'>
             {pet.sex}
           </span>
         </div>
       </div>
 
-      <div className='rounded-xl p-5 border border-border bg-card/50 shadow-sm'>
+      <div className='rounded-xl p-4 border border-border bg-card/50 shadow-sm'>
         <div className='flex items-center gap-2 mb-1'>
           <div className='bg-primary/10 text-primary p-2 rounded-full'>
-            <PaletteIcon className='h-5 w-5' />
+            <PaletteIcon className='h-4 w-4' />
           </div>
           <h3 className='font-medium text-card-foreground'>Colors</h3>
         </div>
-        <div className='mt-3'>
-          <div className='flex flex-wrap gap-2'>
+        <div className='mt-2'>
+          <div className='flex flex-wrap gap-1.5'>
             {pet.colors?.map((color, i) => (
               <div
                 key={i}
-                className='flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border bg-card/50'
+                className='flex items-center gap-1 px-2 py-1 rounded-full border border-border bg-card/50'
               >
                 <div
-                  className='h-4 w-4 rounded-full ring-1 ring-border'
+                  className='h-3 w-3 rounded-full ring-1 ring-border'
                   style={{ backgroundColor: colorToHex(color) }}
                 />
-                <span className='text-sm font-medium text-card-foreground capitalize'>
+                <span className='text-xs font-medium text-card-foreground capitalize'>
                   {color}
                 </span>
               </div>
