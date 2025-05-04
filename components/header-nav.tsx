@@ -5,6 +5,7 @@ import { Suspense } from 'react';
 import AuthButtons from './auth/auth-buttons';
 import { NavUser } from './nav-user';
 import { PetsNav } from './pets-nav';
+import { Separator } from './ui/separator';
 
 export async function HeaderNav() {
   const user = await getUser();
@@ -20,7 +21,7 @@ export async function HeaderNav() {
         </Link>
       </div>
 
-      <div className='flex items-center gap-4'>
+      <div className='flex items-center gap-2 h-10'>
         {user && (
           <div className='flex items-center'>
             <Suspense fallback={<div>Loading...</div>}>
@@ -28,7 +29,7 @@ export async function HeaderNav() {
             </Suspense>
           </div>
         )}
-
+        <Separator orientation='vertical' className='ml-4' />
         <div className='flex items-center'>
           {user ? <NavUser user={user} /> : <AuthButtons />}
         </div>

@@ -28,14 +28,12 @@ export function NavUser({ user }: NavUserProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant='ghost' size='sm' className='flex items-center gap-2'>
-          <Avatar className='h-6 w-6 rounded-full'>
+        <Button variant='ghost' className='flex items-center gap-2'>
+          <Avatar>
             <AvatarImage src={user.picture} alt={user.name} />
-            <AvatarFallback className='rounded-full'>
-              {user.initials}
-            </AvatarFallback>
+            <AvatarFallback>{user.initials}</AvatarFallback>
           </Avatar>
-          <span className='hidden sm:inline'>{user.name}</span>
+          <span className='hidden sm:inline pl-2'>{user.name}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent

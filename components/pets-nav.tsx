@@ -46,7 +46,7 @@ export async function PetsNav({ ownerId }: PetsNavProps) {
     pets.length > MAX_VISIBLE_PETS ? pets.slice(MAX_VISIBLE_PETS) : [];
 
   return (
-    <nav className='flex items-center space-x-2' aria-label='Pets navigation'>
+    <nav className='flex items-center space-x-3' aria-label='Pets navigation'>
       {visiblePets.map((pet) => (
         <PetNavItem key={pet.id} pet={pet} />
       ))}
