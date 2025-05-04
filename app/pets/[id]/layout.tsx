@@ -1,7 +1,4 @@
-import {
-  PetHero,
-  PetSectionNav,
-} from '@passport/components/pets/details/layout';
+import { PetHero } from '@passport/components/pets/details/layout';
 import { PassportSkeleton } from '@passport/components/pets/details/loaders';
 import { PassportSection } from '@passport/components/pets/details/sections';
 import { PassportEditButton } from '@passport/components/pets/details/ui';
@@ -16,13 +13,7 @@ import { petsTable } from '@passport/database/schema/pets';
 import { fetchPassport } from '@passport/passports/pet-details';
 import { format } from 'date-fns';
 import { eq } from 'drizzle-orm';
-import {
-  ArrowLeftIcon,
-  BookIcon,
-  ChevronDownIcon,
-  ClipboardIcon,
-} from 'lucide-react';
-import Link from 'next/link';
+import { BookIcon, ChevronDownIcon, ClipboardIcon } from 'lucide-react';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 
@@ -54,19 +45,9 @@ export default async function PetDetailsLayout(page: {
 
   return (
     <div className='container mx-auto px-4 py-4'>
-      <div className='flex justify-between items-center mb-6'>
-        <Link
-          href='/pets'
-          className='text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors'
-        >
-          <ArrowLeftIcon className='h-4 w-4' />
-          <span>Back to pets</span>
-        </Link>
-      </div>
-
       <div className='flex flex-col lg:flex-row gap-6'>
         <div className='w-full lg:w-80 xl:w-96 flex-shrink-0'>
-          <div className='space-y-6 sticky top-6'>
+          <div className='space-y-6'>
             <Card className='overflow-hidden shadow-lg border-border rounded-xl'>
               <PetHero pet={pet} />
             </Card>
@@ -128,13 +109,6 @@ export default async function PetDetailsLayout(page: {
         <div className='flex-1'>
           <Card className='overflow-hidden shadow-lg border-border rounded-xl'>
             <CardContent className='p-0'>
-              <div
-                id='section-navigation'
-                className='sticky top-0 px-4 py-3 bg-background/95 backdrop-blur-sm z-50 border-b border-border'
-              >
-                <PetSectionNav petId={id} />
-              </div>
-
               <div className='p-4'>{page.children}</div>
             </CardContent>
             <CardFooter className='px-4 py-4 text-sm border-t border-border'>

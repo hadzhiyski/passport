@@ -1,4 +1,5 @@
 import { fetchClinicalExaminationsWithTotals } from '@passport/clinical-examinations/pet-details';
+import { PetSectionNav } from '@passport/components/pets/details/layout';
 import {
   ClinicalExaminationsSkeleton,
   EchinococcusTreatmentSkeleton,
@@ -59,42 +60,47 @@ export default async function PetDetailsPage(page: {
   );
 
   return (
-    <div className='space-y-8'>
-      <Suspense fallback={<VaccinationsSkeleton />}>
-        <VaccinationsSection
-          query={vaccinationsSelect}
-          currentPage={vaxPage}
-          pageSize={VAX_SECTION_PAGE_SIZE}
-          petId={id}
-        />
-      </Suspense>
+    <>
+      <div className='mb-6 z-50'>
+        <PetSectionNav petId={id} />
+      </div>
+      <div className='space-y-8'>
+        <Suspense fallback={<VaccinationsSkeleton />}>
+          <VaccinationsSection
+            query={vaccinationsSelect}
+            currentPage={vaxPage}
+            pageSize={VAX_SECTION_PAGE_SIZE}
+            petId={id}
+          />
+        </Suspense>
 
-      <Suspense fallback={<EchinococcusTreatmentSkeleton />}>
-        <EchinococcusTreatmentSection
-          query={echinococcusSelect}
-          currentPage={echPage}
-          pageSize={ECHINOCOCCUS_SECTION_PAGE_SIZE}
-          petId={id}
-        />
-      </Suspense>
+        <Suspense fallback={<EchinococcusTreatmentSkeleton />}>
+          <EchinococcusTreatmentSection
+            query={echinococcusSelect}
+            currentPage={echPage}
+            pageSize={ECHINOCOCCUS_SECTION_PAGE_SIZE}
+            petId={id}
+          />
+        </Suspense>
 
-      <Suspense fallback={<GeneralParasiteTreatmentSkeleton />}>
-        <GeneralParasiteTreatmentSection
-          query={generalParasiteSelect}
-          currentPage={parPage}
-          pageSize={GENERAL_PARASITE_SECTION_PAGE_SIZE}
-          petId={id}
-        />
-      </Suspense>
+        <Suspense fallback={<GeneralParasiteTreatmentSkeleton />}>
+          <GeneralParasiteTreatmentSection
+            query={generalParasiteSelect}
+            currentPage={parPage}
+            pageSize={GENERAL_PARASITE_SECTION_PAGE_SIZE}
+            petId={id}
+          />
+        </Suspense>
 
-      <Suspense fallback={<ClinicalExaminationsSkeleton />}>
-        <ClinicalExaminationsSection
-          query={examinationsSelect}
-          currentPage={examPage}
-          pageSize={EXAMINATIONS_SECTION_PAGE_SIZE}
-          petId={id}
-        />
-      </Suspense>
-    </div>
+        <Suspense fallback={<ClinicalExaminationsSkeleton />}>
+          <ClinicalExaminationsSection
+            query={examinationsSelect}
+            currentPage={examPage}
+            pageSize={EXAMINATIONS_SECTION_PAGE_SIZE}
+            petId={id}
+          />
+        </Suspense>
+      </div>
+    </>
   );
 }
