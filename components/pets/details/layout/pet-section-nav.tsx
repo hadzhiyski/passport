@@ -2,7 +2,7 @@
 
 import { Button } from '@passport/components/ui/button';
 import { cn } from '@passport/lib/utils';
-import { BadgeMinus, BadgePlus, Shield, Stethoscope } from 'lucide-react';
+import { Bug, Shield, Stethoscope, Zap } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
@@ -38,9 +38,9 @@ export function PetSectionNav({ petId, className }: PetSectionNavProps) {
     {
       id: 'anti-echinococcus',
       label: 'Echinococcus',
-      icon: <BadgeMinus size={16} />,
+      icon: <Zap size={16} />,
     },
-    { id: 'anti-parasites', label: 'Parasites', icon: <BadgePlus size={16} /> },
+    { id: 'anti-parasites', label: 'Parasites', icon: <Bug size={16} /> },
     {
       id: 'examinations',
       label: 'Examinations',

@@ -12,7 +12,7 @@ import {
   DropdownMenuTrigger,
 } from './ui/dropdown-menu';
 import { Avatar, AvatarFallback } from './ui/avatar';
-import { MoreHorizontal } from 'lucide-react';
+import { ListFilter, MoreHorizontal } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
 import Link from 'next/link';
 
@@ -44,6 +44,7 @@ export async function PetsNav({ ownerId }: PetsNavProps) {
   const visiblePets = pets.slice(0, MAX_VISIBLE_PETS);
   const additionalPets =
     pets.length > MAX_VISIBLE_PETS ? pets.slice(MAX_VISIBLE_PETS) : [];
+  const totalPets = pets.length;
 
   return (
     <nav className='flex items-center space-x-3' aria-label='Pets navigation'>
@@ -51,7 +52,7 @@ export async function PetsNav({ ownerId }: PetsNavProps) {
         <PetNavItem key={pet.id} pet={pet} />
       ))}
 
-      {additionalPets.length > 0 && (
+      {additionalPets.length > 0 ? (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <div>
@@ -88,8 +89,33 @@ export async function PetsNav({ ownerId }: PetsNavProps) {
                 </Link>
               </DropdownMenuItem>
             ))}
+
+            <DropdownMenuItem className='mt-1 border-t pt-1' asChild>
+              <Link
+                href='/pets'
+                className='flex items-center gap-2 text-sm text-muted-foreground'
+              >
+                <ListFilter size={14} />
+                <span>View All Pets ({totalPets})</span>
+              </Link>
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+      ) : (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Link href='/pets'>
+              <Avatar className='cursor-pointer hover:opacity-80'>
+                <AvatarFallback className='bg-muted'>
+                  <ListFilter size={16} />
+                </AvatarFallback>
+              </Avatar>
+            </Link>
+          </TooltipTrigger>
+          <TooltipContent>
+            <span>View All Pets</span>
+          </TooltipContent>
+        </Tooltip>
       )}
     </nav>
   );
