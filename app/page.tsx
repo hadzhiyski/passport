@@ -1,8 +1,13 @@
 import { LandingPage } from '@passport/components/home/landing';
 import { getUser } from '@passport/user';
+import { redirect } from 'next/navigation';
 
-export default async function Home() {
+export default async function HomePage() {
   const user = await getUser();
 
-  return user ? <>Welcome back!</> : <LandingPage />;
+  if (user) {
+    redirect('/pets');
+  }
+
+  return <LandingPage />;
 }
