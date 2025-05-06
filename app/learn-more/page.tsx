@@ -1,6 +1,6 @@
 import { Button } from '@passport/components/ui/button';
 import { Separator } from '@passport/components/ui/separator';
-import PassportImage from '@passport/public/passport.png';
+import VetCheckImage from '@passport/public/vet-check-transparent.png';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -19,8 +19,8 @@ export default function LearnMorePage() {
         </div>
         <div className='flex justify-end'>
           <Image
-            src={PassportImage}
-            alt='Digital Pet Passport'
+            src={VetCheckImage}
+            alt='Illustration of a smiling veterinarian in an orange shirt using a stethoscope to examine a golden dog sitting on an exam table.'
             className='w-full max-w-sm h-auto dark:invert'
           />
         </div>
