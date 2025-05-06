@@ -25,7 +25,9 @@ export function LandingPage() {
             all in one app.
           </p>
           <div className='mt-6 flex flex-wrap gap-4'>
-            <Button variant='default'>Create Account</Button>
+            <Button variant='default' asChild>
+              <Link href='/auth/login?screen_hint=signup'>Create Account</Link>
+            </Button>
             <Button variant='outline' asChild>
               <Link href='/learn-more'>Learn More</Link>
             </Button>
@@ -72,7 +74,9 @@ export function LandingPage() {
             Start keeping your pet healthy, safe, and travel-ready.
           </p>
           <div className='mt-6'>
-            <Button variant='default'>Sign Up Free</Button>
+            <Button variant='default' asChild>
+              <Link href='/auth/login?screen_hint=signup'>Sign Up Free</Link>
+            </Button>
           </div>
         </div>
       </section>

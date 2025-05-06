@@ -2,6 +2,7 @@ import { Button } from '@passport/components/ui/button';
 import { Separator } from '@passport/components/ui/separator';
 import PassportImage from '@passport/public/passport.png';
 import Image from 'next/image';
+import Link from 'next/link';
 
 export default function LearnMorePage() {
   return (
@@ -54,7 +55,9 @@ export default function LearnMorePage() {
             Start using the app today to keep your pet healthy, safe, and
             travel-ready.
           </h2>
-          <Button size='lg'>Sign Up Free</Button>
+          <Button size='lg' asChild>
+            <Link href='/auth/login?screen_hint=signup'>Sign Up Free</Link>
+          </Button>
         </div>
       </section>
     </main>
