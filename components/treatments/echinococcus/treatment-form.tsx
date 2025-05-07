@@ -208,7 +208,7 @@ export default function TreatmentForm({
                         : add(new Date(), { months: 3 })
                     }
                     onChange={field.onChange}
-                    isDateDisabled={(date: Date) => date <= new Date()}
+                    disabled={(date: Date) => date <= new Date()}
                   />
                 </FormControl>
                 <FormMessage className='text-red-500 text-sm mt-1' />

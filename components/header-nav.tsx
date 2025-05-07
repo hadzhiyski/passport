@@ -53,7 +53,7 @@ export async function HeaderNav() {
           <span className='font-semibold'>Passport</span>
         </Link>
 
-        {user ? (
+        {user && pets.length > 0 ? (
           <>
             <div className='hidden md:flex items-center ml-4'>
               <NavigationMenu>

@@ -2,6 +2,7 @@ import dotenv from 'dotenv';
 import dotenvExpand from 'dotenv-expand';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { Pool } from 'pg';
+import { schema } from './schema';
 
 dotenvExpand.expand(dotenv.config());
 
@@ -17,4 +18,5 @@ const pool = new Pool({
 export const db = drizzle(pool, {
   casing: 'snake_case',
   logger: true,
+  schema,
 });

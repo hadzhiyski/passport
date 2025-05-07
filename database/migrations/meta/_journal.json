@@ -22,6 +22,20 @@
       "when": 1745786541506,
       "tag": "0002_parasite-tables-administered-on-date-type",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1746527687783,
+      "tag": "0003_parasite-tables-valid_until-not-null",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1746527740409,
+      "tag": "0004_user-onboarding",
+      "breakpoints": true
     }
   ]
 }

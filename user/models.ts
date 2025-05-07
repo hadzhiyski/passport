@@ -5,3 +5,10 @@ export type User = {
   email: string;
   picture: string;
 };
+
+export type UserWithOnboarding = User & {
+  onboarding: {
+    completed: boolean;
+    currentStep: string;
+  };
+};

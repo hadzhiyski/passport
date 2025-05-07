@@ -1,5 +1,5 @@
 import { fetchPets } from '@passport/pets/pets-index';
-import { getUser } from '@passport/user';
+import { getUserId } from '@passport/user';
 import { NoPets } from './no-pets';
 import { PetCard } from './pet-card';
 
@@ -14,9 +14,9 @@ export async function PetsGrid({
   filterSpecies: string;
   searchQuery: string;
 }) {
-  const user = await getUser();
+  const userId = await getUserId();
 
-  if (!user) {
+  if (!userId) {
     return (
       <div className='container py-16 flex flex-col items-center'>
         <h1 className='text-2xl font-bold text-foreground'>
@@ -26,7 +26,7 @@ export async function PetsGrid({
     );
   }
 
-  let pets = await fetchPets(user.id);
+  let pets = await fetchPets(userId);
 
   // Apply filtering
   if (filterStatus === 'needs-attention') {

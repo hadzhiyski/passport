@@ -256,7 +256,7 @@ export default function VaccinationForm({
                         : add(new Date(), { days: 1 })
                     }
                     onChange={field.onChange}
-                    isDateDisabled={(date: Date) => date <= new Date()}
+                    disabled={(date: Date) => date <= new Date()}
                   />
                 </FormControl>
                 <FormMessage className='text-red-500 text-sm mt-1' />
@@ -308,7 +308,7 @@ export default function VaccinationForm({
                     onChange={(value) => {
                       field.onChange(value);
                     }}
-                    isDateDisabled={(date: Date) => date <= new Date()}
+                    disabled={(date: Date) => date <= new Date()}
                   />
                 </FormControl>
                 <FormMessage className='text-red-500 text-sm mt-1' />
@@ -339,7 +339,7 @@ export default function VaccinationForm({
                         : add(new Date(), { years: 1 })
                     }
                     onChange={field.onChange}
-                    isDateDisabled={(date: Date) => date <= new Date()}
+                    disabled={(date: Date) => date <= new Date()}
                   />
                 </FormControl>
                 <FormMessage className='text-red-500 text-sm mt-1' />

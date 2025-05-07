@@ -1,0 +1,359 @@
+[
+  {
+    "name": "Albania",
+    "emoji": "🇦🇱",
+    "alpha2": "AL",
+    "dialCode": "355",
+    "region": "Europe"
+  },
+  {
+    "name": "Andorra",
+    "emoji": "🇦🇩",
+    "alpha2": "AD",
+    "dialCode": "376",
+    "region": "Europe"
+  },
+  {
+    "name": "Austria",
+    "emoji": "🇦🇹",
+    "alpha2": "AT",
+    "dialCode": "43",
+    "region": "Europe"
+  },
+  {
+    "name": "Belarus",
+    "emoji": "🇧🇾",
+    "alpha2": "BY",
+    "dialCode": "375",
+    "region": "Europe"
+  },
+  {
+    "name": "Belgium",
+    "emoji": "🇧🇪",
+    "alpha2": "BE",
+    "dialCode": "32",
+    "region": "Europe"
+  },
+  {
+    "name": "Bosnia and Herzegovina",
+    "emoji": "🇧🇦",
+    "alpha2": "BA",
+    "dialCode": "387",
+    "region": "Europe"
+  },
+  {
+    "name": "Bulgaria",
+    "emoji": "🇧🇬",
+    "alpha2": "BG",
+    "dialCode": "359",
+    "region": "Europe"
+  },
+  {
+    "name": "Croatia",
+    "emoji": "🇭🇷",
+    "alpha2": "HR",
+    "dialCode": "385",
+    "region": "Europe"
+  },
+  {
+    "name": "Czech Republic",
+    "emoji": "🇨🇿",
+    "alpha2": "CZ",
+    "dialCode": "420",
+    "region": "Europe"
+  },
+  {
+    "name": "Denmark",
+    "emoji": "🇩🇰",
+    "alpha2": "DK",
+    "dialCode": "45",
+    "region": "Europe"
+  },
+  {
+    "name": "Estonia",
+    "emoji": "🇪🇪",
+    "alpha2": "EE",
+    "dialCode": "372",
+    "region": "Europe"
+  },
+  {
+    "name": "Faroe Islands",
+    "emoji": "🇫🇴",
+    "alpha2": "FO",
+    "dialCode": "298",
+    "region": "Europe"
+  },
+  {
+    "name": "Finland",
+    "emoji": "🇫🇮",
+    "alpha2": "FI",
+    "dialCode": "358",
+    "region": "Europe"
+  },
+  {
+    "name": "France",
+    "emoji": "🇫🇷",
+    "alpha2": "FR",
+    "dialCode": "33",
+    "region": "Europe"
+  },
+  {
+    "name": "Germany",
+    "emoji": "🇩🇪",
+    "alpha2": "DE",
+    "dialCode": "49",
+    "region": "Europe"
+  },
+  {
+    "name": "Gibraltar",
+    "emoji": "🇬🇮",
+    "alpha2": "GI",
+    "dialCode": "350",
+    "region": "Europe"
+  },
+  {
+    "name": "Greece",
+    "emoji": "🇬🇷",
+    "alpha2": "GR",
+    "dialCode": "30",
+    "region": "Europe"
+  },
+  {
+    "name": "Guernsey",
+    "emoji": "🇬🇬",
+    "alpha2": "GG",
+    "dialCode": "44",
+    "region": "Europe"
+  },
+  {
+    "name": "Hungary",
+    "emoji": "🇭🇺",
+    "alpha2": "HU",
+    "dialCode": "36",
+    "region": "Europe"
+  },
+  {
+    "name": "Iceland",
+    "emoji": "🇮🇸",
+    "alpha2": "IS",
+    "dialCode": "354",
+    "region": "Europe"
+  },
+  {
+    "name": "Ireland",
+    "emoji": "🇮🇪",
+    "alpha2": "IE",
+    "dialCode": "353",
+    "region": "Europe"
+  },
+  {
+    "name": "Isle of Man",
+    "emoji": "🇮🇲",
+    "alpha2": "IM",
+    "dialCode": "44",
+    "region": "Europe"
+  },
+  {
+    "name": "Italy",
+    "emoji": "🇮🇹",
+    "alpha2": "IT",
+    "dialCode": "39",
+    "region": "Europe"
+  },
+  {
+    "name": "Jersey",
+    "emoji": "🇯🇪",
+    "alpha2": "JE",
+    "dialCode": "44",
+    "region": "Europe"
+  },
+  {
+    "name": "Latvia",
+    "emoji": "🇱🇻",
+    "alpha2": "LV",
+    "dialCode": "371",
+    "region": "Europe"
+  },
+  {
+    "name": "Liechtenstein",
+    "emoji": "🇱🇮",
+    "alpha2": "LI",
+    "dialCode": "423",
+    "region": "Europe"
+  },
+  {
+    "name": "Lithuania",
+    "emoji": "🇱🇹",
+    "alpha2": "LT",
+    "dialCode": "370",
+    "region": "Europe"
+  },
+  {
+    "name": "Luxembourg",
+    "emoji": "🇱🇺",
+    "alpha2": "LU",
+    "dialCode": "352",
+    "region": "Europe"
+  },
+  {
+    "name": "Macedonia",
+    "emoji": "🇲🇰",
+    "alpha2": "MK",
+    "dialCode": "389",
+    "region": "Europe"
+  },
+  {
+    "name": "Malta",
+    "emoji": "🇲🇹",
+    "alpha2": "MT",
+    "dialCode": "356",
+    "region": "Europe"
+  },
+  {
+    "name": "Moldova",
+    "emoji": "🇲🇩",
+    "alpha2": "MD",
+    "dialCode": "373",
+    "region": "Europe"
+  },
+  {
+    "name": "Monaco",
+    "emoji": "🇲🇨",
+    "alpha2": "MC",
+    "dialCode": "377",
+    "region": "Europe"
+  },
+  {
+    "name": "Montenegro",
+    "emoji": "🇲🇪",
+    "alpha2": "ME",
+    "dialCode": "382",
+    "region": "Europe"
+  },
+  {
+    "name": "Netherlands",
+    "emoji": "🇳🇱",
+    "alpha2": "NL",
+    "dialCode": "31",
+    "region": "Europe"
+  },
+  {
+    "name": "Norway",
+    "emoji": "🇳🇴",
+    "alpha2": "NO",
+    "dialCode": "47",
+    "region": "Europe"
+  },
+  {
+    "name": "Poland",
+    "emoji": "🇵🇱",
+    "alpha2": "PL",
+    "dialCode": "48",
+    "region": "Europe"
+  },
+  {
+    "name": "Portugal",
+    "emoji": "🇵🇹",
+    "alpha2": "PT",
+    "dialCode": "351",
+    "region": "Europe"
+  },
+  {
+    "name": "Romania",
+    "emoji": "🇷🇴",
+    "alpha2": "RO",
+    "dialCode": "40",
+    "region": "Europe"
+  },
+  {
+    "name": "Russia",
+    "emoji": "🇷🇺",
+    "alpha2": "RU",
+    "dialCode": "7",
+    "region": "Europe"
+  },
+  {
+    "name": "San Marino",
+    "emoji": "🇸🇲",
+    "alpha2": "SM",
+    "dialCode": "378",
+    "region": "Europe"
+  },
+  {
+    "name": "Serbia",
+    "emoji": "🇷🇸",
+    "alpha2": "RS",
+    "dialCode": "381",
+    "region": "Europe"
+  },
+  {
+    "name": "Slovakia",
+    "emoji": "🇸🇰",
+    "alpha2": "SK",
+    "dialCode": "421",
+    "region": "Europe"
+  },
+  {
+    "name": "Slovenia",
+    "emoji": "🇸🇮",
+    "alpha2": "SI",
+    "dialCode": "386",
+    "region": "Europe"
+  },
+  {
+    "name": "Spain",
+    "emoji": "🇪🇸",
+    "alpha2": "ES",
+    "dialCode": "34",
+    "region": "Europe"
+  },
+  {
+    "name": "Svalbard and Jan Mayen",
+    "emoji": "🇸🇯",
+    "alpha2": "SJ",
+    "dialCode": "47",
+    "region": "Europe"
+  },
+  {
+    "name": "Sweden",
+    "emoji": "🇸🇪",
+    "alpha2": "SE",
+    "dialCode": "46",
+    "region": "Europe"
+  },
+  {
+    "name": "Switzerland",
+    "emoji": "🇨🇭",
+    "alpha2": "CH",
+    "dialCode": "41",
+    "region": "Europe"
+  },
+  {
+    "name": "Ukraine",
+    "emoji": "🇺🇦",
+    "alpha2": "UA",
+    "dialCode": "380",
+    "region": "Europe"
+  },
+  {
+    "name": "United Kingdom",
+    "emoji": "🇬🇧",
+    "alpha2": "GB",
+    "dialCode": "44",
+    "region": "Europe"
+  },
+  {
+    "name": "Vatican City",
+    "emoji": "🇻🇦",
+    "alpha2": "VA",
+    "dialCode": "379",
+    "region": "Europe"
+  },
+  {
+    "name": "Åland Islands",
+    "emoji": "🇦🇽",
+    "alpha2": "AX",
+    "dialCode": "",
+    "region": "Europe"
+  }
+]
