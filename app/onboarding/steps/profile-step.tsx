@@ -13,11 +13,18 @@ import {
   FormMessage,
 } from '@passport/components/ui/form';
 import { Input } from '@passport/components/ui/input';
+import { useMicroSteps } from '@passport/onboarding/micro-steps';
 import {
   tryGetOrAssumeOwnerProfile,
   upsertOwnerProfile,
 } from '@passport/owners/actions';
-import { ArrowRight, Loader2, UserCircle } from 'lucide-react';
+import {
+  ArrowLeft,
+  ArrowRight,
+  Loader2,
+  MapPin,
+  UserCircle,
+} from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -38,27 +45,64 @@ const profileFormSchema = z.object({
   phone: z.string().optional(),
 });
 
+// Sub-schemas for micro steps
+const personalInfoSchema = profileFormSchema.pick({
+  firstname: true,
+  lastname: true,
+  phone: true,
+});
+
+const addressInfoSchema = profileFormSchema.pick({
+  address: true,
+  city: true,
+  country: true,
+  postcode: true,
+});
+
 type ProfileFormValues = z.infer<typeof profileFormSchema>;
+type PersonalInfoValues = z.infer<typeof personalInfoSchema>;
+type AddressInfoValues = z.infer<typeof addressInfoSchema>;
 
 export function ProfileStep({
   onComplete,
   isUpdating = false,
 }: ProfileStepProps) {
+  const {
+    current: currentMicroStep,
+    next: goToNextMicroStep,
+    previous: goToPreviousMicroStep,
+  } = useMicroSteps();
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [formData, setFormData] = useState<ProfileFormValues>({
+    firstname: '',
+    lastname: '',
+    address: '',
+    city: '',
+    country: '',
+    postcode: '',
+    phone: '',
+  });
 
-  // Define form with validation
-  const form = useForm<ProfileFormValues>({
-    resolver: zodResolver(profileFormSchema),
+  // Define form with validation for current micro step
+  const personalInfoForm = useForm<PersonalInfoValues>({
+    resolver: zodResolver(personalInfoSchema),
     defaultValues: {
-      firstname: '',
-      lastname: '',
-      address: '',
-      city: '',
-      country: '',
-      postcode: '',
-      phone: '',
+      firstname: formData.firstname,
+      lastname: formData.lastname,
+      phone: formData.phone,
+    },
+  });
+
+  const addressInfoForm = useForm<AddressInfoValues>({
+    resolver: zodResolver(addressInfoSchema),
+    defaultValues: {
+      address: formData.address,
+      city: formData.city,
+      country: formData.country,
+      postcode: formData.postcode,
     },
   });
 
@@ -70,7 +114,7 @@ export function ProfileStep({
         const response = await tryGetOrAssumeOwnerProfile();
 
         if (response.success && response.profile) {
-          form.reset({
+          const profileData = {
             firstname: response.profile.firstname || '',
             lastname: response.profile.lastname || '',
             address: response.profile.address || '',
@@ -78,6 +122,22 @@ export function ProfileStep({
             country: response.profile.country || '',
             postcode: response.profile.postcode || '',
             phone: response.profile.phone || '',
+          };
+
+          setFormData(profileData);
+
+          // Update the form values for each micro step
+          personalInfoForm.reset({
+            firstname: profileData.firstname,
+            lastname: profileData.lastname,
+            phone: profileData.phone,
+          });
+
+          addressInfoForm.reset({
+            address: profileData.address,
+            city: profileData.city,
+            country: profileData.country,
+            postcode: profileData.postcode,
           });
         }
       } catch (err) {
@@ -88,22 +148,33 @@ export function ProfileStep({
     }
 
     fetchProfile();
-  }, [form]);
+  }, [personalInfoForm, addressInfoForm]);
 
-  // Form submission handler
-  const onSubmit = async (data: ProfileFormValues) => {
+  // Handle personal info submission and transition to address step
+  const onPersonalInfoSubmit = async (data: PersonalInfoValues) => {
+    setFormData((prev) => ({ ...prev, ...data }));
+    goToNextMicroStep();
+  };
+
+  // Handle address info submission and complete the profile step
+  const onAddressInfoSubmit = async (data: AddressInfoValues) => {
     setIsSubmitting(true);
     setError(null);
 
+    const completeFormData = {
+      ...formData,
+      ...data,
+    };
+
     try {
       const result = await upsertOwnerProfile({
-        firstname: data.firstname,
-        lastname: data.lastname,
-        address: data.address,
-        city: data.city,
-        country: data.country,
-        postcode: data.postcode || null,
-        phone: data.phone || null,
+        firstname: completeFormData.firstname,
+        lastname: completeFormData.lastname,
+        address: completeFormData.address,
+        city: completeFormData.city,
+        country: completeFormData.country,
+        postcode: completeFormData.postcode || null,
+        phone: completeFormData.phone || null,
       });
 
       if (result.success) {
@@ -123,15 +194,24 @@ export function ProfileStep({
     <div className='space-y-6'>
       <div className='flex justify-center'>
         <div className='flex items-center justify-center h-24 w-24 rounded-full bg-primary/10'>
-          <UserCircle className='h-12 w-12 text-primary' />
+          {currentMicroStep === 'personal' ? (
+            <UserCircle className='h-12 w-12 text-primary' />
+          ) : (
+            <MapPin className='h-12 w-12 text-primary' />
+          )}
         </div>
       </div>
 
-      <div className='text-center space-x-2'>
-        <h2 className='text-2xl font-bold'>Complete Your Profile</h2>
+      <div className='text-center space-y-2'>
+        <h2 className='text-2xl font-bold'>
+          {currentMicroStep === 'personal'
+            ? 'Pet Owner Information'
+            : 'Owner Contact Details'}
+        </h2>
         <p className='text-muted-foreground'>
-          Add your contact details so we can better assist you with your
-          pets&apos; health records.
+          {currentMicroStep === 'personal'
+            ? 'This information is required for your EU Pet Passport and will associate you as the legal owner of your pets.'
+            : 'Your address details are mandatory for the EU Pet Passport and help veterinarians provide location-specific care recommendations.'}
         </p>
       </div>
 
@@ -146,46 +226,90 @@ export function ProfileStep({
           <div className='flex justify-center items-center py-8'>
             <Loader2 className='h-8 w-8 animate-spin text-muted-foreground' />
           </div>
-        ) : (
-          <Form {...form}>
+        ) : null}
+        {currentMicroStep === 'personal' ? (
+          <Form {...personalInfoForm}>
             <form
-              onSubmit={form.handleSubmit(onSubmit)}
-              className='grid grid-cols-2 gap-4'
+              onSubmit={personalInfoForm.handleSubmit(onPersonalInfoSubmit)}
+              className='space-y-4'
+            >
+              <div className='grid grid-cols-2 gap-4'>
+                <FormField
+                  control={personalInfoForm.control}
+                  name='firstname'
+                  render={({ field }) => (
+                    <FormItem className='grid grid-rows-[auto_auto_minmax(1.25rem,_auto)] gap-1'>
+                      <FormLabel>
+                        First Name{' '}
+                        <span className='text-primary'>Required</span>
+                      </FormLabel>
+                      <FormControl>
+                        <Input placeholder='John' {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={personalInfoForm.control}
+                  name='lastname'
+                  render={({ field }) => (
+                    <FormItem className='grid grid-rows-[auto_auto_minmax(1.25rem,_auto)] gap-1'>
+                      <FormLabel>
+                        Last Name <span className='text-primary'>Required</span>
+                      </FormLabel>
+                      <FormControl>
+                        <Input placeholder='Doe' {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <FormField
+                control={personalInfoForm.control}
+                name='phone'
+                render={({ field }) => (
+                  <FormItem className='grid grid-rows-[auto_auto_minmax(1.25rem,_auto)] gap-1'>
+                    <FormLabel>
+                      Phone Number{' '}
+                      <span className='text-muted-foreground text-sm'>
+                        (Optional)
+                      </span>
+                    </FormLabel>
+                    <FormControl>
+                      <Input placeholder='+359 870 123 456' {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className='flex justify-end mt-6'>
+                <Button type='submit' disabled={isSubmitting || isUpdating}>
+                  Next Step
+                  <ArrowRight className='h-4 w-4 ml-2' />
+                </Button>
+              </div>
+            </form>
+          </Form>
+        ) : null}
+        {currentMicroStep === 'address' ? (
+          <Form {...addressInfoForm}>
+            <form
+              onSubmit={addressInfoForm.handleSubmit(onAddressInfoSubmit)}
+              className='space-y-4'
             >
               <FormField
-                control={form.control}
-                name='firstname'
-                render={({ field }) => (
-                  <FormItem className='grid grid-rows-[auto_auto_minmax(1.25rem,_auto)] gap-1'>
-                    <FormLabel>First Name *</FormLabel>
-                    <FormControl>
-                      <Input placeholder='John' {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name='lastname'
-                render={({ field }) => (
-                  <FormItem className='grid grid-rows-[auto_auto_minmax(1.25rem,_auto)] gap-1'>
-                    <FormLabel>Last Name *</FormLabel>
-                    <FormControl>
-                      <Input placeholder='Doe' {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
+                control={addressInfoForm.control}
                 name='address'
                 render={({ field }) => (
-                  <FormItem className='col-span-2 grid grid-rows-[auto_auto_minmax(1.25rem,_auto)] gap-1'>
-                    <FormLabel>Address *</FormLabel>
+                  <FormItem className='grid grid-rows-[auto_auto_minmax(1.25rem,_auto)] gap-1'>
+                    <FormLabel>
+                      Address <span className='text-primary'>Required</span>
+                    </FormLabel>
                     <FormControl>
                       <Input placeholder='123 Main St' {...field} />
                     </FormControl>
@@ -194,12 +318,51 @@ export function ProfileStep({
                 )}
               />
 
+              <div className='grid grid-cols-2 gap-4'>
+                <FormField
+                  control={addressInfoForm.control}
+                  name='postcode'
+                  render={({ field }) => (
+                    <FormItem className='grid grid-rows-[auto_auto_minmax(1.25rem,_auto)] gap-1'>
+                      <FormLabel>
+                        Postal Code{' '}
+                        <span className='text-muted-foreground text-sm'>
+                          (Optional)
+                        </span>
+                      </FormLabel>
+                      <FormControl>
+                        <Input placeholder='1000' {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={addressInfoForm.control}
+                  name='city'
+                  render={({ field }) => (
+                    <FormItem className='grid grid-rows-[auto_auto_minmax(1.25rem,_auto)] gap-1'>
+                      <FormLabel>
+                        City <span className='text-primary'>Required</span>
+                      </FormLabel>
+                      <FormControl>
+                        <Input placeholder='Sofia' {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
               <FormField
-                control={form.control}
+                control={addressInfoForm.control}
                 name='country'
                 render={({ field }) => (
                   <FormItem className='grid grid-rows-[auto_auto_minmax(1.25rem,_auto)] gap-1'>
-                    <FormLabel>Country *</FormLabel>
+                    <FormLabel>
+                      Country <span className='text-primary'>Required</span>
+                    </FormLabel>
                     <FormControl>
                       <CountrySelector
                         value={field.value}
@@ -212,78 +375,33 @@ export function ProfileStep({
                 )}
               />
 
-              <FormField
-                control={form.control}
-                name='city'
-                render={({ field }) => (
-                  <FormItem className='grid grid-rows-[auto_auto_minmax(1.25rem,_auto)] gap-1'>
-                    <FormLabel>City *</FormLabel>
-                    <FormControl>
-                      <Input placeholder='Sofia' {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name='postcode'
-                render={({ field }) => (
-                  <FormItem className='grid grid-rows-[auto_auto_minmax(1.25rem,_auto)] gap-1'>
-                    <FormLabel>Postal Code</FormLabel>
-                    <FormControl>
-                      <Input placeholder='1000' {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name='phone'
-                render={({ field }) => (
-                  <FormItem className='grid grid-rows-[auto_auto_minmax(1.25rem,_auto)] gap-1'>
-                    <FormLabel>Phone Number</FormLabel>
-                    <FormControl>
-                      <Input placeholder='+359 870 123 456' {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormItem className='col-span-2 flex justify-end mt-4 gap-4'>
+              <div className='flex justify-between mt-6'>
                 <Button
-                  variant='outline'
-                  onClick={onComplete}
                   type='button'
+                  variant='outline'
+                  onClick={goToPreviousMicroStep}
                   disabled={isSubmitting || isUpdating}
                 >
-                  Skip for now
+                  <ArrowLeft className='h-4 w-4 mr-2' />
+                  Back
                 </Button>
-                <Button
-                  type='submit'
-                  disabled={isSubmitting || isUpdating}
-                  className='col-span-2 btn'
-                >
-                  {isSubmitting || isUpdating ? (
+                <Button type='submit' disabled={isSubmitting || isUpdating}>
+                  {isSubmitting ? (
                     <>
-                      <Loader2 className='h-4 w-4 animate-spin' />
+                      <Loader2 className='h-4 w-4 animate-spin mr-2' />
                       Processing...
                     </>
                   ) : (
                     <>
                       Continue
-                      <ArrowRight className='h-4 w-4' />
+                      <ArrowRight className='h-4 w-4 ml-2' />
                     </>
                   )}
                 </Button>
-              </FormItem>
+              </div>
             </form>
           </Form>
-        )}
+        ) : null}
       </Card>
     </div>
   );
