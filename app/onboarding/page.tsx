@@ -1,4 +1,3 @@
-import { isOnboardingStep } from '@passport/onboarding';
 import { getOnboardingUser } from '@passport/user';
 import { redirect } from 'next/navigation';
 import { OnboardingFlow } from './onboarding-flow';
@@ -14,10 +13,6 @@ export default async function OnboardingPage() {
   // If onboarding is already complete, redirect to main app
   if (user.onboarding.completed) {
     redirect('/pets');
-  }
-
-  if (!isOnboardingStep(user.onboarding.currentStep)) {
-    redirect('/onboarding/welcome');
   }
 
   return (

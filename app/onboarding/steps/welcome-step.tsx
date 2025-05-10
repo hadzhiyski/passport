@@ -115,7 +115,7 @@ export function WelcomeStep({
             </>
           ) : (
             <>
-              Get Started
+              Create Your Profile
               <ArrowRight className='h-4 w-4' />
             </>
           )}

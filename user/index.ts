@@ -1,6 +1,7 @@
 import { db } from '@passport/database';
 import { userOnboardingTable } from '@passport/database/schema/user-onboarding';
 import { auth0 } from '@passport/lib/auth0';
+import { isOnboardingStep } from '@passport/onboarding';
 import { startUserOnboarding } from '@passport/onboarding/actions';
 import { getOwnerNameByExternalId } from '@passport/owners/actions';
 import { eq, sql } from 'drizzle-orm';
@@ -57,14 +58,27 @@ export async function getOnboardingUser(): Promise<
       },
       where: eq(userOnboardingTable.userId, user.id),
     })
-    .then(
-      (onboarding) =>
-        onboarding || {
-          currentStep: 'welcome',
+    .then((onboarding) => {
+      if (!onboarding) {
+        return {
           completed: false,
+          currentStep: 'welcome',
           journey: 'new-user',
-        },
-    );
+        } satisfies UserWithOnboarding['onboarding'] & { journey: 'new-user' };
+      }
+
+      if (!isOnboardingStep(onboarding.currentStep)) {
+        throw new Error(`Invalid onboarding step: ${onboarding.currentStep}`);
+      }
+
+      return {
+        completed: onboarding.completed,
+        currentStep: onboarding.currentStep,
+        journey: onboarding.journey,
+      } satisfies UserWithOnboarding['onboarding'] & {
+        journey: string;
+      };
+    });
 
   if (journey === 'new-user') {
     await startUserOnboarding(user.id);

@@ -1,3 +1,5 @@
+import { OnboardingStep } from '@passport/onboarding';
+
 export type User = {
   id: string;
   name: string;
@@ -9,6 +11,6 @@ export type User = {
 export type UserWithOnboarding = User & {
   onboarding: {
     completed: boolean;
-    currentStep: string;
+    currentStep: OnboardingStep;
   };
 };

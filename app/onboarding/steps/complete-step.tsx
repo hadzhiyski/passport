@@ -1,6 +1,8 @@
 'use client';
 
 import { Button } from '@passport/components/ui/button';
+import { useOnboardingDataStore } from '@passport/onboarding/onboarding-data-store';
+import { formatPetNameForDisplay } from '@passport/onboarding/utils';
 import { User } from '@passport/user';
 import { ArrowRight, CheckCircle, Loader2 } from 'lucide-react';
 
@@ -15,6 +17,12 @@ export function CompleteStep({
   onComplete,
   isUpdating = false,
 }: CompleteStepProps) {
+  // Get the pet's name from the onboarding data store
+  const { petData } = useOnboardingDataStore();
+
+  // Format pet name for display using utility function
+  const petName = formatPetNameForDisplay(petData.name);
+
   return (
     <div className='space-y-6 text-center'>
       <div className='flex justify-center'>
@@ -70,7 +78,7 @@ export function CompleteStep({
             </>
           ) : (
             <>
-              Go to Dashboard
+              Explore {petName}&apos;s Digital Passport
               <ArrowRight className='h-4 w-4' />
             </>
           )}

@@ -5,16 +5,28 @@ import {
   OnboardingStep,
   STEPS_CONFIG,
 } from '@passport/onboarding';
-import { useMicroSteps } from '@passport/onboarding/micro-steps';
+import {
+  useOnboardingNavigationStore,
+  useMicroStepsWithLabels,
+} from '@passport/onboarding/navigation-store';
 import { CheckCircle } from 'lucide-react';
 
 interface OnboardingStepsNavProps {
   currentStep: OnboardingStep;
 }
 
+/**
+ * Navigation component that displays the onboarding progress with main steps and micro steps
+ */
 export function OnboardingStepsNav({ currentStep }: OnboardingStepsNavProps) {
-  const { current, index, all } = useMicroSteps();
+  const { currentMicroStep, getCurrentMicroStepIndex } =
+    useOnboardingNavigationStore();
+
+  // The micro steps with their labels for better rendering
+  const microStepsWithLabels = useMicroStepsWithLabels();
+
   const currentStepIndex = ONBOARDING_STEPS_ORDER.indexOf(currentStep);
+  const activeMicroStepIndex = getCurrentMicroStepIndex();
 
   return (
     <div className='flex justify-end'>
@@ -43,6 +55,7 @@ export function OnboardingStepsNav({ currentStep }: OnboardingStepsNavProps) {
                           ? 'border-2 border-primary text-primary'
                           : 'border-2 border-gray-200 text-gray-400'
                     }`}
+                  title={STEPS_CONFIG[step].label}
                 >
                   {isPastStep ? (
                     <CheckCircle size={16} />
@@ -55,20 +68,20 @@ export function OnboardingStepsNav({ currentStep }: OnboardingStepsNavProps) {
           })}
         </div>
 
-        {current && (
+        {currentMicroStep && microStepsWithLabels && (
           <div className='flex justify-center mt-1.5'>
             <div className='flex items-center space-x-2'>
-              {(all || []).map((microStep, microIndex) => (
-                <div key={microStep} className='flex flex-col items-center'>
+              {microStepsWithLabels.map(({ name, label }, microIndex) => (
+                <div key={name} className='flex flex-col items-center'>
                   <div
                     className={`h-2 w-2 rounded-full ${
-                      microIndex === index
+                      microIndex === activeMicroStepIndex
                         ? 'bg-primary'
-                        : microIndex < index
+                        : microIndex < activeMicroStepIndex
                           ? 'bg-primary/60'
                           : 'bg-gray-300'
                     }`}
-                    title={STEPS_CONFIG[currentStep].microSteps?.[microStep]}
+                    title={label}
                   />
                 </div>
               ))}

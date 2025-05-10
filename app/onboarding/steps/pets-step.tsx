@@ -20,7 +20,8 @@ import {
 } from '@passport/components/ui/radio-group';
 import { Textarea } from '@passport/components/ui/textarea';
 import { cn } from '@passport/lib/utils';
-import { useMicroSteps } from '@passport/onboarding/micro-steps';
+import { useOnboardingDataStore } from '@passport/onboarding/onboarding-data-store';
+import { formatPetNameForDisplay } from '@passport/onboarding/utils';
 import { insertPet } from '@passport/pets/actions';
 import {
   BasicInfoValues,
@@ -32,7 +33,6 @@ import {
   passportSchema,
 } from '@passport/pets/schema';
 import {
-  ArrowLeft,
   ArrowRight,
   Cat,
   Dog,
@@ -47,15 +47,16 @@ import { useForm } from 'react-hook-form';
 interface PetsStepProps {
   onComplete: () => void;
   isUpdating?: boolean;
+  microStep: string | null;
+  onNextMicroStep: () => void;
 }
 
-export function PetsStep({ onComplete, isUpdating = false }: PetsStepProps) {
-  const {
-    current: currentMicroStep,
-    next: goToNextMicroStep,
-    previous: goToPreviousMicroStep,
-  } = useMicroSteps();
-
+export function PetsStep({
+  onComplete,
+  isUpdating = false,
+  microStep,
+  onNextMicroStep,
+}: PetsStepProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState<PetFormValues>({
     name: '',
@@ -68,6 +69,12 @@ export function PetsStep({ onComplete, isUpdating = false }: PetsStepProps) {
     passportSerialNumber: '',
     passportIssueDate: new Date(),
   });
+
+  // Get the updatePetData function and pet data from the onboarding data store
+  const { updatePetData, petData } = useOnboardingDataStore();
+
+  // Format pet name for display using utility function
+  const petName = formatPetNameForDisplay(petData.name || formData.name);
 
   // Define forms with validation for each micro step
   const basicInfoForm = useForm<BasicInfoValues>({
@@ -99,14 +106,20 @@ export function PetsStep({ onComplete, isUpdating = false }: PetsStepProps) {
 
   // Handle basic info submission and transition to characteristics step
   const onBasicInfoSubmit = (data: BasicInfoValues) => {
+    // Update the local form data
     setFormData((prev) => ({ ...prev, ...data }));
-    goToNextMicroStep();
+
+    // Save the pet's name to the onboarding data store
+    updatePetData({ name: data.name });
+
+    // Move to the next step
+    onNextMicroStep();
   };
 
   // Handle characteristics submission and transition to passport step
   const onCharacteristicsSubmit = (data: CharacteristicsValues) => {
     setFormData((prev) => ({ ...prev, ...data }));
-    goToNextMicroStep();
+    onNextMicroStep();
   };
 
   // Handle passport info submission and complete the pets step
@@ -121,6 +134,9 @@ export function PetsStep({ onComplete, isUpdating = false }: PetsStepProps) {
     try {
       await insertPet(completePetData);
 
+      // Make sure the pet's name is saved in the onboarding data store
+      updatePetData({ name: completePetData.name });
+
       onComplete();
     } catch (error) {
       console.error('Error adding pet:', error);
@@ -130,7 +146,7 @@ export function PetsStep({ onComplete, isUpdating = false }: PetsStepProps) {
 
   // Get the appropriate icon based on the current micro step
   const getStepIcon = () => {
-    switch (currentMicroStep) {
+    switch (microStep) {
       case 'basic':
         return <PawPrint className='h-12 w-12 text-primary' />;
       case 'characteristics':
@@ -144,7 +160,7 @@ export function PetsStep({ onComplete, isUpdating = false }: PetsStepProps) {
 
   // Get the appropriate heading based on the current micro step
   const getStepHeading = () => {
-    switch (currentMicroStep) {
+    switch (microStep) {
       case 'basic':
         return 'Tell us about your furry friend';
       case 'characteristics':
@@ -158,7 +174,7 @@ export function PetsStep({ onComplete, isUpdating = false }: PetsStepProps) {
 
   // Get the appropriate description based on the current micro step
   const getStepDescription = () => {
-    switch (currentMicroStep) {
+    switch (microStep) {
       case 'basic':
         return "Let's get to know your pet a little better!";
       case 'characteristics':
@@ -184,7 +200,7 @@ export function PetsStep({ onComplete, isUpdating = false }: PetsStepProps) {
       </div>
 
       <Card className='border-0 p-6'>
-        {currentMicroStep === 'basic' && (
+        {microStep === 'basic' && (
           <Form {...basicInfoForm}>
             <form
               onSubmit={basicInfoForm.handleSubmit(onBasicInfoSubmit)}
@@ -351,7 +367,7 @@ export function PetsStep({ onComplete, isUpdating = false }: PetsStepProps) {
 
               <div className='flex justify-end mt-6'>
                 <Button type='submit' disabled={isSubmitting || isUpdating}>
-                  Next Step
+                  Describe Your Pet&apos;s Looks
                   <ArrowRight className='h-4 w-4 ml-2' />
                 </Button>
               </div>
@@ -359,7 +375,7 @@ export function PetsStep({ onComplete, isUpdating = false }: PetsStepProps) {
           </Form>
         )}
 
-        {currentMicroStep === 'characteristics' && (
+        {microStep === 'characteristics' && (
           <Form {...characteristicsForm}>
             <form
               onSubmit={characteristicsForm.handleSubmit(
@@ -428,18 +444,9 @@ export function PetsStep({ onComplete, isUpdating = false }: PetsStepProps) {
                 )}
               />
 
-              <div className='flex justify-between mt-6'>
-                <Button
-                  type='button'
-                  variant='outline'
-                  onClick={goToPreviousMicroStep}
-                  disabled={isSubmitting || isUpdating}
-                >
-                  <ArrowLeft className='h-4 w-4 mr-2' />
-                  Back
-                </Button>
+              <div className='flex justify-end mt-6'>
                 <Button type='submit' disabled={isSubmitting || isUpdating}>
-                  Next Step
+                  Register Your Pet&apos;s Passport
                   <ArrowRight className='h-4 w-4 ml-2' />
                 </Button>
               </div>
@@ -447,7 +454,7 @@ export function PetsStep({ onComplete, isUpdating = false }: PetsStepProps) {
           </Form>
         )}
 
-        {currentMicroStep === 'passport' && (
+        {microStep === 'passport' && (
           <Form {...passportForm}>
             <form
               onSubmit={passportForm.handleSubmit(onPassportSubmit)}
@@ -493,16 +500,7 @@ export function PetsStep({ onComplete, isUpdating = false }: PetsStepProps) {
                 )}
               />
 
-              <div className='flex justify-between mt-6'>
-                <Button
-                  type='button'
-                  variant='outline'
-                  onClick={goToPreviousMicroStep}
-                  disabled={isSubmitting || isUpdating}
-                >
-                  <ArrowLeft className='h-4 w-4 mr-2' />
-                  Back
-                </Button>
+              <div className='flex justify-end mt-6'>
                 <Button type='submit' disabled={isSubmitting || isUpdating}>
                   {isSubmitting ? (
                     <>
@@ -511,7 +509,7 @@ export function PetsStep({ onComplete, isUpdating = false }: PetsStepProps) {
                     </>
                   ) : (
                     <>
-                      Complete
+                      Finalize {petName}&apos;s Profile
                       <ArrowRight className='h-4 w-4 ml-2' />
                     </>
                   )}

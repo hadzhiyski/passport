@@ -13,18 +13,11 @@ import {
   FormMessage,
 } from '@passport/components/ui/form';
 import { Input } from '@passport/components/ui/input';
-import { useMicroSteps } from '@passport/onboarding/micro-steps';
 import {
   tryGetOrAssumeOwnerProfile,
   upsertOwnerProfile,
 } from '@passport/owners/actions';
-import {
-  ArrowLeft,
-  ArrowRight,
-  Loader2,
-  MapPin,
-  UserCircle,
-} from 'lucide-react';
+import { ArrowRight, Loader2, MapPin, UserCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -32,6 +25,8 @@ import { z } from 'zod';
 interface ProfileStepProps {
   onComplete: () => void;
   isUpdating?: boolean;
+  microStep: string | null;
+  onNextMicroStep: () => void;
 }
 
 // Define form validation schema
@@ -66,13 +61,9 @@ type AddressInfoValues = z.infer<typeof addressInfoSchema>;
 export function ProfileStep({
   onComplete,
   isUpdating = false,
+  microStep,
+  onNextMicroStep,
 }: ProfileStepProps) {
-  const {
-    current: currentMicroStep,
-    next: goToNextMicroStep,
-    previous: goToPreviousMicroStep,
-  } = useMicroSteps();
-
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -153,7 +144,7 @@ export function ProfileStep({
   // Handle personal info submission and transition to address step
   const onPersonalInfoSubmit = async (data: PersonalInfoValues) => {
     setFormData((prev) => ({ ...prev, ...data }));
-    goToNextMicroStep();
+    onNextMicroStep();
   };
 
   // Handle address info submission and complete the profile step
@@ -194,7 +185,7 @@ export function ProfileStep({
     <div className='space-y-6'>
       <div className='flex justify-center'>
         <div className='flex items-center justify-center h-24 w-24 rounded-full bg-primary/10'>
-          {currentMicroStep === 'personal' ? (
+          {microStep === 'personal' ? (
             <UserCircle className='h-12 w-12 text-primary' />
           ) : (
             <MapPin className='h-12 w-12 text-primary' />
@@ -204,12 +195,12 @@ export function ProfileStep({
 
       <div className='text-center space-y-2'>
         <h2 className='text-2xl font-bold'>
-          {currentMicroStep === 'personal'
+          {microStep === 'personal'
             ? 'Tell us a bit about yourself'
             : 'Where can we find you?'}
         </h2>
         <p className='text-muted-foreground'>
-          {currentMicroStep === 'personal'
+          {microStep === 'personal'
             ? "We'll need this info for your pet's passport and to register you as their proud parent!"
             : 'Your address helps vets give location-based care recommendations for your furry friend.'}
         </p>
@@ -227,7 +218,7 @@ export function ProfileStep({
             <Loader2 className='h-8 w-8 animate-spin text-muted-foreground' />
           </div>
         ) : null}
-        {currentMicroStep === 'personal' ? (
+        {microStep === 'personal' ? (
           <Form {...personalInfoForm}>
             <form
               onSubmit={personalInfoForm.handleSubmit(onPersonalInfoSubmit)}
@@ -289,14 +280,14 @@ export function ProfileStep({
 
               <div className='flex justify-end mt-6'>
                 <Button type='submit' disabled={isSubmitting || isUpdating}>
-                  Next Step
+                  Tell Us Where You Live
                   <ArrowRight className='h-4 w-4 ml-2' />
                 </Button>
               </div>
             </form>
           </Form>
         ) : null}
-        {currentMicroStep === 'address' ? (
+        {microStep === 'address' ? (
           <Form {...addressInfoForm}>
             <form
               onSubmit={addressInfoForm.handleSubmit(onAddressInfoSubmit)}
@@ -375,16 +366,7 @@ export function ProfileStep({
                 )}
               />
 
-              <div className='flex justify-between mt-6'>
-                <Button
-                  type='button'
-                  variant='outline'
-                  onClick={goToPreviousMicroStep}
-                  disabled={isSubmitting || isUpdating}
-                >
-                  <ArrowLeft className='h-4 w-4 mr-2' />
-                  Back
-                </Button>
+              <div className='flex justify-end mt-6'>
                 <Button type='submit' disabled={isSubmitting || isUpdating}>
                   {isSubmitting ? (
                     <>
@@ -393,7 +375,7 @@ export function ProfileStep({
                     </>
                   ) : (
                     <>
-                      Continue
+                      Add Your Furry Friend
                       <ArrowRight className='h-4 w-4 ml-2' />
                     </>
                   )}
