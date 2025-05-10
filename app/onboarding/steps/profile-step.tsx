@@ -205,13 +205,13 @@ export function ProfileStep({
       <div className='text-center space-y-2'>
         <h2 className='text-2xl font-bold'>
           {currentMicroStep === 'personal'
-            ? 'Pet Owner Information'
-            : 'Owner Contact Details'}
+            ? 'Tell us a bit about yourself'
+            : 'Where can we find you?'}
         </h2>
         <p className='text-muted-foreground'>
           {currentMicroStep === 'personal'
-            ? 'This information is required for your EU Pet Passport and will associate you as the legal owner of your pets.'
-            : 'Your address details are mandatory for the EU Pet Passport and help veterinarians provide location-specific care recommendations.'}
+            ? "We'll need this info for your pet's passport and to register you as their proud parent!"
+            : 'Your address helps vets give location-based care recommendations for your furry friend.'}
         </p>
       </div>
 
@@ -221,7 +221,7 @@ export function ProfileStep({
         </div>
       )}
 
-      <Card className='p-6'>
+      <Card className='border-0 p-6'>
         {isLoading ? (
           <div className='flex justify-center items-center py-8'>
             <Loader2 className='h-8 w-8 animate-spin text-muted-foreground' />

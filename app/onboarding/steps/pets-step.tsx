@@ -1,5 +1,6 @@
 'use client';
 
+import { zodResolver } from '@hookform/resolvers/zod';
 import DatePicker, { afterToday } from '@passport/components/date-picker';
 import { Button } from '@passport/components/ui/button';
 import { Card } from '@passport/components/ui/card';
@@ -17,7 +18,29 @@ import {
   RadioGroup,
   RadioGroupItem,
 } from '@passport/components/ui/radio-group';
-import { ArrowRight, Cat, Dog, Loader2, PawPrint, Plus } from 'lucide-react';
+import { Textarea } from '@passport/components/ui/textarea';
+import { cn } from '@passport/lib/utils';
+import { useMicroSteps } from '@passport/onboarding/micro-steps';
+import { insertPet } from '@passport/pets/actions';
+import {
+  BasicInfoValues,
+  CharacteristicsValues,
+  PassportValues,
+  PetFormValues,
+  basicInfoSchema,
+  characteristicsSchema,
+  passportSchema,
+} from '@passport/pets/schema';
+import {
+  ArrowLeft,
+  ArrowRight,
+  Cat,
+  Dog,
+  Loader2,
+  Mars,
+  PawPrint,
+  Venus,
+} from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 
@@ -26,37 +49,124 @@ interface PetsStepProps {
   isUpdating?: boolean;
 }
 
-interface PetFormValues {
-  petName: string;
-  species: 'dog' | 'cat' | 'ferret' | 'other';
-  breed: string;
-  birthDate: string;
-}
-
 export function PetsStep({ onComplete, isUpdating = false }: PetsStepProps) {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [addedPets, setAddedPets] = useState<Partial<PetFormValues>[]>([]);
+  const {
+    current: currentMicroStep,
+    next: goToNextMicroStep,
+    previous: goToPreviousMicroStep,
+  } = useMicroSteps();
 
-  const form = useForm<PetFormValues>({
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formData, setFormData] = useState<PetFormValues>({
+    name: '',
+    dob: '',
+    sex: 'male',
+    species: 'dog',
+    breed: '',
+    colors: '',
+    notes: '',
+    passportSerialNumber: '',
+    passportIssueDate: new Date(),
+  });
+
+  // Define forms with validation for each micro step
+  const basicInfoForm = useForm<BasicInfoValues>({
+    resolver: zodResolver(basicInfoSchema),
     defaultValues: {
-      petName: '',
-      species: 'dog',
-      breed: '',
-      birthDate: '',
+      name: formData.name,
+      dob: formData.dob,
+      sex: undefined as unknown as 'male' | 'female',
+      species: undefined as unknown as 'dog' | 'cat',
     },
   });
 
-  const onSubmit = async (data: PetFormValues) => {
+  const characteristicsForm = useForm<CharacteristicsValues>({
+    resolver: zodResolver(characteristicsSchema),
+    defaultValues: {
+      breed: formData.breed,
+      colors: formData.colors,
+      notes: formData.notes,
+    },
+  });
+
+  const passportForm = useForm<PassportValues>({
+    resolver: zodResolver(passportSchema),
+    defaultValues: {
+      passportSerialNumber: formData.passportSerialNumber,
+      passportIssueDate: undefined as unknown as Date,
+    },
+  });
+
+  // Handle basic info submission and transition to characteristics step
+  const onBasicInfoSubmit = (data: BasicInfoValues) => {
+    setFormData((prev) => ({ ...prev, ...data }));
+    goToNextMicroStep();
+  };
+
+  // Handle characteristics submission and transition to passport step
+  const onCharacteristicsSubmit = (data: CharacteristicsValues) => {
+    setFormData((prev) => ({ ...prev, ...data }));
+    goToNextMicroStep();
+  };
+
+  // Handle passport info submission and complete the pets step
+  const onPassportSubmit = async (data: PassportValues) => {
     setIsSubmitting(true);
+
+    const completePetData = {
+      ...formData,
+      ...data,
+    };
+
     try {
-      // In a real app, you'd save this pet to your database
-      // For now we'll just add it to our local state
-      setAddedPets([...addedPets, data]);
-      form.reset();
+      await insertPet(completePetData);
+
+      onComplete();
     } catch (error) {
       console.error('Error adding pet:', error);
-    } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  // Get the appropriate icon based on the current micro step
+  const getStepIcon = () => {
+    switch (currentMicroStep) {
+      case 'basic':
+        return <PawPrint className='h-12 w-12 text-primary' />;
+      case 'characteristics':
+        return <Dog className='h-12 w-12 text-primary' />;
+      case 'passport':
+        return <Cat className='h-12 w-12 text-primary' />;
+      default:
+        return <PawPrint className='h-12 w-12 text-primary' />;
+    }
+  };
+
+  // Get the appropriate heading based on the current micro step
+  const getStepHeading = () => {
+    switch (currentMicroStep) {
+      case 'basic':
+        return 'Tell us about your furry friend';
+      case 'characteristics':
+        return 'Physical Characteristics';
+      case 'passport':
+        return 'Passport Details';
+      default:
+        return 'Add Your Pet';
+    }
+  };
+
+  // Get the appropriate description based on the current micro step
+  const getStepDescription = () => {
+    switch (currentMicroStep) {
+      case 'basic':
+        return "Let's get to know your pet a little better!";
+      case 'characteristics':
+        return "Tell us about your pet's physical characteristics.";
+      case 'passport':
+        return 'If your pet has a passport, please enter the details.';
+      default:
+        return "Let's get your pet set up in Passport.";
     }
   };
 
@@ -64,217 +174,353 @@ export function PetsStep({ onComplete, isUpdating = false }: PetsStepProps) {
     <div className='space-y-6'>
       <div className='flex justify-center'>
         <div className='flex items-center justify-center h-24 w-24 rounded-full bg-primary/10'>
-          <PawPrint className='h-12 w-12 text-primary' />
+          {getStepIcon()}
         </div>
       </div>
 
       <div className='text-center space-y-2'>
-        <h2 className='text-2xl font-bold'>Add Your Pets</h2>
-        <p className='text-muted-foreground'>
-          Let&apos;s get your pets set up in Passport. You can add more pets
-          later.
-        </p>
+        <h2 className='text-2xl font-bold'>{getStepHeading()}</h2>
+        <p className='text-muted-foreground'>{getStepDescription()}</p>
       </div>
 
-      {addedPets.length > 0 && (
-        <div className='space-y-4'>
-          <h3 className='font-medium'>Added pets:</h3>
-          <div className='grid gap-3 grid-cols-1 md:grid-cols-2'>
-            {addedPets.map((pet, index) => (
-              <Card key={index} className='p-4 flex items-center gap-3'>
-                <div className='flex items-center justify-center h-10 w-10 rounded-full bg-primary/10'>
-                  {pet.species === 'dog' ? (
-                    <Dog className='h-5 w-5 text-primary' />
-                  ) : pet.species === 'cat' ? (
-                    <Cat className='h-5 w-5 text-primary' />
-                  ) : pet.species === 'ferret' ? (
-                    <PawPrint className='h-5 w-5 text-primary' />
-                  ) : (
-                    <PawPrint className='h-5 w-5 text-primary' />
-                  )}
-                </div>
-                <div>
-                  <p className='font-medium'>{pet.petName}</p>
-                  <p className='text-sm text-muted-foreground'>
-                    {pet.species}, {pet.breed}
-                  </p>
-                </div>
-              </Card>
-            ))}
-          </div>
-        </div>
-      )}
-
-      <Card className='p-4'>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
-            <div className='grid gap-4'>
-              <div className='grid gap-2'>
-                <FormField
-                  control={form.control}
-                  name='petName'
-                  rules={{ required: 'Pet name is required' }}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Pet Name</FormLabel>
-                      <FormControl>
-                        <Input placeholder='Buddy' {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              <div className='grid gap-2'>
-                <FormField
-                  control={form.control}
-                  name='species'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Species</FormLabel>
-                      <FormControl>
-                        <RadioGroup
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                          className='flex gap-4'
-                        >
-                          <FormItem className='flex items-center gap-2 space-y-0'>
-                            <FormControl>
-                              <RadioGroupItem value='dog' />
-                            </FormControl>
-                            <FormLabel className='font-normal flex items-center gap-1'>
-                              <Dog className='h-4 w-4' /> Dog
-                            </FormLabel>
-                          </FormItem>
-                          <FormItem className='flex items-center gap-2 space-y-0'>
-                            <FormControl>
-                              <RadioGroupItem value='cat' />
-                            </FormControl>
-                            <FormLabel className='font-normal flex items-center gap-1'>
-                              <Cat className='h-4 w-4' /> Cat
-                            </FormLabel>
-                          </FormItem>
-                          <FormItem className='flex items-center gap-2 space-y-0'>
-                            <FormControl>
-                              <RadioGroupItem value='ferret' />
-                            </FormControl>
-                            <FormLabel className='font-normal flex items-center gap-1'>
-                              <PawPrint className='h-4 w-4' /> Ferret
-                            </FormLabel>
-                          </FormItem>
-                          <FormItem className='flex items-center gap-2 space-y-0'>
-                            <FormControl>
-                              <RadioGroupItem value='other' />
-                            </FormControl>
-                            <FormLabel className='font-normal flex items-center gap-1'>
-                              <PawPrint className='h-4 w-4' /> Other
-                            </FormLabel>
-                          </FormItem>
-                        </RadioGroup>
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              <div className='grid gap-2'>
-                <FormField
-                  control={form.control}
-                  name='breed'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Breed</FormLabel>
-                      <FormControl>
-                        <Input placeholder='Golden Retriever' {...field} />
-                      </FormControl>
-                      <FormDescription>
-                        Enter &quot;Mixed&quot; or &quot;Unknown&quot; if
-                        you&apos;re not sure
-                      </FormDescription>
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              <div className='grid gap-2'>
-                <FormField
-                  control={form.control}
-                  name='birthDate'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Birth Date (approximate)</FormLabel>
-                      <FormControl>
-                        <DatePicker
-                          date={field.value}
-                          onChange={field.onChange}
-                          disabled={afterToday}
-                        ></DatePicker>
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-              </div>
-            </div>
-
-            <div className='flex justify-end'>
-              <Button type='submit' disabled={isSubmitting} className='gap-2'>
-                <Plus className='h-4 w-4' />
-                Add Pet
-              </Button>
-            </div>
-          </form>
-        </Form>
-      </Card>
-
-      <div className='flex justify-between pt-4'>
-        {addedPets.length === 0 ? (
-          <>
-            <Button
-              variant='outline'
-              onClick={onComplete}
-              disabled={isSubmitting || isUpdating}
+      <Card className='border-0 p-6'>
+        {currentMicroStep === 'basic' && (
+          <Form {...basicInfoForm}>
+            <form
+              onSubmit={basicInfoForm.handleSubmit(onBasicInfoSubmit)}
+              className='space-y-4'
             >
-              Skip for now
-            </Button>
-            <Button
-              onClick={onComplete}
-              disabled={isSubmitting || isUpdating}
-              className='gap-2'
-            >
-              {isUpdating ? (
-                <>
-                  <Loader2 className='h-4 w-4 animate-spin' />
-                  Processing...
-                </>
-              ) : (
-                <>
-                  Continue without pets
-                  <ArrowRight className='h-4 w-4' />
-                </>
-              )}
-            </Button>
-          </>
-        ) : (
-          <Button
-            onClick={onComplete}
-            className='ml-auto gap-2'
-            disabled={isUpdating}
-          >
-            {isUpdating ? (
-              <>
-                <Loader2 className='h-4 w-4 animate-spin' />
-                Processing...
-              </>
-            ) : (
-              <>
-                Continue
-                <ArrowRight className='h-4 w-4' />
-              </>
-            )}
-          </Button>
+              <FormField
+                control={basicInfoForm.control}
+                name='name'
+                render={({ field }) => (
+                  <FormItem className='grid grid-rows-[auto_auto_minmax(1.25rem,_auto)] gap-1'>
+                    <FormLabel>
+                      Pet Name <span className='text-primary'>Required</span>
+                    </FormLabel>
+                    <FormControl>
+                      <Input placeholder='Buddy' {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={basicInfoForm.control}
+                name='species'
+                render={({ field }) => (
+                  <FormItem className='grid grid-rows-[auto_auto_minmax(1.25rem,_auto)] gap-1'>
+                    <FormLabel>Species</FormLabel>
+                    <FormControl>
+                      <RadioGroup
+                        onValueChange={field.onChange}
+                        value={field.value as string | undefined}
+                        className='grid grid-cols-2 gap-3'
+                      >
+                        <FormItem>
+                          <FormControl>
+                            <RadioGroupItem
+                              value='dog'
+                              id='species-dog'
+                              className='peer sr-only'
+                            />
+                          </FormControl>
+                          <FormLabel
+                            htmlFor='species-dog'
+                            className={cn(
+                              'flex flex-col items-center justify-center rounded-md border-2 border-muted p-4 hover:border-muted-foreground/20 hover:bg-muted/30 peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/10 [&:has([data-state=checked])]:border-primary',
+                              'cursor-pointer transition-colors',
+                            )}
+                          >
+                            <Dog className='mb-1 h-5 w-5 text-muted-foreground peer-data-[state=checked]:text-primary [&:has([data-state=checked])]:text-primary' />
+                            <span className='font-medium text-muted-foreground peer-data-[state=checked]:text-primary [&:has([data-state=checked])]:text-primary'>
+                              Dog
+                            </span>
+                          </FormLabel>
+                        </FormItem>
+                        <FormItem>
+                          <FormControl>
+                            <RadioGroupItem
+                              value='cat'
+                              id='species-cat'
+                              className='peer sr-only'
+                            />
+                          </FormControl>
+                          <FormLabel
+                            htmlFor='species-cat'
+                            className={cn(
+                              'flex flex-col items-center justify-center rounded-md border-2 border-muted p-4 hover:border-muted-foreground/20 hover:bg-muted/30 peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/10 [&:has([data-state=checked])]:border-primary',
+                              'cursor-pointer transition-colors',
+                            )}
+                          >
+                            <Cat className='mb-1 h-5 w-5 text-muted-foreground peer-data-[state=checked]:text-primary [&:has([data-state=checked])]:text-primary' />
+                            <span className='font-medium text-muted-foreground peer-data-[state=checked]:text-primary [&:has([data-state=checked])]:text-primary'>
+                              Cat
+                            </span>
+                          </FormLabel>
+                        </FormItem>
+                      </RadioGroup>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={basicInfoForm.control}
+                name='sex'
+                render={({ field }) => (
+                  <FormItem className='grid grid-rows-[auto_auto_minmax(1.25rem,_auto)] gap-1'>
+                    <FormLabel>Sex</FormLabel>
+                    <FormControl>
+                      <RadioGroup
+                        onValueChange={field.onChange}
+                        value={field.value as string | undefined}
+                        className='grid grid-cols-2 gap-3'
+                      >
+                        <FormItem>
+                          <FormControl>
+                            <RadioGroupItem
+                              value='male'
+                              id='sex-male'
+                              className='peer sr-only'
+                            />
+                          </FormControl>
+                          <FormLabel
+                            htmlFor='sex-male'
+                            className={cn(
+                              'flex flex-col items-center justify-center rounded-md border-2 border-muted p-4 hover:border-muted-foreground/20 hover:bg-muted/30 peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/10 [&:has([data-state=checked])]:border-primary',
+                              'cursor-pointer transition-colors',
+                            )}
+                          >
+                            <Mars className='mb-1 h-5 w-5 text-muted-foreground peer-data-[state=checked]:text-primary [&:has([data-state=checked])]:text-primary' />
+                            <span className='font-medium text-muted-foreground peer-data-[state=checked]:text-primary [&:has([data-state=checked])]:text-primary'>
+                              Male
+                            </span>
+                          </FormLabel>
+                        </FormItem>
+                        <FormItem>
+                          <FormControl>
+                            <RadioGroupItem
+                              value='female'
+                              id='sex-female'
+                              className='peer sr-only'
+                            />
+                          </FormControl>
+                          <FormLabel
+                            htmlFor='sex-female'
+                            className={cn(
+                              'flex flex-col items-center justify-center rounded-md border-2 border-muted p-4 hover:border-muted-foreground/20 hover:bg-muted/30 peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/10 [&:has([data-state=checked])]:border-primary',
+                              'cursor-pointer transition-colors',
+                            )}
+                          >
+                            <Venus className='mb-1 h-5 w-5 text-muted-foreground peer-data-[state=checked]:text-primary [&:has([data-state=checked])]:text-primary' />
+                            <span className='font-medium text-muted-foreground peer-data-[state=checked]:text-primary [&:has([data-state=checked])]:text-primary'>
+                              Female
+                            </span>
+                          </FormLabel>
+                        </FormItem>
+                      </RadioGroup>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={basicInfoForm.control}
+                name='dob'
+                render={({ field }) => (
+                  <FormItem className='grid grid-rows-[auto_auto_minmax(1.25rem,_auto)] gap-1'>
+                    <FormLabel>
+                      Birth Date <span className='text-primary'>Required</span>
+                    </FormLabel>
+                    <FormControl>
+                      <DatePicker
+                        className='w-full'
+                        date={field.value}
+                        onChange={field.onChange}
+                        disabled={afterToday}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className='flex justify-end mt-6'>
+                <Button type='submit' disabled={isSubmitting || isUpdating}>
+                  Next Step
+                  <ArrowRight className='h-4 w-4 ml-2' />
+                </Button>
+              </div>
+            </form>
+          </Form>
         )}
-      </div>
+
+        {currentMicroStep === 'characteristics' && (
+          <Form {...characteristicsForm}>
+            <form
+              onSubmit={characteristicsForm.handleSubmit(
+                onCharacteristicsSubmit,
+              )}
+              className='space-y-4'
+            >
+              <FormField
+                control={characteristicsForm.control}
+                name='breed'
+                render={({ field }) => (
+                  <FormItem className='grid grid-rows-[auto_auto_minmax(1.25rem,_auto)] gap-1'>
+                    <FormLabel>
+                      Breed <span className='text-primary'>Required</span>
+                    </FormLabel>
+                    <FormControl>
+                      <Input placeholder='Golden Retriever' {...field} />
+                    </FormControl>
+                    <FormDescription>
+                      Enter &quot;Mixed&quot; or &quot;Unknown&quot; if
+                      you&apos;re not sure
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={characteristicsForm.control}
+                name='colors'
+                render={({ field }) => (
+                  <FormItem className='grid grid-rows-[auto_auto_minmax(1.25rem,_auto)] gap-1'>
+                    <FormLabel>
+                      Colors{' '}
+                      <span className='text-muted-foreground text-sm'>
+                        (Optional)
+                      </span>
+                    </FormLabel>
+                    <FormControl>
+                      <Input placeholder='Golden, White, Brown' {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={characteristicsForm.control}
+                name='notes'
+                render={({ field }) => (
+                  <FormItem className='grid grid-rows-[auto_auto_minmax(1.25rem,_auto)] gap-1'>
+                    <FormLabel>
+                      Notes{' '}
+                      <span className='text-muted-foreground text-sm'>
+                        (Optional)
+                      </span>
+                    </FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder='Any special notes about your pet'
+                        {...field}
+                      ></Textarea>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className='flex justify-between mt-6'>
+                <Button
+                  type='button'
+                  variant='outline'
+                  onClick={goToPreviousMicroStep}
+                  disabled={isSubmitting || isUpdating}
+                >
+                  <ArrowLeft className='h-4 w-4 mr-2' />
+                  Back
+                </Button>
+                <Button type='submit' disabled={isSubmitting || isUpdating}>
+                  Next Step
+                  <ArrowRight className='h-4 w-4 ml-2' />
+                </Button>
+              </div>
+            </form>
+          </Form>
+        )}
+
+        {currentMicroStep === 'passport' && (
+          <Form {...passportForm}>
+            <form
+              onSubmit={passportForm.handleSubmit(onPassportSubmit)}
+              className='space-y-4'
+            >
+              <FormField
+                control={passportForm.control}
+                name='passportSerialNumber'
+                render={({ field }) => (
+                  <FormItem className='grid grid-rows-[auto_auto_minmax(1.25rem,_auto)] gap-1'>
+                    <FormLabel>
+                      Passport Serial Number{' '}
+                      <span className='text-primary'>Required</span>
+                    </FormLabel>
+                    <FormControl>
+                      <Input placeholder='ABC123456789' {...field} />
+                    </FormControl>
+                    <FormDescription>
+                      Leave blank if your pet doesn&apos;t have a passport yet
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={passportForm.control}
+                name='passportIssueDate'
+                render={({ field }) => (
+                  <FormItem className='grid grid-rows-[auto_auto_minmax(1.25rem,_auto)] gap-1'>
+                    <FormLabel>
+                      Issue Date <span className='text-primary'>Required</span>
+                    </FormLabel>
+                    <FormControl>
+                      <DatePicker
+                        date={field.value}
+                        onChange={field.onChange}
+                        disabled={afterToday}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className='flex justify-between mt-6'>
+                <Button
+                  type='button'
+                  variant='outline'
+                  onClick={goToPreviousMicroStep}
+                  disabled={isSubmitting || isUpdating}
+                >
+                  <ArrowLeft className='h-4 w-4 mr-2' />
+                  Back
+                </Button>
+                <Button type='submit' disabled={isSubmitting || isUpdating}>
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className='h-4 w-4 animate-spin mr-2' />
+                      Processing...
+                    </>
+                  ) : (
+                    <>
+                      Complete
+                      <ArrowRight className='h-4 w-4 ml-2' />
+                    </>
+                  )}
+                </Button>
+              </div>
+            </form>
+          </Form>
+        )}
+      </Card>
     </div>
   );
 }

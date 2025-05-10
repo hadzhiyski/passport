@@ -25,12 +25,6 @@ export async function updateOnboardingStep(
       .set({
         currentStep: step,
         updatedAt: new Date(),
-        ...(step === 'complete'
-          ? {
-              completed: true,
-              completedAt: new Date(),
-            }
-          : {}),
       })
       .where(eq(userOnboardingTable.userId, userId));
 
@@ -49,7 +43,6 @@ export async function updateOnboardingStep(
   }
 }
 
-// Mark onboarding as complete for a user
 export async function completeOnboarding(userId: string) {
   try {
     await db

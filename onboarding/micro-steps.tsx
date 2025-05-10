@@ -1,7 +1,13 @@
 'use client';
 
 import { STEPS_CONFIG } from '@passport/onboarding';
-import React, { createContext, useCallback, useContext, useState } from 'react';
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
 
 function getAvailableMicroSteps<T extends keyof typeof STEPS_CONFIG>(
   step: T,
@@ -39,9 +45,14 @@ export function MicroStepsProvider({
   initialMicroStep,
 }: MicroStepsProviderProps) {
   const all = getAvailableMicroSteps(mainStep);
-  const [current, updateCurrent] = useState<string | null>(
-    initialMicroStep || (all && all.length > 0 ? all[0] : null),
-  );
+  const initialCurrentStep =
+    initialMicroStep || (all && all.length > 0 ? all[0] : null);
+
+  const [current, updateCurrent] = useState<string | null>(initialCurrentStep);
+
+  useEffect(() => {
+    updateCurrent(initialCurrentStep);
+  }, [initialCurrentStep]);
 
   const index = current && all ? all.indexOf(current) : -1;
 

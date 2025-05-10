@@ -17,12 +17,14 @@ export const afterToday: Matcher = {
 };
 
 export interface DatePickerProps {
+  className?: string;
   date?: Date | string | null | undefined;
   onChange: (...event: unknown[]) => void;
   disabled?: ComponentProps<typeof DayPicker>['disabled'];
 }
 
 export default function DatePicker({
+  className,
   date,
   onChange,
   disabled,
@@ -32,7 +34,7 @@ export default function DatePicker({
     ? typeof date === 'string'
       ? new Date(date)
       : date
-    : new Date();
+    : undefined;
 
   return (
     <Popover open={isOpen}>
@@ -43,6 +45,7 @@ export default function DatePicker({
             className={cn(
               'w-[240px] pl-3 text-left font-normal',
               !dateValue && 'text-muted-foreground',
+              className,
             )}
             onClick={() => setIsOpen((prev) => !prev)}
           >

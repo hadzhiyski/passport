@@ -1,10 +1,19 @@
 'use client';
 
+import { Button } from '@passport/components/ui/button';
 import { Card } from '@passport/components/ui/card';
-import { OnboardingStep } from '@passport/onboarding';
-import { updateOnboardingStep } from '@passport/onboarding/actions';
+import {
+  getNextStep,
+  OnboardingStep,
+  STEPS_CONFIG,
+} from '@passport/onboarding';
+import {
+  completeOnboarding,
+  updateOnboardingStep,
+} from '@passport/onboarding/actions';
 import { MicroStepsProvider } from '@passport/onboarding/micro-steps';
 import { User } from '@passport/user';
+import { ArrowRight, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { OnboardingStepsNav } from './onboarding-steps-nav';
@@ -32,11 +41,7 @@ export function OnboardingFlow({
       const result = await updateOnboardingStep(user.id, nextStep);
 
       if (result.success) {
-        if (nextStep === 'complete') {
-          router.push('/pets');
-        } else {
-          setCurrentStep(nextStep);
-        }
+        setCurrentStep(nextStep);
       } else {
         console.error('Error updating onboarding step:', result.error);
       }
@@ -47,7 +52,8 @@ export function OnboardingFlow({
     }
   };
 
-  // Wrap specific steps that have micro steps with the provider
+  const canSkipCurrentStep = STEPS_CONFIG[currentStep]?.canSkip || false;
+
   const renderCurrentStep = () => {
     if (currentStep === 'welcome') {
       return (
@@ -81,7 +87,10 @@ export function OnboardingFlow({
       return (
         <CompleteStep
           user={user}
-          onComplete={() => router.push('/pets')}
+          onComplete={async () => {
+            await completeOnboarding(user.id);
+            router.push('/pets');
+          }}
           isUpdating={isUpdating}
         />
       );
@@ -93,7 +102,32 @@ export function OnboardingFlow({
   return (
     <div className='flex flex-col space-y-6'>
       <MicroStepsProvider mainStep={currentStep}>
-        <OnboardingStepsNav currentStep={currentStep} />
+        <div className='flex justify-between items-center'>
+          <OnboardingStepsNav currentStep={currentStep} />
+
+          {/* Skip button - only shown for steps that can be skipped */}
+          {canSkipCurrentStep && (
+            <Button
+              onClick={() => handleCompleteStep(getNextStep(currentStep))}
+              disabled={isUpdating}
+              variant='ghost'
+              className='gap-2'
+            >
+              {isUpdating ? (
+                <>
+                  <Loader2 className='h-4 w-4 animate-spin' />
+                  Processing...
+                </>
+              ) : (
+                <>
+                  Skip for now
+                  <ArrowRight className='h-4 w-4' />
+                </>
+              )}
+            </Button>
+          )}
+        </div>
+
         <Card className='p-6 shadow-lg'>{renderCurrentStep()}</Card>
       </MicroStepsProvider>
     </div>

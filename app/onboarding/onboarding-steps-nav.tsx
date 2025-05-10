@@ -17,7 +17,7 @@ export function OnboardingStepsNav({ currentStep }: OnboardingStepsNavProps) {
   const currentStepIndex = ONBOARDING_STEPS_ORDER.indexOf(currentStep);
 
   return (
-    <div className='flex justify-end mb-6'>
+    <div className='flex justify-end'>
       <div className='flex flex-col'>
         <div className='flex items-center gap-2'>
           {ONBOARDING_STEPS_ORDER.slice(0, -1).map((step, index) => {
