@@ -7,7 +7,7 @@ export const petFormSchema = z.object({
   sex: z.enum(['male', 'female']),
   species: z.enum(['dog', 'cat']),
   breed: z.string().min(1, 'Breed is required'),
-  colors: z.string().optional(),
+  colors: z.array(z.string()).optional(),
   notes: z.string().optional(),
   passportSerialNumber: z.string(),
   passportIssueDate: z.coerce.date(),
@@ -18,10 +18,10 @@ export const basicInfoSchema = petFormSchema.pick({
   name: true,
   dob: true,
   sex: true,
-  species: true,
 });
 
 export const characteristicsSchema = petFormSchema.pick({
+  species: true,
   breed: true,
   colors: true,
   notes: true,
@@ -32,7 +32,7 @@ export const passportSchema = petFormSchema.pick({
   passportIssueDate: true,
 });
 
-export type PetFormValues = z.infer<typeof petFormSchema>;
 export type BasicInfoValues = z.infer<typeof basicInfoSchema>;
 export type CharacteristicsValues = z.infer<typeof characteristicsSchema>;
 export type PassportValues = z.infer<typeof passportSchema>;
+export type PetFormValues = BasicInfoValues & CharacteristicsValues;

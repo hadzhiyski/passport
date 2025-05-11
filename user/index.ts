@@ -1,4 +1,5 @@
 import { db } from '@passport/database';
+import { ownersTable } from '@passport/database/schema/owners';
 import { userOnboardingTable } from '@passport/database/schema/user-onboarding';
 import { auth0 } from '@passport/lib/auth0';
 import { isOnboardingStep } from '@passport/onboarding';
@@ -14,6 +15,24 @@ export async function getUserId(): Promise<string | undefined> {
     return undefined;
   }
   return user.sub;
+}
+
+export async function getUserOwnerId(): Promise<string | undefined> {
+  const session = await auth0.getSession();
+  const user = session?.user;
+  if (!user || !user.sub) {
+    return undefined;
+  }
+  const owner = await db.query.ownersTable.findFirst({
+    where: eq(ownersTable.externalId, user.sub),
+    columns: {
+      id: true,
+    },
+  });
+  if (!owner) {
+    return undefined;
+  }
+  return owner.id;
 }
 
 export async function getUser(): Promise<User | undefined> {

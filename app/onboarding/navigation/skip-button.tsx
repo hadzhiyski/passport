@@ -4,16 +4,23 @@ import { ArrowRight, Loader2 } from 'lucide-react';
 
 export interface SkipButtonProps {
   currentStep: OnboardingStep;
+  currentMicroStep: string | null;
   onClick: () => void;
   isUpdating: boolean;
 }
 
 export function SkipButton({
   currentStep,
+  currentMicroStep,
   onClick,
   isUpdating,
 }: SkipButtonProps) {
-  const canSkipCurrentStep = STEPS_CONFIG[currentStep]?.canSkip || false;
+  const canSkipCurrentStep =
+    STEPS_CONFIG[currentStep]?.canSkip ||
+    (currentMicroStep &&
+      STEPS_CONFIG[currentStep].microSteps &&
+      STEPS_CONFIG[currentStep].microSteps[currentMicroStep]?.canSkip) ||
+    false;
   return canSkipCurrentStep ? (
     <Button
       onClick={onClick}

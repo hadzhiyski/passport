@@ -10,7 +10,7 @@ import {
 import { ownersTable } from './owners';
 import { petsTable } from './pets';
 import { auditTimestamps, softDeleteTimestamps } from './timestamps';
-import { integerSqid, serialSqid } from './types/sqid';
+import { integerSqid, integerSqidNullable, serialSqid } from './types/sqid';
 import { veterinariansTable } from './veterinarians';
 
 export const passportsTable = pgTable(
@@ -22,7 +22,7 @@ export const passportsTable = pgTable(
     issuedBy: integerSqid('veterinarians').notNull(),
     petId: integerSqid('pets').notNull(),
     owner1Id: integerSqid('owners').notNull(),
-    owner2Id: integerSqid('owners'),
+    owner2Id: integerSqidNullable('owners'),
     ...auditTimestamps,
     ...softDeleteTimestamps,
   },

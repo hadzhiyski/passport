@@ -14,13 +14,16 @@ export const ONBOARDING_STEPS_ORDER: OnboardingStep[] = [
   'complete',
 ];
 
-export interface StepConfig {
+export interface Step {
   label: string;
   canSkip?: boolean;
-  microSteps?: {
-    [key: string]: string;
-  };
 }
+
+export type StepConfig = Step & {
+  microSteps?: {
+    [key: string]: Step;
+  };
+};
 
 // Configuration for steps, including micro steps
 export const STEPS_CONFIG: Record<OnboardingStep, StepConfig> = {
@@ -28,17 +31,16 @@ export const STEPS_CONFIG: Record<OnboardingStep, StepConfig> = {
   profile: {
     label: 'Profile',
     microSteps: {
-      personal: 'Personal Info',
-      address: 'Address Info',
+      personal: { label: 'Personal Info' },
+      address: { label: 'Address Info' },
     },
   },
   pets: {
     label: 'Pets',
-    canSkip: true,
     microSteps: {
-      basic: 'Basic Information',
-      characteristics: 'Physical Characteristics',
-      passport: 'Passport Details',
+      basic: { label: 'Basic Information' },
+      characteristics: { label: 'Physical Characteristics' },
+      passport: { label: 'Passport Details', canSkip: true },
     },
   },
   complete: { label: 'Complete' },

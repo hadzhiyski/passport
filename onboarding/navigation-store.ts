@@ -283,8 +283,7 @@ export function useActiveMicroStep(): { name: string; label: string } | null {
   const microStepsConfig = STEPS_CONFIG[currentMainStep].microSteps;
   if (!microStepsConfig) return null;
 
-  const label = microStepsConfig[currentMicroStep];
-  if (!label) return null;
+  const label = microStepsConfig[currentMicroStep]?.label;
 
   return { name: currentMicroStep, label };
 }
@@ -307,6 +306,6 @@ export function useMicroStepsWithLabels(): Array<{
 
   return microSteps.map((name) => ({
     name,
-    label: microStepsConfig[name],
+    label: microStepsConfig[name]?.label,
   }));
 }

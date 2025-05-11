@@ -17,7 +17,7 @@ export function BackButton({
   isUpdating,
   onNavigateBack,
 }: BackButtonProps) {
-  const showBackButton = currentStep !== 'welcome'; // Show back button on all steps except welcome
+  const showBackButton = currentStep !== 'welcome';
 
   if (!showBackButton) return null;
 

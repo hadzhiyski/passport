@@ -1,0 +1,2 @@
+ALTER TABLE "pets" ADD COLUMN "no_passport_owner_id" integer;--> statement-breakpoint
+ALTER TABLE "pets" ADD CONSTRAINT "pets_no_passport_owner_id_owners_id_fk" FOREIGN KEY ("no_passport_owner_id") REFERENCES "public"."owners"("id") ON DELETE no action ON UPDATE no action;

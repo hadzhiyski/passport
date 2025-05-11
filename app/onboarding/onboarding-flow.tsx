@@ -77,7 +77,6 @@ export function OnboardingFlow({
       const result = await updateOnboardingStep(user.id, nextStep);
 
       if (result.success) {
-        // Update our navigation store
         goToStep(nextStep);
       } else {
         console.error('Error updating onboarding step:', result.error);
@@ -203,8 +202,9 @@ export function OnboardingFlow({
         <div className='justify-self-end'>
           <SkipButton
             currentStep={currentMainStep}
+            currentMicroStep={currentMicroStep}
             isUpdating={isUpdating}
-            onClick={() => handleCompleteStep(getNextStep(currentMainStep))}
+            onClick={() => handleNextMicroStep()}
           />
         </div>
       </div>

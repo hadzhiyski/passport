@@ -13,14 +13,21 @@ import {
   FormMessage,
 } from '@passport/components/ui/form';
 import { Input } from '@passport/components/ui/input';
+import { useOnboardingDataStore } from '@passport/onboarding/onboarding-data-store';
 import {
   tryGetOrAssumeOwnerProfile,
   upsertOwnerProfile,
-} from '@passport/owners/actions';
+} from '@passport/onboarding/steps/profile/actions';
+import {
+  AddressInfoValues,
+  PersonalInfoValues,
+  ProfileFormValues,
+  addressInfoSchema,
+  personalInfoSchema,
+} from '@passport/onboarding/steps/profile/schema';
 import { ArrowRight, Loader2, MapPin, UserCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { z } from 'zod';
 
 interface ProfileStepProps {
   onComplete: () => void;
@@ -29,72 +36,40 @@ interface ProfileStepProps {
   onNextMicroStep: () => void;
 }
 
-// Define form validation schema
-const profileFormSchema = z.object({
-  firstname: z.string().min(1, 'First name is required'),
-  lastname: z.string().min(1, 'Last name is required'),
-  address: z.string().min(1, 'Address is required'),
-  city: z.string().min(1, 'City is required'),
-  country: z.string().min(1, 'Country is required'),
-  postcode: z.string().optional(),
-  phone: z.string().optional(),
-});
-
-// Sub-schemas for micro steps
-const personalInfoSchema = profileFormSchema.pick({
-  firstname: true,
-  lastname: true,
-  phone: true,
-});
-
-const addressInfoSchema = profileFormSchema.pick({
-  address: true,
-  city: true,
-  country: true,
-  postcode: true,
-});
-
-type ProfileFormValues = z.infer<typeof profileFormSchema>;
-type PersonalInfoValues = z.infer<typeof personalInfoSchema>;
-type AddressInfoValues = z.infer<typeof addressInfoSchema>;
-
 export function ProfileStep({
   onComplete,
   isUpdating = false,
   microStep,
   onNextMicroStep,
 }: ProfileStepProps) {
+  const [initialized, setInitialized] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const {
+    steps: { profile },
+    storeProfileAddressData,
+    storeProfilePersonalData,
+  } = useOnboardingDataStore();
   const [formData, setFormData] = useState<ProfileFormValues>({
-    firstname: '',
-    lastname: '',
-    address: '',
-    city: '',
-    country: '',
-    postcode: '',
-    phone: '',
+    firstname: profile.personal?.firstname || '',
+    lastname: profile.personal?.lastname || '',
+    address: profile.address?.address || '',
+    city: profile.address?.city || '',
+    country: profile.address?.country || '',
+    postcode: profile.address?.postcode,
+    phone: profile.personal?.phone,
   });
 
   // Define form with validation for current micro step
   const personalInfoForm = useForm<PersonalInfoValues>({
     resolver: zodResolver(personalInfoSchema),
-    defaultValues: {
-      firstname: formData.firstname,
-      lastname: formData.lastname,
-      phone: formData.phone,
-    },
+    defaultValues: { ...profile.personal },
   });
 
   const addressInfoForm = useForm<AddressInfoValues>({
     resolver: zodResolver(addressInfoSchema),
-    defaultValues: {
-      address: formData.address,
-      city: formData.city,
-      country: formData.country,
-      postcode: formData.postcode,
-    },
+    defaultValues: { ...profile.address },
   });
 
   // Load existing profile data on component mount
@@ -102,35 +77,50 @@ export function ProfileStep({
     async function fetchProfile() {
       try {
         setIsLoading(true);
-        const response = await tryGetOrAssumeOwnerProfile();
+        console.log('dbg::profile', { profile, initialized });
+        if (initialized) return;
+        if (!profile.personal || !profile.address) {
+          const response = await tryGetOrAssumeOwnerProfile();
 
-        if (response.success && response.profile) {
-          const profileData = {
-            firstname: response.profile.firstname || '',
-            lastname: response.profile.lastname || '',
-            address: response.profile.address || '',
-            city: response.profile.city || '',
-            country: response.profile.country || '',
-            postcode: response.profile.postcode || '',
-            phone: response.profile.phone || '',
-          };
+          if (response.success && response.profile) {
+            const profileData = {
+              firstname: response.profile.firstname || '',
+              lastname: response.profile.lastname || '',
+              address: response.profile.address || '',
+              city: response.profile.city || '',
+              country: response.profile.country || '',
+              postcode: response.profile.postcode || '',
+              phone: response.profile.phone || '',
+            };
 
-          setFormData(profileData);
+            setFormData(profileData);
+            storeProfilePersonalData({
+              firstname: profileData.firstname,
+              lastname: profileData.lastname,
+              phone: profileData.phone,
+            });
+            storeProfileAddressData({
+              address: profileData.address,
+              city: profileData.city,
+              country: profileData.country,
+              postcode: profileData.postcode,
+            });
 
-          // Update the form values for each micro step
-          personalInfoForm.reset({
-            firstname: profileData.firstname,
-            lastname: profileData.lastname,
-            phone: profileData.phone,
-          });
+            personalInfoForm.reset({
+              firstname: profileData.firstname,
+              lastname: profileData.lastname,
+              phone: profileData.phone,
+            });
 
-          addressInfoForm.reset({
-            address: profileData.address,
-            city: profileData.city,
-            country: profileData.country,
-            postcode: profileData.postcode,
-          });
+            addressInfoForm.reset({
+              address: profileData.address,
+              city: profileData.city,
+              country: profileData.country,
+              postcode: profileData.postcode,
+            });
+          }
         }
+        setInitialized(true);
       } catch (err) {
         console.error('Error fetching profile data:', err);
       } finally {
@@ -139,7 +129,14 @@ export function ProfileStep({
     }
 
     fetchProfile();
-  }, [personalInfoForm, addressInfoForm]);
+  }, [
+    personalInfoForm,
+    addressInfoForm,
+    profile,
+    storeProfileAddressData,
+    storeProfilePersonalData,
+    initialized,
+  ]);
 
   // Handle personal info submission and transition to address step
   const onPersonalInfoSubmit = async (data: PersonalInfoValues) => {

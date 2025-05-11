@@ -60,12 +60,14 @@ export function serialSqid(table: SQID_TABLE) {
   })();
 }
 
-export function integerSqid(table: SQID_TABLE) {
+function integerSqidInternal<T extends { notNull: boolean; default: boolean }>(
+  table: SQID_TABLE,
+) {
   const prefix = TABLE_MAPPING[table];
   return customType<{
     data: string;
-    notNull: true;
-    default: true;
+    notNull: T['notNull'];
+    default: T['default'];
   }>({
     dataType() {
       return 'integer';
@@ -93,3 +95,12 @@ export function integerSqid(table: SQID_TABLE) {
     },
   })();
 }
+
+export const integerSqid = integerSqidInternal<{
+  notNull: true;
+  default: false;
+}>;
+export const integerSqidNullable = integerSqidInternal<{
+  notNull: false;
+  default: false;
+}>;

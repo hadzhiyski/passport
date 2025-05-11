@@ -18,10 +18,12 @@ export function CompleteStep({
   isUpdating = false,
 }: CompleteStepProps) {
   // Get the pet's name from the onboarding data store
-  const { petData } = useOnboardingDataStore();
+  const {
+    steps: { pet },
+  } = useOnboardingDataStore();
 
   // Format pet name for display using utility function
-  const petName = formatPetNameForDisplay(petData.name);
+  const petName = formatPetNameForDisplay(pet.basic?.name);
 
   return (
     <div className='space-y-6 text-center'>

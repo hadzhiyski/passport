@@ -1,5 +1,6 @@
 import {
   date,
+  foreignKey,
   pgEnum,
   pgTable,
   primaryKey,
@@ -7,7 +8,8 @@ import {
   varchar,
 } from 'drizzle-orm/pg-core';
 import { auditTimestamps } from './timestamps';
-import { serialSqid } from './types/sqid';
+import { integerSqidNullable, serialSqid } from './types/sqid';
+import { ownersTable } from './owners';
 
 export const petSpecies = pgEnum('pet_species', ['dog', 'cat']);
 export const petSex = pgEnum('pet_sex', ['male', 'female']);
@@ -23,7 +25,14 @@ export const petsTable = pgTable(
     breed: varchar({ length: 255 }).notNull(),
     colors: varchar({ length: 255 }).array().notNull().default([]),
     notes: text(),
+    noPassportOwnerId: integerSqidNullable('owners'),
     ...auditTimestamps,
   },
-  (table) => [primaryKey({ columns: [table.id] })],
+  (table) => [
+    primaryKey({ columns: [table.id] }),
+    foreignKey({
+      columns: [table.noPassportOwnerId],
+      foreignColumns: [ownersTable.id],
+    }),
+  ],
 );
