@@ -11,7 +11,7 @@ import { getHumanReadeableAge } from '@passport/lib/utils';
 import { addDays } from 'date-fns';
 import { and, eq, or, sql } from 'drizzle-orm';
 
-export async function fetchPets(userId: string) {
+export async function fetchPets(userId: string, ownerId: string) {
   const currentDate = new Date();
   const thirtyDaysLater = addDays(currentDate, 30);
 
@@ -94,6 +94,10 @@ export async function fetchPets(userId: string) {
       sex: petsTable.sex,
       dob: petsTable.dob,
       colors: petsTable.colors,
+      hasPassport:
+        sql<boolean>`CASE WHEN ${passportsTable.id} IS NOT NULL THEN true ELSE false END`.as(
+          'has_passport',
+        ),
 
       vaccinationName: latestVaccinations.name,
       vaccinationValidUntil: latestVaccinations.validUntil,
@@ -111,7 +115,7 @@ export async function fetchPets(userId: string) {
       parasiteIsExpiringSoon: sql<boolean>`${latestParasites.isExpiringSoon}`,
     })
     .from(petsTable)
-    .innerJoin(passportsTable, eq(petsTable.id, passportsTable.petId))
+    .leftJoin(passportsTable, eq(petsTable.id, passportsTable.petId))
     .leftJoin(
       ownersTable,
       or(
@@ -143,7 +147,12 @@ export async function fetchPets(userId: string) {
         eq(latestParasites.rowNum, 1),
       ),
     )
-    .where(eq(ownersTable.externalId, userId));
+    .where(
+      or(
+        eq(ownersTable.externalId, userId),
+        eq(petsTable.noPassportOwnerId, ownerId),
+      ),
+    );
 
   return petsData.map((pet) => {
     const lastVaccination = pet.vaccinationValidUntil

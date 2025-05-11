@@ -10,6 +10,7 @@ import { ownersTable } from '@passport/database/schema/owners';
 import { passportsTable } from '@passport/database/schema/passports';
 import { petsTable } from '@passport/database/schema/pets';
 import { cn } from '@passport/lib/utils';
+import { getUser, getUserOwnerId } from '@passport/user';
 import { eq, or } from 'drizzle-orm';
 import { PawPrint } from 'lucide-react';
 import Link from 'next/link';
@@ -21,27 +22,33 @@ import { PetQuickNavLinks } from './pet-quick-nav-links';
 import { Separator } from './ui/separator';
 
 export async function HeaderNav() {
-  const { getUser } = await import('@passport/user');
   const user = await getUser();
+  const ownerId = await getUserOwnerId();
 
-  const pets = user
-    ? await db
-        .select({
-          id: petsTable.id,
-          name: petsTable.name,
-          species: petsTable.species,
-        })
-        .from(petsTable)
-        .innerJoin(passportsTable, eq(petsTable.id, passportsTable.petId))
-        .leftJoin(
-          ownersTable,
-          or(
-            eq(ownersTable.id, passportsTable.owner1Id),
-            eq(ownersTable.id, passportsTable.owner2Id),
-          ),
-        )
-        .where(eq(ownersTable.externalId, user.id))
-    : [];
+  const pets =
+    user && ownerId
+      ? await db
+          .select({
+            id: petsTable.id,
+            name: petsTable.name,
+            species: petsTable.species,
+          })
+          .from(petsTable)
+          .leftJoin(passportsTable, eq(petsTable.id, passportsTable.petId))
+          .leftJoin(
+            ownersTable,
+            or(
+              eq(ownersTable.id, passportsTable.owner1Id),
+              eq(ownersTable.id, passportsTable.owner2Id),
+            ),
+          )
+          .where(
+            or(
+              eq(ownersTable.externalId, user.id),
+              eq(petsTable.noPassportOwnerId, ownerId),
+            ),
+          )
+      : [];
 
   return (
     <div className={'flex w-full items-center justify-between'}>

@@ -8,6 +8,7 @@ import {
 } from '@passport/components/ui/tooltip';
 import { format } from 'date-fns';
 import {
+  BookX,
   CalendarCheck,
   Clock,
   HeartPulse,
@@ -35,6 +36,7 @@ export interface PetCardProps {
     species?: string;
     age: string;
     colors?: string[];
+    hasPassport: boolean;
     lastVaccination: {
       name: string | null;
       validUntil: Date;
@@ -78,6 +80,29 @@ export function PetCard({ pet }: PetCardProps) {
                   {pet.healthStatus.hasExpiredTreatment && (
                     <p>This pet has expired treatments</p>
                   )}
+                  <p className='text-xs mt-1 opacity-80'>
+                    Click to view details and update records
+                  </p>
+                </div>
+              </TooltipContent>
+            </Tooltip>
+          </div>
+        )}
+
+        {!pet.hasPassport && (
+          <div className='absolute top-0 right-0 m-4'>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Badge
+                  variant='destructive'
+                  className='rounded-full text-destructive-foreground font-medium'
+                >
+                  <BookX className='h-3.5 w-3.5 mr-1' /> Missing passport
+                </Badge>
+              </TooltipTrigger>
+              <TooltipContent>
+                <div className='text-sm w-60'>
+                  <p>This pet has no registered passport</p>
                   <p className='text-xs mt-1 opacity-80'>
                     Click to view details and update records
                   </p>
