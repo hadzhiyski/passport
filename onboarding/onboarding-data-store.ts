@@ -29,7 +29,7 @@ export type OnboardingState = OnboardingDataState & {
   storePetCharacteristicsData: (data: CharacteristicsValues) => void;
   storePetPassportData: (data: PassportValues) => void;
   storePetId: (id: string) => void;
-  resetData: () => void;
+  reset: () => void;
 };
 
 /**
@@ -118,7 +118,7 @@ export const useOnboardingDataStore = create<OnboardingState>()(
         }));
       },
 
-      resetData: () => {
+      reset: () => {
         set(initialState);
       },
     }),

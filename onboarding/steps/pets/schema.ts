@@ -1,3 +1,4 @@
+import { passportSerialNumberSchema } from '@passport/passports/schema';
 import { z } from 'zod';
 
 // Define form validation schema
@@ -9,7 +10,7 @@ export const petFormSchema = z.object({
   breed: z.string().min(1, 'Breed is required'),
   colors: z.array(z.string()).optional(),
   notes: z.string().optional(),
-  passportSerialNumber: z.string(),
+  passportSerialNumber: passportSerialNumberSchema,
   passportIssueDate: z.coerce.date(),
 });
 

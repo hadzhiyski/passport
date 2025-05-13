@@ -17,6 +17,7 @@ import { CompleteStep } from './steps/complete-step';
 import { PetsStep } from './steps/pets-step';
 import { ProfileStep } from './steps/profile-step';
 import { WelcomeStep } from './steps/welcome-step';
+import { useOnboardingDataStore } from '@passport/onboarding/onboarding-data-store';
 
 interface OnboardingFlowProps {
   user: User;
@@ -36,6 +37,7 @@ export function OnboardingFlow({
     goToNextMicroStep,
     resetNavigation,
   } = useOnboardingNavigationStore();
+  const { reset: resetOnboarding } = useOnboardingDataStore();
 
   const [isUpdating, setIsUpdating] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
@@ -162,6 +164,7 @@ export function OnboardingFlow({
           onComplete={async () => {
             try {
               setIsUpdating(true);
+              resetOnboarding();
               await completeOnboarding(user.id);
               router.push('/pets');
             } catch (error) {

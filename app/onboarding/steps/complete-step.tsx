@@ -43,7 +43,7 @@ export function CompleteStep({
         </p>
       </div>
 
-      <div className='bg-slate-50 dark:bg-slate-900 rounded-lg p-5 space-y-4 text-left max-w-lg mx-auto'>
+      <div className='bg-foreground/5 rounded-lg p-6 space-y-4 text-left max-w-lg mx-auto'>
         <h3 className='text-lg font-medium'>What&apos;s next?</h3>
 
         <ul className='list-disc pl-5 space-y-3'>

@@ -3,9 +3,9 @@ import { Separator } from '@passport/components/ui/separator';
 import { cn } from '@passport/lib/utils';
 import { format } from 'date-fns';
 import {
-  BookIcon,
   ChevronRightIcon,
   HeartPulseIcon,
+  NotebookText,
   QrCodeIcon,
   UserIcon,
 } from 'lucide-react';
@@ -36,17 +36,19 @@ export type PassportProps = {
 };
 
 export interface PassportSectionProps {
+  petId: string;
   query: Promise<PassportProps[]>;
 }
 
-export async function PassportSection({ query }: PassportSectionProps) {
-  const passportSelect = await query;
+export async function PassportSection({ petId, query }: PassportSectionProps) {
   try {
+    const passportSelect = await query;
+
     if (passportSelect.length === 0) {
       return (
         <div className='flex flex-col items-center text-center p-4'>
           <div className='bg-primary/10 text-primary p-2.5 rounded-full mb-3'>
-            <BookIcon className='h-5 w-5' />
+            <NotebookText className='h-5 w-5' />
           </div>
           <h3 className='font-medium text-card-foreground mb-2'>
             No Passport Registered
@@ -58,8 +60,9 @@ export async function PassportSection({ query }: PassportSectionProps) {
             variant='outline'
             size='sm'
             className='text-primary border-primary/20'
+            asChild
           >
-            Register Passport
+            <Link href={`/pets/${petId}/passports/add`}>Register Passport</Link>
           </Button>
         </div>
       );

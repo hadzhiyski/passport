@@ -245,7 +245,9 @@ export function PetsStep({
                 name='sex'
                 render={({ field }) => (
                   <FormItem className='grid grid-rows-[auto_auto_minmax(1.25rem,_auto)] gap-1'>
-                    <FormLabel>Sex</FormLabel>
+                    <FormLabel>
+                      Sex <span className='text-primary'>Required</span>
+                    </FormLabel>
                     <FormControl>
                       <RadioGroup
                         onValueChange={field.onChange}

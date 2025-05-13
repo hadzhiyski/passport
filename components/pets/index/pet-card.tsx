@@ -8,11 +8,11 @@ import {
 } from '@passport/components/ui/tooltip';
 import { format } from 'date-fns';
 import {
-  BookX,
   CalendarCheck,
   Clock,
   HeartPulse,
   Mars,
+  NotebookText,
   ShieldCheck,
   Venus,
 } from 'lucide-react';
@@ -97,7 +97,7 @@ export function PetCard({ pet }: PetCardProps) {
                   variant='destructive'
                   className='rounded-full text-destructive-foreground font-medium'
                 >
-                  <BookX className='h-3.5 w-3.5 mr-1' /> Missing passport
+                  <NotebookText className='h-3.5 w-3.5 mr-1' /> Missing passport
                 </Badge>
               </TooltipTrigger>
               <TooltipContent>
@@ -157,7 +157,7 @@ export function PetCard({ pet }: PetCardProps) {
             </div>
 
             {pet.colors && pet.colors.length > 0 && (
-              <div className='flex items-center gap-2 flex-wrap'>
+              <div className='flex items-center justify-end gap-2 flex-wrap'>
                 {pet.colors.slice(0, 3).map((color, i) => (
                   <Badge
                     key={i}

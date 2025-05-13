@@ -1,16 +1,10 @@
 import { PetHero } from '@passport/components/pets/details/layout';
 import { PassportSkeleton } from '@passport/components/pets/details/loaders';
 import { PassportSection } from '@passport/components/pets/details/sections';
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from '@passport/components/ui/card';
+import { Card, CardContent, CardHeader } from '@passport/components/ui/card';
 import { db } from '@passport/database';
 import { petsTable } from '@passport/database/schema/pets';
 import { fetchPassport } from '@passport/passports/pet-details';
-import { format } from 'date-fns';
 import { eq } from 'drizzle-orm';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
@@ -29,7 +23,6 @@ export default async function PetDetailsLayout(page: {
       breed: petsTable.breed,
       colors: petsTable.colors,
       notes: petsTable.notes,
-      updatedAt: petsTable.updatedAt,
     })
     .from(petsTable)
     .where(eq(petsTable.id, id));
@@ -64,7 +57,7 @@ export default async function PetDetailsLayout(page: {
               ) : null}
 
               <Suspense fallback={<PassportSkeleton />}>
-                <PassportSection query={passport} />
+                <PassportSection petId={id} query={passport} />
               </Suspense>
             </CardContent>
           </Card>
@@ -75,17 +68,6 @@ export default async function PetDetailsLayout(page: {
             <CardContent className='p-0'>
               <div className='p-4'>{page.children}</div>
             </CardContent>
-            <CardFooter className='px-4 py-4 text-sm border-t border-border'>
-              <div className='flex flex-col sm:flex-row sm:justify-between w-full gap-2'>
-                <span className='text-muted-foreground'>
-                  Last updated:{' '}
-                  {pet.updatedAt
-                    ? format(new Date(pet.updatedAt), 'MMMM d, yyyy')
-                    : 'Unknown'}
-                </span>
-                <span className='text-muted-foreground'>Pet ID: {id}</span>
-              </div>
-            </CardFooter>
           </Card>
         </div>
       </div>
