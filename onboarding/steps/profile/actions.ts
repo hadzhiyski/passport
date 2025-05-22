@@ -4,7 +4,6 @@ import { User } from '@auth0/nextjs-auth0/types';
 import { db } from '@passport/database';
 import { ownersTable } from '@passport/database/schema/owners';
 import { auth0 } from '@passport/lib/auth0';
-import { TrueMap } from '@passport/shared/types';
 import { capitalizeFirstLetter } from '@passport/shared/utils';
 import { eq } from 'drizzle-orm';
 
@@ -12,16 +11,6 @@ export type OwnerProfileData = Omit<
   typeof ownersTable.$inferSelect,
   'id' | 'createdAt' | 'updatedAt' | 'externalId'
 >;
-
-const selectOwnerColumns: TrueMap<OwnerProfileData> = {
-  firstname: true,
-  lastname: true,
-  address: true,
-  city: true,
-  country: true,
-  postcode: true,
-  phone: true,
-};
 
 export async function upsertOwnerProfile(profileData: OwnerProfileData) {
   const session = await auth0.getSession();
@@ -34,9 +23,9 @@ export async function upsertOwnerProfile(profileData: OwnerProfileData) {
 
   try {
     // Check if owner already exists in the database
-    const existingOwner = await db.query.ownersTable.findFirst({
-      where: eq(ownersTable.externalId, externalId),
-    });
+    const existingOwner = await db
+      .$count(ownersTable, eq(ownersTable.externalId, externalId))
+      .then((count) => count > 0);
 
     if (existingOwner) {
       // Update existing owner
@@ -78,49 +67,40 @@ export async function upsertOwnerProfile(profileData: OwnerProfileData) {
   }
 }
 
-export async function tryGetOrAssumeOwnerProfile(): Promise<
-  | {
-      success: true;
-      profile: OwnerProfileData;
-    }
-  | {
-      success: false;
-      error: string;
-    }
-> {
+export async function tryGetOrAssumeOwnerOnboardingProfile(): Promise<OwnerProfileData> {
   const session = await auth0.getSession();
 
   if (!session?.user) {
-    return { success: false, error: 'User not authenticated' };
+    throw new Error('User not authenticated');
   }
 
-  try {
-    const externalId = session.user.sub;
-    const profile = await db.query.ownersTable.findFirst({
-      columns: selectOwnerColumns,
-      where: eq(ownersTable.externalId, externalId),
-    });
+  const externalId = session.user.sub;
+  const profileSelect = await db
+    .select({
+      firstname: ownersTable.firstname,
+      lastname: ownersTable.lastname,
+      address: ownersTable.address,
+      city: ownersTable.city,
+      country: ownersTable.country,
+      postcode: ownersTable.postcode,
+      phone: ownersTable.phone,
+    })
+    .from(ownersTable)
+    .where(eq(ownersTable.externalId, externalId))
+    .limit(1);
 
-    const nameInfo = extractNameInfo(session.user);
-    return {
-      success: true,
-      profile: profile || {
-        firstname: nameInfo.firstname,
-        lastname: nameInfo.lastname,
-        address: '',
-        city: '',
-        country: '',
-        postcode: null,
-        phone: null,
-      },
-    };
-  } catch (error) {
-    console.error('Error getting owner profile:', error);
-    return {
-      success: false,
-      error: 'Failed to get profile',
-    };
-  }
+  const nameInfo = extractNameInfo(session.user);
+  return (
+    profileSelect[0] || {
+      firstname: nameInfo.firstname,
+      lastname: nameInfo.lastname,
+      address: '',
+      city: '',
+      country: '',
+      postcode: null,
+      phone: null,
+    }
+  );
 }
 
 function extractNameInfo(user: User) {

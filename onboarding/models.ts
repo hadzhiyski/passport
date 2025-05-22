@@ -1,7 +1,7 @@
 export const ONBOARDING_STEPS = [
   'welcome',
   'profile',
-  'pets',
+  'pet',
   'complete',
 ] as const;
 
@@ -10,7 +10,7 @@ export type OnboardingStep = (typeof ONBOARDING_STEPS)[number];
 export const ONBOARDING_STEPS_ORDER: OnboardingStep[] = [
   'welcome',
   'profile',
-  'pets',
+  'pet',
   'complete',
 ];
 
@@ -35,8 +35,8 @@ export const STEPS_CONFIG: Record<OnboardingStep, StepConfig> = {
       address: { label: 'Address Info' },
     },
   },
-  pets: {
-    label: 'Pets',
+  pet: {
+    label: 'Pet',
     microSteps: {
       basic: { label: 'Basic Information' },
       characteristics: { label: 'Physical Characteristics' },

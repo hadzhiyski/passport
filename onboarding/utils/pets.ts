@@ -1,4 +1,4 @@
-import { MAX_PET_NAME_LENGTH } from './constants';
+import { MAX_PET_NAME_LENGTH } from '../constants';
 
 /**
  * Formats a pet name for display in UI elements with length constraints

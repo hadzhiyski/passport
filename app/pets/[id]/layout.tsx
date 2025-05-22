@@ -4,7 +4,7 @@ import { PassportSection } from '@passport/components/pets/details/sections';
 import { Card, CardContent, CardHeader } from '@passport/components/ui/card';
 import { db } from '@passport/database';
 import { petsTable } from '@passport/database/schema/pets';
-import { fetchPassport } from '@passport/passports/pet-details';
+import { fetchPassport } from '@passport/passports/actions';
 import { eq } from 'drizzle-orm';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';

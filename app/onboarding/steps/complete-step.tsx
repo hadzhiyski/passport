@@ -1,7 +1,7 @@
 'use client';
 
 import { Button } from '@passport/components/ui/button';
-import { useOnboardingDataStore } from '@passport/onboarding/onboarding-data-store';
+import { useOnboardingDataStore } from '@passport/onboarding/stores';
 import { formatPetNameForDisplay } from '@passport/onboarding/utils';
 import { User } from '@passport/user';
 import { ArrowRight, CheckCircle, Loader2 } from 'lucide-react';
@@ -17,13 +17,19 @@ export function CompleteStep({
   onComplete,
   isUpdating = false,
 }: CompleteStepProps) {
-  // Get the pet's name from the onboarding data store
-  const {
-    steps: { pet },
-  } = useOnboardingDataStore();
+  // Get the pet's name and step completion marker from the coordinator store
+  const { getPetName, markStepComplete } = useOnboardingDataStore();
 
   // Format pet name for display using utility function
-  const petName = formatPetNameForDisplay(pet.basic?.name);
+  const petName = formatPetNameForDisplay(getPetName());
+
+  // Handle complete step
+  const handleComplete = () => {
+    // Mark the complete step as completed
+    markStepComplete('passport');
+    // Call the provided completion handler
+    onComplete();
+  };
 
   return (
     <div className='space-y-6 text-center'>
@@ -68,7 +74,7 @@ export function CompleteStep({
 
       <div className='pt-6'>
         <Button
-          onClick={onComplete}
+          onClick={handleComplete}
           size='lg'
           className='gap-2'
           disabled={isUpdating}

@@ -6,8 +6,8 @@ export const profileFormSchema = z.object({
   address: z.string().min(1, 'Address is required'),
   city: z.string().min(1, 'City is required'),
   country: z.string().min(1, 'Country is required'),
-  postcode: z.string().optional(),
-  phone: z.string().optional(),
+  postcode: z.string().nullable(),
+  phone: z.string().nullable(),
 });
 
 export const personalInfoSchema = profileFormSchema.pick({

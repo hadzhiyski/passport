@@ -4,7 +4,7 @@ import { FilterOptions } from '@passport/components/pets/index/ui/filter-options
 import { SortOptions } from '@passport/components/pets/index/ui/sort-options';
 import { SearchInput } from '@passport/components/search-input';
 import { Button } from '@passport/components/ui/button';
-import { getOnboardingUser } from '@passport/user';
+import { getUser } from '@passport/user';
 import { CircleX, PlusCircleIcon } from 'lucide-react';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
@@ -15,16 +15,11 @@ export default async function PetsPage({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  const user = await getOnboardingUser();
+  const user = await getUser();
 
   // If no user is logged in, redirect to login
   if (!user) {
     redirect('/auth/login');
-  }
-
-  // If user hasn't completed onboarding, redirect to the onboarding flow
-  if (!user.onboarding.completed) {
-    redirect('/onboarding');
   }
 
   const resolvedParams = await searchParams;

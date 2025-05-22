@@ -6,16 +6,20 @@ import { eq } from 'drizzle-orm';
 
 export async function getOwnerNameByExternalId(
   externalId: string,
-): Promise<string | undefined> {
-  return db.query.ownersTable
-    .findFirst({
-      where: eq(ownersTable.externalId, externalId),
-      columns: {
-        firstname: true,
-        lastname: true,
-      },
+): Promise<string | null> {
+  return await db
+    .select({
+      firstname: ownersTable.firstname,
+      lastname: ownersTable.lastname,
     })
-    .then((owner) =>
-      owner ? `${owner.firstname} ${owner.lastname}` : undefined,
-    );
+    .from(ownersTable)
+    .where(eq(ownersTable.externalId, externalId))
+    .limit(1)
+    .then((result) => {
+      if (result.length === 0) {
+        return null;
+      }
+      const owner = result[0];
+      return `${owner.firstname} ${owner.lastname}`;
+    });
 }

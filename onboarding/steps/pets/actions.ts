@@ -10,19 +10,39 @@ import { getUserOwnerId } from '@passport/user';
 import { eq } from 'drizzle-orm';
 import { PetFormValues } from './schema';
 
+export async function fetchOnboardingPet(petId: string) {
+  const petSelect = await db
+    .select({
+      id: petsTable.id,
+      name: petsTable.name,
+      dob: petsTable.dob,
+      breed: petsTable.breed,
+      sex: petsTable.sex,
+      species: petsTable.species,
+      notes: petsTable.notes,
+      colors: petsTable.colors,
+    })
+    .from(petsTable)
+    .where(eq(petsTable.id, petId));
+
+  if (petSelect.length === 0) {
+    return null;
+  }
+
+  return petSelect[0];
+}
+
 export async function insertPet(pet: PetFormValues) {
   const session = await auth0.getSession();
   if (!session) {
     throw new Error('User not authenticated');
   }
-  const owner1 = await db.query.ownersTable.findFirst({
-    where: eq(ownersTable.externalId, session.user.sub),
-    columns: {
-      id: true,
-    },
-  });
-
-  if (!owner1) {
+  const owner1 = await db
+    .select()
+    .from(ownersTable)
+    .where(eq(ownersTable.externalId, session.user.sub))
+    .limit(1);
+  if (owner1.length === 0) {
     throw new Error('Owner not found');
   }
 
@@ -37,7 +57,7 @@ export async function insertPet(pet: PetFormValues) {
       notes: pet.notes,
       colors: pet.colors,
       createdAt: new Date(),
-      noPassportOwnerId: owner1.id,
+      noPassportOwnerId: owner1[0].id,
     })
     .returning({
       id: petsTable.id,

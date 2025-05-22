@@ -3,9 +3,8 @@ import { ownersTable } from '@passport/database/schema/owners';
 import { userOnboardingTable } from '@passport/database/schema/user-onboarding';
 import { auth0 } from '@passport/lib/auth0';
 import { isOnboardingStep } from '@passport/onboarding';
-import { startUserOnboarding } from '@passport/onboarding/actions';
 import { getOwnerNameByExternalId } from '@passport/owners/actions';
-import { eq, sql } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 import { User, UserWithOnboarding } from './models';
 
 export async function getUserId(): Promise<string | undefined> {
@@ -17,22 +16,23 @@ export async function getUserId(): Promise<string | undefined> {
   return user.sub;
 }
 
-export async function getUserOwnerId(): Promise<string | undefined> {
+export async function getUserOwnerId(): Promise<string | null> {
   const session = await auth0.getSession();
   const user = session?.user;
   if (!user || !user.sub) {
-    return undefined;
+    return null;
   }
-  const owner = await db.query.ownersTable.findFirst({
-    where: eq(ownersTable.externalId, user.sub),
-    columns: {
-      id: true,
-    },
-  });
-  if (!owner) {
-    return undefined;
-  }
-  return owner.id;
+  return db
+    .select({ id: ownersTable.id })
+    .from(ownersTable)
+    .where(eq(ownersTable.externalId, user.sub))
+    .limit(1)
+    .then((result) => {
+      if (result.length === 0) {
+        return null;
+      }
+      return result[0].id;
+    });
 }
 
 export async function getUser(): Promise<User | undefined> {
@@ -66,42 +66,30 @@ export async function getOnboardingUser(): Promise<
     return undefined;
   }
 
-  const { journey, ...onboarding } = await db.query.userOnboardingTable
-    .findFirst({
-      columns: {
-        completed: true,
-        currentStep: true,
-      },
-      extras: {
-        journey: sql`'existing-user'`.mapWith(String).as('journey'),
-      },
-      where: eq(userOnboardingTable.userId, user.id),
+  const onboarding = await db
+    .select({
+      completed: userOnboardingTable.completed,
+      currentStep: userOnboardingTable.currentStep,
     })
-    .then((onboarding) => {
-      if (!onboarding) {
+    .from(userOnboardingTable)
+    .where(eq(userOnboardingTable.userId, user.id))
+    .limit(1)
+    .then((result) => {
+      if (result.length === 0) {
         return {
           completed: false,
           currentStep: 'welcome',
-          journey: 'new-user',
-        } satisfies UserWithOnboarding['onboarding'] & { journey: 'new-user' };
+        } satisfies UserWithOnboarding['onboarding'];
       }
-
+      const onboarding = result[0];
       if (!isOnboardingStep(onboarding.currentStep)) {
         throw new Error(`Invalid onboarding step: ${onboarding.currentStep}`);
       }
-
       return {
         completed: onboarding.completed,
         currentStep: onboarding.currentStep,
-        journey: onboarding.journey,
-      } satisfies UserWithOnboarding['onboarding'] & {
-        journey: string;
-      };
+      } satisfies UserWithOnboarding['onboarding'];
     });
-
-  if (journey === 'new-user') {
-    await startUserOnboarding(user.id);
-  }
 
   return {
     ...user,

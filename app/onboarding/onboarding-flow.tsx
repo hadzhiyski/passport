@@ -6,7 +6,9 @@ import {
   completeOnboarding,
   updateOnboardingStep,
 } from '@passport/onboarding/actions';
+import { useOnboardingData } from '@passport/onboarding/hooks';
 import { useOnboardingNavigationStore } from '@passport/onboarding/navigation-store';
+import { useOnboardingDataStore } from '@passport/onboarding/stores';
 import { User } from '@passport/user';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -14,10 +16,9 @@ import { BackButton } from './navigation/back-button';
 import { SkipButton } from './navigation/skip-button';
 import { OnboardingStepsNav } from './onboarding-steps-nav';
 import { CompleteStep } from './steps/complete-step';
-import { PetsStep } from './steps/pets-step';
-import { ProfileStep } from './steps/profile-step';
+import { PetStep } from './steps/pet';
+import { ProfileStep } from './steps/profile';
 import { WelcomeStep } from './steps/welcome-step';
-import { useOnboardingDataStore } from '@passport/onboarding/onboarding-data-store';
 
 interface OnboardingFlowProps {
   user: User;
@@ -37,11 +38,14 @@ export function OnboardingFlow({
     goToNextMicroStep,
     resetNavigation,
   } = useOnboardingNavigationStore();
-  const { reset: resetOnboarding } = useOnboardingDataStore();
 
   const [isUpdating, setIsUpdating] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
   const router = useRouter();
+
+  // Use our custom hook to manage onboarding data
+  // This will automatically initialize data from all stores as needed
+  const { isLoading: isDataLoading, error: dataError } = useOnboardingData();
 
   // Initialize the store with the server-provided initial step only on first mount
   useEffect(() => {
@@ -76,13 +80,13 @@ export function OnboardingFlow({
   const handleCompleteStep = async (nextStep: OnboardingStep) => {
     try {
       setIsUpdating(true);
-      const result = await updateOnboardingStep(user.id, nextStep);
 
-      if (result.success) {
-        goToStep(nextStep);
-      } else {
-        console.error('Error updating onboarding step:', result.error);
-      }
+      // Mark the current step as complete in our store
+      const { markStepComplete } = useOnboardingDataStore.getState();
+      markStepComplete(currentMainStep as 'profile' | 'pet' | 'passport');
+
+      await updateOnboardingStep(user.id, nextStep);
+      goToStep(nextStep);
     } catch (error) {
       console.error('Error updating onboarding step:', error);
     } finally {
@@ -138,7 +142,7 @@ export function OnboardingFlow({
     if (currentMainStep === 'profile') {
       return (
         <ProfileStep
-          onComplete={() => handleCompleteStep('pets')}
+          onComplete={() => handleCompleteStep('pet')}
           isUpdating={isUpdating}
           microStep={currentMicroStep}
           onNextMicroStep={handleNextMicroStep}
@@ -146,9 +150,9 @@ export function OnboardingFlow({
       );
     }
 
-    if (currentMainStep === 'pets') {
+    if (currentMainStep === 'pet') {
       return (
-        <PetsStep
+        <PetStep
           onComplete={() => handleCompleteStep('complete')}
           isUpdating={isUpdating}
           microStep={currentMicroStep}
@@ -164,7 +168,6 @@ export function OnboardingFlow({
           onComplete={async () => {
             try {
               setIsUpdating(true);
-              resetOnboarding();
               await completeOnboarding(user.id);
               router.push('/pets');
             } catch (error) {
@@ -182,12 +185,20 @@ export function OnboardingFlow({
 
   return (
     <div className='flex flex-col space-y-6 relative'>
-      {isUpdating && (
+      {(isUpdating || isDataLoading) && (
         <div className='absolute inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center'>
           <div className='text-center'>
             <div className='inline-block animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full mb-4'></div>
-            <p className='text-muted-foreground'>Processing...</p>
+            <p className='text-muted-foreground'>
+              {isUpdating ? 'Processing...' : 'Loading data...'}
+            </p>
           </div>
+        </div>
+      )}
+
+      {dataError && (
+        <div className='bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm'>
+          {dataError}
         </div>
       )}
 

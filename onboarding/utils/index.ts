@@ -1,0 +1,1 @@
+export { formatPetNameForDisplay } from './pets';
