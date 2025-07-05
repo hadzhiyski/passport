@@ -11,7 +11,9 @@
     "format:check": "prettier --check .",
     "format:fix": "prettier --write .",
     "fix": "npm run lint:fix && npm run format:fix",
-    "prepare": "husky"
+    "drizzle:generate": "drizzle-kit generate",
+    "drizzle:migrate": "drizzle-kit migrate",
+    "drizzle:studio": "drizzle-kit studio"
   },
   "lint-staged": {
     "**/*.{js,jsx,ts,tsx}": [
@@ -23,7 +25,9 @@
   },
   "dependencies": {
     "@tailwindcss/postcss": "^4.1.11",
+    "drizzle-orm": "^0.44.2",
     "next": "15.3.5",
+    "pg": "^8.16.3",
     "postcss": "^8.5.6",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
@@ -32,9 +36,11 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@types/node": "^20",
+    "@types/pg": "^8.15.4",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "dotenv": "^17.0.1",
+    "drizzle-kit": "^0.31.4",
     "eslint": "^9",
     "eslint-config-next": "15.3.5",
     "eslint-config-prettier": "^10.1.1",
