@@ -1,16 +1,32 @@
-import { drizzle } from 'drizzle-orm/node-postgres';
-import { Pool } from 'pg';
+import { drizzle, PostgresJsDatabase } from 'drizzle-orm/postgres-js';
+
+import postgres from 'postgres';
 import { PASSPORT_SCHEMA } from './schema';
 
-const databaseUrl = process.env.DATABASE_URL;
+export type Schema = typeof PASSPORT_SCHEMA;
+export type Database = PostgresJsDatabase<Schema>;
 
-const pool = new Pool({
-  connectionString: databaseUrl,
-  max: 3,
-});
+let _db: PostgresJsDatabase<Schema> | undefined;
 
-export const db = drizzle(pool, {
-  casing: 'snake_case',
-  logger: true,
-  schema: PASSPORT_SCHEMA,
-});
+export function getDb(): PostgresJsDatabase<Schema> {
+  if (_db) {
+    return _db;
+  }
+
+  const databaseUrl = process.env.DATABASE_URL;
+  if (!databaseUrl) {
+    throw new Error('DATABASE_URL is not set in environment variables.');
+  }
+
+  const connection = postgres(databaseUrl, {
+    prepare: false,
+  });
+
+  _db = drizzle(connection, {
+    casing: 'snake_case',
+    logger: true,
+    schema: PASSPORT_SCHEMA,
+  });
+
+  return _db;
+}
