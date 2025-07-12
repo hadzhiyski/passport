@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { cn } from '@passport/lib/utils';
+import { cn } from '@passport/shared/shadcn/lib/utils';
 
 function Input({ className, type, ...props }: React.ComponentProps<'input'>) {
   return (

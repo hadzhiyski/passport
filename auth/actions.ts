@@ -1,12 +1,9 @@
 'use server';
 
-import { createClient } from '@passport/utils/supabase/server';
+import { createClient } from '@passport/shared/supabase/server';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-import {
-  signUpServerSchema,
-  signInSchema,
-} from '@passport/lib/validations/auth';
+import { signUpServerSchema, signInSchema } from '@passport/auth/schema';
 
 export async function signUp(formData: FormData) {
   const rawData = {

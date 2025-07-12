@@ -1,5 +1,5 @@
-import { getUser, signOut } from '@passport/app/actions/auth';
-import { Button } from '@passport/components/ui/button';
+import { getUser, signOut } from '@passport/auth/actions';
+import { Button } from '@passport/shared/shadcn/components/ui/button';
 import { redirect } from 'next/navigation';
 
 export default async function Dashboard() {

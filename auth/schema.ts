@@ -4,9 +4,8 @@ import { z } from 'zod';
 export const signUpSchema = z
   .object({
     email: z
-      .string()
-      .min(1, 'Email is required')
-      .email('Please enter a valid email address'),
+      .email('Please enter a valid email address')
+      .min(1, 'Email is required'),
     displayName: z
       .string()
       .min(1, 'Please tell us your name')
@@ -27,9 +26,8 @@ export const signUpSchema = z
 
 export const signInSchema = z.object({
   email: z
-    .string()
-    .min(1, 'Email is required')
-    .email('Please enter a valid email address'),
+    .email('Please enter a valid email address')
+    .min(1, 'Email is required'),
   password: z.string().min(1, 'Password is required'),
 });
 

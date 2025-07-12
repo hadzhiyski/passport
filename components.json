@@ -11,11 +11,11 @@
     "prefix": ""
   },
   "aliases": {
-    "components": "@passport/components",
-    "utils": "@passport/lib/utils",
-    "ui": "@passport/components/ui",
-    "lib": "@passport/lib",
-    "hooks": "@passport/hooks"
+    "components": "@passport/shared/shadcn/components",
+    "utils": "@passport/shared/shadcn/lib/utils",
+    "ui": "@passport/shared/shadcn/components/ui",
+    "lib": "@passport/shared/shadcn/lib",
+    "hooks": "@passport/shared/shadcn/hooks"
   },
   "iconLibrary": "lucide"
 }

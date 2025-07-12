@@ -1,4 +1,4 @@
-import { createClient } from '@passport/utils/supabase/middleware';
+import { createClient } from '@passport/shared/supabase/middleware';
 import { NextResponse, type NextRequest } from 'next/server';
 
 export async function middleware(request: NextRequest) {

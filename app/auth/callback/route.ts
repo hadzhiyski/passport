@@ -1,4 +1,4 @@
-import { createClient } from '@passport/utils/supabase/server';
+import { createClient } from '@passport/shared/supabase/server';
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 

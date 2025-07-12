@@ -1,11 +1,11 @@
-import { getUser } from '@passport/app/actions/auth';
-import { Button } from '@passport/components/ui/button';
+import { getUser } from '@passport/auth/actions';
+import { Button } from '@passport/shared/shadcn/components/ui/button';
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-} from '@passport/components/ui/card';
+} from '@passport/shared/shadcn/components/ui/card';
 import Link from 'next/link';
 
 // Force dynamic rendering and no caching for this page
