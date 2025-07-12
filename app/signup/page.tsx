@@ -1,43 +1,44 @@
 'use client';
 
 import { signUp } from '@passport/app/actions/auth';
+import { Button } from '@passport/components/ui/button';
+import { Input } from '@passport/components/ui/input';
+import { Label } from '@passport/components/ui/label';
+import {
+  signUpSchema,
+  type SignUpFormData,
+} from '@passport/lib/validations/auth';
 import Link from 'next/link';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 
 export default function SignUp() {
-  const [email, setEmail] = useState('');
-  const [displayName, setDisplayName] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+  const [submittedEmail, setSubmittedEmail] = useState('');
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<SignUpFormData>({
+    resolver: zodResolver(signUpSchema),
+  });
+
+  const onSubmit = async (data: SignUpFormData) => {
     setIsLoading(true);
     setError('');
 
-    if (!displayName.trim()) {
-      setError('Please tell us your name');
-      setIsLoading(false);
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      setError('Passwords do not match');
-      setIsLoading(false);
-      return;
-    }
-
-    if (password.length < 6) {
-      setError('Password must be at least 6 characters');
-      setIsLoading(false);
-      return;
-    }
-
     try {
-      await signUp(email, password, displayName.trim());
+      const formData = new FormData();
+      formData.append('email', data.email);
+      formData.append('password', data.password);
+      formData.append('displayName', data.displayName.trim());
+
+      await signUp(formData);
+      setSubmittedEmail(data.email);
       setSuccess(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
@@ -55,7 +56,7 @@ export default function SignUp() {
               Check your email
             </h2>
             <p className='mt-2 text-sm text-gray-600'>
-              We&apos;ve sent a confirmation link to {email}
+              We&apos;ve sent a confirmation link to {submittedEmail}
             </p>
             <Link
               href='/login'
@@ -87,7 +88,7 @@ export default function SignUp() {
           </p>
         </div>
 
-        <form className='mt-8 space-y-6' onSubmit={handleSubmit}>
+        <form className='mt-8 space-y-6' onSubmit={handleSubmit(onSubmit)}>
           {error && (
             <div className='bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md'>
               {error}
@@ -95,95 +96,73 @@ export default function SignUp() {
           )}
 
           <div className='space-y-4'>
-            <div>
-              <label
-                htmlFor='email-address'
-                className='block text-sm font-medium text-gray-700'
-              >
-                Email address
-              </label>
-              <input
+            <div className='space-y-2'>
+              <Label htmlFor='email-address'>Email address</Label>
+              <Input
                 id='email-address'
-                name='email'
                 type='email'
                 autoComplete='email'
-                required
-                className='mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm'
                 placeholder='Email address'
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                {...register('email')}
               />
+              {errors.email && (
+                <p className='text-sm text-red-600'>{errors.email.message}</p>
+              )}
             </div>
 
-            <div>
-              <label
-                htmlFor='display-name'
-                className='block text-sm font-medium text-gray-700'
-              >
-                What&apos;s your name?
-              </label>
-              <input
+            <div className='space-y-2'>
+              <Label htmlFor='display-name'>What&apos;s your name?</Label>
+              <Input
                 id='display-name'
-                name='displayName'
                 type='text'
                 autoComplete='name'
-                required
-                className='mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm'
                 placeholder='Enter your name'
-                value={displayName}
-                onChange={(e) => setDisplayName(e.target.value)}
+                {...register('displayName')}
               />
+              {errors.displayName && (
+                <p className='text-sm text-red-600'>
+                  {errors.displayName.message}
+                </p>
+              )}
             </div>
 
-            <div>
-              <label
-                htmlFor='password'
-                className='block text-sm font-medium text-gray-700'
-              >
-                Password
-              </label>
-              <input
+            <div className='space-y-2'>
+              <Label htmlFor='password'>Password</Label>
+              <Input
                 id='password'
-                name='password'
                 type='password'
                 autoComplete='new-password'
-                required
-                className='mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm'
                 placeholder='Password (min. 6 characters)'
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                {...register('password')}
               />
+              {errors.password && (
+                <p className='text-sm text-red-600'>
+                  {errors.password.message}
+                </p>
+              )}
             </div>
 
-            <div>
-              <label
-                htmlFor='confirm-password'
-                className='block text-sm font-medium text-gray-700'
-              >
-                Confirm password
-              </label>
-              <input
+            <div className='space-y-2'>
+              <Label htmlFor='confirm-password'>Confirm password</Label>
+              <Input
                 id='confirm-password'
-                name='confirm-password'
                 type='password'
                 autoComplete='new-password'
-                required
-                className='mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm'
                 placeholder='Confirm password'
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
+                {...register('confirmPassword')}
               />
+              {errors.confirmPassword && (
+                <p className='text-sm text-red-600'>
+                  {errors.confirmPassword.message}
+                </p>
+              )}
             </div>
           </div>
 
           <div>
-            <button
-              type='submit'
-              disabled={isLoading}
-              className='group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed'
-            >
+            <Button type='submit' disabled={isLoading} className='w-full'>
               {isLoading ? 'Creating account...' : 'Create account'}
-            </button>
+            </Button>
           </div>
         </form>
       </div>

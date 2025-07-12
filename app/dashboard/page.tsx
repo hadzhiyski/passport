@@ -1,4 +1,5 @@
 import { getUser, signOut } from '@passport/app/actions/auth';
+import { Button } from '@passport/components/ui/button';
 import { redirect } from 'next/navigation';
 
 export default async function Dashboard() {
@@ -24,12 +25,9 @@ export default async function Dashboard() {
                   user.email}
               </span>
               <form action={signOut}>
-                <button
-                  type='submit'
-                  className='bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium'
-                >
+                <Button type='submit' variant='destructive' size='sm'>
                   Sign out
-                </button>
+                </Button>
               </form>
             </div>
           </div>

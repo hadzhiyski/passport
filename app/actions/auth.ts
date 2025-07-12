@@ -3,21 +3,30 @@
 import { createClient } from '@passport/utils/supabase/server';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
+import {
+  signUpServerSchema,
+  signInSchema,
+} from '@passport/lib/validations/auth';
 
-export async function signUp(
-  email: string,
-  password: string,
-  displayName: string,
-) {
+export async function signUp(formData: FormData) {
+  const rawData = {
+    email: formData.get('email'),
+    password: formData.get('password'),
+    displayName: formData.get('displayName'),
+  };
+
+  // Validate input using Zod schema
+  const validatedData = signUpServerSchema.parse(rawData);
+
   const supabase = await createClient(cookies());
 
   const { data, error } = await supabase.auth.signUp({
-    email,
-    password,
+    email: validatedData.email,
+    password: validatedData.password,
     options: {
       data: {
-        display_name: displayName,
-        full_name: displayName, // Some apps use full_name instead
+        display_name: validatedData.displayName,
+        full_name: validatedData.displayName, // Some apps use full_name instead
       },
     },
   });
@@ -29,12 +38,20 @@ export async function signUp(
   return data;
 }
 
-export async function signIn(email: string, password: string) {
+export async function signIn(formData: FormData) {
+  const rawData = {
+    email: formData.get('email'),
+    password: formData.get('password'),
+  };
+
+  // Validate input using Zod schema
+  const validatedData = signInSchema.parse(rawData);
+
   const supabase = await createClient(cookies());
 
   const { error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
+    email: validatedData.email,
+    password: validatedData.password,
   });
 
   if (error) {
